@@ -7,6 +7,7 @@ By investing in automation of certicate renewal process, we can save significant
 This application is written in Python 3 and follows pep 8 style guide for python code.
  
 ## Screenshots
+![Certificate Renewal](https://secureservernet-my.sharepoint.com/:i:/r/personal/agrover_godaddy_com/Documents/Screen%20Shot%202021-01-17%20at%2010.47.27%20AM.png?csf=1&web=1&e=GlKlcz "Logs")
 
 ## Installation
 1)  Pull the main branch of Scripts repository
