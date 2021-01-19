@@ -9,6 +9,17 @@ This application is written in Python 3 and follows pep 8 style guide for python
 ## Screenshots
 ![Certificate Renewal](https://secureservernet-my.sharepoint.com/:i:/r/personal/agrover_godaddy_com/Documents/Screen%20Shot%202021-01-17%20at%2010.47.27%20AM.png?csf=1&web=1&e=GlKlcz "Logs")
 
+## Certificate_Secret_Mapping json file schema
+```
+{
+    "<certificate name>": {
+        "secret": {
+            "<secret name>": [<"dev"/"ote"/"prod">],
+	    "<secret name>": [<"dev"/"ote"/"prod">]
+        }
+    }
+}
+```
 ## Installation
 1)  Pull the main branch of Scripts repository
 2)  Execute the cert_renew.py script in a python3 environment
