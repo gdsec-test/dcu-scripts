@@ -1,7 +1,6 @@
 import getpass
 import unittest
-
-from cert_renew import getAuthToken, read_certificate_secret_mapping_file
+from automated_certificate_renewal.cert_renew import getAuthToken, read_certificate_secret_mapping_file
 
 
 class MyTestCase(unittest.TestCase):

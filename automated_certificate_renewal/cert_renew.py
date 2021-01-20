@@ -1,3 +1,4 @@
+import configparser
 from datetime import datetime
 from enum import IntEnum
 from http import HTTPStatus
@@ -22,6 +23,7 @@ cert-api swagger: https://certificates.api.int.godaddy.com/doc/#!/_v1_certificat
 BASE_URL = 'https://certificates.api.int.godaddy.com:443/v1/certificates'
 SSO_URL = 'https://sso.godaddy.com/v1/api/token'
 CONFLUENCE_URL = 'https://confluence.godaddy.com/display/ITSecurity/Replacing+SSL+Certs#ReplacingSSLCerts-InSaltstack'
+KEY_COMMON_NAME = 'commonName'
 
 encoding = encodings.utf_8.getregentry().name
 
@@ -81,17 +83,17 @@ def issue_new_certificate():
     :return: None
     """
 
-    print('Issuing a new certificate for {}'.format(body['commonName']))
+    print('Issuing a new certificate for {}'.format(body[KEY_COMMON_NAME]))
     issue_new_certificate_response = doPostRequest(body)
     if issue_new_certificate_response.status_code == HTTPStatus.OK:
         print('Certificate Issued - Certificate Name: {}, HTTP Response Code: {}'
-              .format(body['commonName'], issue_new_certificate_response.status_code))
+              .format(body[KEY_COMMON_NAME], issue_new_certificate_response.status_code))
         print('New Certificate will be in PENDING_ISSUANCE status. Waiting 300s')
         sleep(300)
     else:
         print('Invalid HTTP Response for cert api post request while issuing the certificate'
               '- Certificate Name: {}, HTTP Response Code: {}'
-              .format(body['commonName'], issue_new_certificate_response.status_code))
+              .format(body[KEY_COMMON_NAME], issue_new_certificate_response.status_code))
         exit(1)
 
 
@@ -111,8 +113,8 @@ def get_latest_certificate():
     :return: response json of the latest certificate for a given commonName
     """
 
-    print('Fetching the current certificate {}'.format(body['commonName']))
-    get_latest_certificate_response = requests.get('{}/cn/{}/latest'.format(BASE_URL, body['commonName']),
+    print('Fetching the current certificate {}'.format(body[KEY_COMMON_NAME]))
+    get_latest_certificate_response = requests.get('{}/cn/{}/latest'.format(BASE_URL, body[KEY_COMMON_NAME]),
                                                    params=body, headers=HEADERS)
 
     if get_latest_certificate_response.status_code == HTTPStatus.OK:
@@ -120,7 +122,7 @@ def get_latest_certificate():
     else:
         print('Invalid HTTP Response for cert api get request while fetching the current certificate for '
               '- Certificate Name: {}, HTTP Response Code: {}'
-              .format(body['commonName'], get_latest_certificate_response.status_code))
+              .format(body[KEY_COMMON_NAME], get_latest_certificate_response.status_code))
         exit(1)
 
 
@@ -136,38 +138,17 @@ def get_certificate_data(url):
     else:
         print('Invalid HTTP Response for cert api get request while fetching the latest certificate text for '
               '- Certificate Name: {}, HTTP Response Code: {}'
-              .format(body['commonName'], download_response.status_code))
+              .format(body[KEY_COMMON_NAME], download_response.status_code))
         return None
 
 
-def download_new_certificate_crt_file():
+def download_file(file_type):
     """
-    This function fetches the crt text of the latest certificate
-    :return: response text (crt) for latest certificate
+        This function fetches the crt text of the latest certificate
+        :return: response text (crt) for latest certificate
     """
-    print('Downloading crt file for certificate {}'.format(body['commonName']))
-    url = '{}/cn/{}/latest.crt'.format(BASE_URL, body['commonName'])
-    return get_certificate_data(url)
-
-
-def download_new_certificate_intermediate_chain_file():
-    """
-    This function fetches the chain text of the latest certificate
-    :return: response text (chain) for latest certificate
-    """
-
-    print('Downloading chain file for certificate {}'.format(body['commonName']))
-    url = '{}/cn/{}/latest.chain'.format(BASE_URL, body['commonName'])
-    return get_certificate_data(url)
-
-
-def download_new_certificate_key_file():
-    """
-    This function fetches the key text of the latest certificate
-    :return: response text (key) for latest certificate
-    """
-    print('Downloading key file for certificate {}'.format(body['commonName']))
-    url = '{}/cn/{}/latest.key'.format(BASE_URL, body['commonName'])
+    print('Downloading {} file for certificate {}'.format(file_type, body[KEY_COMMON_NAME]))
+    url = '{}/cn/{}/latest.{}'.format(BASE_URL, body[KEY_COMMON_NAME], file_type)
     return get_certificate_data(url)
 
 
@@ -180,10 +161,9 @@ def generate_new_cert_package(crt, chain, key):
     :return: None
     """
 
-    print('Generating crt package for certificate {}'.format(body['commonName']))
+    print('Generating crt package for certificate {}'.format(body[KEY_COMMON_NAME]))
     f = open('tls.crt', 'a')
-    f.write('{}\n'.format(crt))
-    f.write(chain)
+    f.write('{}\n{}'.format(crt, chain))
     f.close()
 
     f = open('tls.key', 'a')
@@ -212,19 +192,19 @@ def get_certificate_serial_number():
     :return: Fetch the serial number of the certificate
     """
 
-    print('Fetching Serial Number for certificate {}'.format(body['commonName']))
+    print('Fetching Serial Number for certificate {}'.format(body[KEY_COMMON_NAME]))
     get_certificate_serial_number_response = requests.get(
-        '{}/cn/{}/latest'.format(BASE_URL, body['commonName']), params=body, headers=HEADERS)
+        '{}/cn/{}/latest'.format(BASE_URL, body[KEY_COMMON_NAME]), params=body, headers=HEADERS)
 
     if get_certificate_serial_number_response.status_code == HTTPStatus.OK:
         last_certificate_response = get_certificate_serial_number_response.json()
-        print('Details of the current certificate with commonName {}'.format(body['commonName']))
+        print('Details of the current certificate with commonName {}'.format(body[KEY_COMMON_NAME]))
         pprint(last_certificate_response)
         return last_certificate_response['certificate']['serialNumber']
     else:
         print('Invalid HTTP Response for cert api get request while fetching the latest certificate serial number for '
               '- Certificate Name: {}, HTTP Response Code: {}'
-              .format(body['commonName'], get_certificate_serial_number_response.status_code))
+              .format(body[KEY_COMMON_NAME], get_certificate_serial_number_response.status_code))
         exit(1)
 
 
@@ -235,7 +215,7 @@ def retire_old_certificate(certificate_serial_number):
     :return:response json
     """
 
-    print('Retiring old certificate {} with Serial Number: {}'.format(body['commonName'], certificate_serial_number))
+    print('Retiring old certificate {} with Serial Number: {}'.format(body[KEY_COMMON_NAME], certificate_serial_number))
     body['serialNumber'] = certificate_serial_number
     retire_old_certificate_response = requests.post('{}/sn/{}/retire'.format(BASE_URL, certificate_serial_number),
                                                     params=body, headers=HEADERS)
@@ -245,7 +225,7 @@ def retire_old_certificate(certificate_serial_number):
     else:
         print('Invalid HTTP Response for cert api post request while retiring the certificate for '
               '- Certificate Name: {}, Serial Number: {}, HTTP Response Code: {}'
-              .format(body['commonName'], certificate_serial_number, retire_old_certificate_response.status_code))
+              .format(body[KEY_COMMON_NAME], certificate_serial_number, retire_old_certificate_response.status_code))
         exit(1)
 
 
@@ -308,12 +288,11 @@ def verify_new_certificate():
     print('Not Before: {}'.format(datetime.strptime(cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ')))
 
 
-def getAuthToken(user, password, certificate_file='apiuser.cmap.int.godaddy.com.crt',
-                 certificate_secret='apiuser.cmap.int.godaddy.com.key'):
+def getAuthToken(user, password, path_to_crt, path_to_secret):
     """
     This function generates the signed jwt token for a user
-    :param certificate_secret: path to apiuser.cmap.int.godaddy.com.crt file
-    :param certificate_file: path to apiuser.cmap.int.godaddy.com.key file
+    :param path_to_crt: path to apiuser.cmap.int.godaddy.com.crt file
+    :param path_to_secret: path to apiuser.cmap.int.godaddy.com.key file
     :param user: The JOMAX username of the user
     :param password: User Password
     :return: 
@@ -325,7 +304,7 @@ def getAuthToken(user, password, certificate_file='apiuser.cmap.int.godaddy.com.
         "password": password
     }
 
-    response = requests.post(SSO_URL, json=data, headers=HEADERS, cert=(certificate_file, certificate_secret))
+    response = requests.post(SSO_URL, json=data, headers=HEADERS, cert=(path_to_crt, path_to_secret))
 
     if response.status_code == HTTPStatus.CREATED:
         return response.json()['data']
@@ -343,14 +322,17 @@ def get_user_selection():
 
 
 def main():
+    config = configparser.ConfigParser()
+    config.read('./settings.ini')
+
     user = input('Enter jomax username: ').strip()
     password = getpass.getpass('Enter password for user {}: '.format(user))
 
-    if user is None or password is None:
+    if not user or not password:
         print('Invalid Credentials - Exiting')
         exit(1)
 
-    authorization_token = getAuthToken(user, password)
+    authorization_token = getAuthToken(user, password, config['DEFAULT']['PATH_TO_CRT'], config['DEFAULT']['PATH_TO_KEY'])
 
     if authorization_token:
         print('Authorization Token retrieved')
@@ -362,16 +344,16 @@ def main():
 
     certificate_name = input('Enter the name of certificate to be issued/renewed/retired:').strip()
 
-    if certificate_name is None:
+    if not certificate_name:
         print('Certificate Name is null')
         exit(1)
-    body['commonName'] = certificate_name
+    body[KEY_COMMON_NAME] = certificate_name
 
     user_action = get_user_selection()
 
     if user_action == Action.Retire:
         certificate_serial_number = input('Enter the serial number of the certificate you want to retire:').strip()
-        if certificate_serial_number is None:
+        if not certificate_serial_number:
             print('Serial Number is null')
             exit(1)
         retire_old_certificate(certificate_serial_number)
@@ -379,8 +361,8 @@ def main():
         issue_new_certificate()
     elif user_action == Action.Renew:
 
-        cert_secret_mapping = read_certificate_secret_mapping_file(body['commonName'])
-        if cert_secret_mapping is None:
+        cert_secret_mapping = read_certificate_secret_mapping_file(body[KEY_COMMON_NAME])
+        if not cert_secret_mapping:
             print('Unable to fetch information of {} certificate from certificate_secret_mapping.json file - Exiting ')
             exit(1)
 
@@ -390,7 +372,7 @@ def main():
         for secret_name in cert_secret_mapping['secret']:
             for context in cert_secret_mapping['secret'][secret_name]:
                 context = '{}-dcu'.format(context)
-                print('{} \t {} \t {} \n'.format(body['commonName'], secret_name, context))
+                print('{} \t {} \t {} \n'.format(body[KEY_COMMON_NAME], secret_name, context))
 
         user_input = input('Do you wish to continue (Y/N)? ').strip()
 
@@ -424,16 +406,16 @@ def main():
                 exit(1)
 
         # Step 5: Download the crt text from the latest certificate
-        latest_certificate_crt = download_new_certificate_crt_file()
+        latest_certificate_crt = download_file('crt')
 
         # Step 6: Download the chain text from the latest certificate
-        latest_certificate_intermediate_chain = download_new_certificate_intermediate_chain_file()
+        latest_certificate_intermediate_chain = download_file('chain')
 
         # Step 7: Download the key text from the latest certificate
-        latest_certificate_key = download_new_certificate_key_file()
+        latest_certificate_key = download_file('key')
 
-        if latest_certificate_crt is None or latest_certificate_intermediate_chain is None or \
-                latest_certificate_key is None:
+        if not latest_certificate_crt or not latest_certificate_intermediate_chain or \
+                not latest_certificate_key:
             print('Unable to download cert, chain or key file - Exiting')
             exit(1)
 
