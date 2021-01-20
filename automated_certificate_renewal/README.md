@@ -7,7 +7,7 @@ By investing in the automation of certificate renewal process, we can save signi
 This application is written in Python 3 and follows pep 8 style guide for python code. The required packages are listed in requirements.txt file
  
 ## Screenshots
-![Certificate Renewal](https://secureservernet-my.sharepoint.com/:i:/r/personal/agrover_godaddy_com/Documents/Screen%20Shot%202021-01-17%20at%2010.47.27%20AM.png?csf=1&web=1&e=GlKlcz "Logs")
+![Certificate Renewal](https://secureservernet-my.sharepoint.com/:i:/g/personal/agrover_godaddy_com/EfKCqJh1PDNFoFbcY4GUiGQB8uR2Uoo184tMbEn-_J0jjg?e=2s4Ieh "Certificate Renewal")
 
 ## Certificate_Secret_Mapping json file schema
 ```
@@ -29,4 +29,4 @@ This application is written in Python 3 and follows pep 8 style guide for python
 5)  Make sure **new** certificate/kubernetes secrets are updated in certificate_secret_mapping.json file
 
 ## Certificate Renewal Process
-[Click here to watch the automated certificate renewal process](https://secureservernet-my.sharepoint.com/:v:/r/personal/agrover_godaddy_com/Documents/Projects/Automated_Certificate_Renewal/zoom_0.mp4?csf=1&web=1&e=hI0Ivl)
+[Click here to watch the automated certificate renewal process](https://secureservernet-my.sharepoint.com/:v:/g/personal/agrover_godaddy_com/ES-5k4M2ToRBnqLHeTGueKQB2G19J-6gY9m9h9A4Jo6oqg?e=u8MMjQ)
