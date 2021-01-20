@@ -144,8 +144,9 @@ def get_certificate_data(url):
 
 def download_file(file_type):
     """
-        This function fetches the crt text of the latest certificate
-        :return: response text (crt) for latest certificate
+    This function downloads the required part (crt, key or chain) of the certificate
+    :param file_type: crt, chain or key
+    :return: response text
     """
     print('Downloading {} file for certificate {}'.format(file_type, body[KEY_COMMON_NAME]))
     url = '{}/cn/{}/latest.{}'.format(BASE_URL, body[KEY_COMMON_NAME], file_type)
