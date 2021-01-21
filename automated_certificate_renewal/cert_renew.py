@@ -335,8 +335,8 @@ def main():
         print('Invalid Credentials - Exiting')
         exit(1)
 
-    authorization_token = get_auth_token(user, password, config['DEFAULT']['PATH_TO_CRT'],
-                                         config['DEFAULT']['PATH_TO_KEY'])
+    authorization_token = get_auth_token(user, password, config['DEFAULT'].get('PATH_TO_CRT'),
+                                         config['DEFAULT'].get('PATH_TO_KEY'))
 
     if authorization_token:
         print('Authorization Token retrieved')
