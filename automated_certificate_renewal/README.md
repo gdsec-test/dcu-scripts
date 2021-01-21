@@ -7,7 +7,7 @@ By investing in the automation of certificate renewal process, we can save signi
 This application is written in Python 3 and follows pep 8 style guide for python code. The required packages are listed in requirements.txt file
  
 ## Screenshots
-![Certificate Renewal](https://secureservernet-my.sharepoint.com/:i:/g/personal/agrover_godaddy_com/EfKCqJh1PDNFoFbcY4GUiGQB8uR2Uoo184tMbEn-_J0jjg?e=2s4Ieh "Certificate Renewal")
+![Certificate Renewal](certificate_renewal.png?raw=true "Certificate Renewal")
 
 ## Certificate_Secret_Mapping json file schema
 ```

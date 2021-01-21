@@ -84,7 +84,7 @@ def issue_new_certificate():
     """
 
     print('Issuing a new certificate for {}'.format(body.get(KEY_COMMON_NAME)))
-    issue_new_certificate_response = doPostRequest(body)
+    issue_new_certificate_response = do_post_request(body)
     if issue_new_certificate_response.status_code == HTTPStatus.OK:
         print('Certificate Issued - Certificate Name: {}, HTTP Response Code: {}'
               .format(body.get(KEY_COMMON_NAME), issue_new_certificate_response.status_code))
@@ -97,7 +97,7 @@ def issue_new_certificate():
         exit(1)
 
 
-def doPostRequest(data):
+def do_post_request(data):
     """
     This function performs the post request
     :param data: contains the values for group and commonName
@@ -227,7 +227,8 @@ def retire_old_certificate(certificate_serial_number):
     else:
         print('Invalid HTTP Response for cert api post request while retiring the certificate for '
               '- Certificate Name: {}, Serial Number: {}, HTTP Response Code: {}'
-              .format(body.get(KEY_COMMON_NAME), certificate_serial_number, retire_old_certificate_response.status_code))
+              .format(body.get(KEY_COMMON_NAME), certificate_serial_number,
+                      retire_old_certificate_response.status_code))
         exit(1)
 
 
@@ -290,7 +291,7 @@ def verify_new_certificate():
     print('Not Before: {}'.format(datetime.strptime(cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ')))
 
 
-def getAuthToken(user, password, path_to_crt, path_to_secret):
+def get_auth_token(user, password, path_to_crt, path_to_secret):
     """
     This function generates the signed jwt token for a user
     :param path_to_crt: path to apiuser.cmap.int.godaddy.com.crt file
@@ -334,7 +335,8 @@ def main():
         print('Invalid Credentials - Exiting')
         exit(1)
 
-    authorization_token = getAuthToken(user, password, config['DEFAULT']['PATH_TO_CRT'], config['DEFAULT']['PATH_TO_KEY'])
+    authorization_token = get_auth_token(user, password, config['DEFAULT']['PATH_TO_CRT'],
+                                         config['DEFAULT']['PATH_TO_KEY'])
 
     if authorization_token:
         print('Authorization Token retrieved')
