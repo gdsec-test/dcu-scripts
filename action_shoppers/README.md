@@ -1,4 +1,4 @@
-# Scramble and Lock
+# Action Shoppers
 
 ## Motivation
 DCU is often asked to change shopper account passwords on, or lock shopper accounts, or send templated emails to shoppers.  This script provides an automated and easy way to handle this process.
@@ -17,7 +17,7 @@ This application is written in Python 3 and follows pep 8 style guide for python
 ## Running Locally
 Shopper account ids are required to scramble or email, while the lock functionality can accept an email address, username or shopper account id.
 1)  Enter shopper ids to action into the `source.txt` file, one id per line
-2)  Execute `python3 scramble_and_lock.py` in the same virtual environment
+2)  Execute `python action_shopper.py` in the same virtual environment, providing `python` is Python version 3.
 3)  Make sure to pay attention to the script prompts
 4) If you notice output containing `Error while aggregating ShopperIDs`, it simply means that the shopper id provided is not associated with a valid shopper account
 
