@@ -83,7 +83,8 @@ class TestScramble:
         """
         self._mr.status_code = HTTPStatus.CREATED
         mock_post.return_value = self._mr
-        assert_equal(POST_DATA, Action._get_jwt(self.CERT, self.URL))
+        expected_value = 'sso-jwt {}'.format(POST_DATA)
+        assert_equal(expected_value, Action._get_jwt(self.CERT, self.URL))
         mock_post.assert_called()
 
     @patch('shopper_actions.interface.post')
