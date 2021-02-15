@@ -1,6 +1,6 @@
 from hermes.connectors.ocm import OCMClient
 
-from scramble_and_lock.shopper_actions.interface import Action
+from .interface import Action
 
 
 class EmailShopper(Action):

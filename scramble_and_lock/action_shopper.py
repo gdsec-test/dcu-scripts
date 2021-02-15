@@ -1,9 +1,9 @@
 import configparser
 
-from scramble_and_lock.shopper_actions.email import EmailShopper
-from scramble_and_lock.shopper_actions.interface import Action
-from scramble_and_lock.shopper_actions.lock import LockShopper
-from scramble_and_lock.shopper_actions.scramble import ScrambleShopper
+from shopper_actions.email import EmailShopper
+from shopper_actions.interface import Action
+from shopper_actions.lock import LockShopper
+from shopper_actions.scramble import ScrambleShopper
 
 
 class ActionShoppers:

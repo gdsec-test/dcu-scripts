@@ -8,8 +8,8 @@ class Action(object, metaclass=abc.ABCMeta):
     """
     Abstract base class for all shopper actions
     """
+    HEADERS = {'Accept': 'application/json'}
     _confirm = 'n'
-    _headers = {'Accept': 'application/json'}
     _note = ''
     _question = 'Do you want to {} these shopper accounts? (y/n)'
 
@@ -73,7 +73,8 @@ class Action(object, metaclass=abc.ABCMeta):
             response.raise_for_status()
 
             body = json.loads(response.text)
-            return body.get('data')  # {'type': 'signed-jwt', 'id': 'XXX', 'code': 1, 'message': 'Success', 'data': JWT}
+            # body = {'type': 'signed-jwt', 'id': 'XXX', 'code': 1, 'message': 'Success', 'data': JWT}
+            return 'sso-jwt {}'.format(body.get('data'))
         except Exception as e:
             print('EXCEPTION: {}'.format(e))
         return None

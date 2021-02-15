@@ -1,5 +1,5 @@
 from requests import post
-from scramble_and_lock.shopper_actions.interface import Action
+from .interface import Action
 
 
 class LockShopper(Action):
@@ -12,9 +12,10 @@ class LockShopper(Action):
         """
         :param _config: object containing required cert path and api url
         """
-        self._headers.update({'Authorization': Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
-                                                                _config.get('PATH_TO_SHOPLOCKED_KEY')),
-                                                               _config.get('URL_SSO_API'))})
+        self._headers = dict(Authorization=Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
+                                                            _config.get('PATH_TO_SHOPLOCKED_KEY')),
+                                                           _config.get('URL_SSO_API')))
+        self._headers.update(self.HEADERS)
         self._url = _config.get('URL_SHOPLOCKED_API')
 
     def confirm(self):

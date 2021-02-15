@@ -4,9 +4,9 @@ from mock import patch
 from http import HTTPStatus
 from nose.tools import assert_is_none, assert_equal, assert_false, assert_true
 
-from scramble_and_lock.action_shopper import ActionShoppers
-from scramble_and_lock.shopper_actions.scramble import ScrambleShopper
-from scramble_and_lock.shopper_actions.interface import Action
+from action_shopper import ActionShoppers
+from shopper_actions.scramble import ScrambleShopper
+from shopper_actions.interface import Action
 
 POST_DATA = {"data": "test_jwt"}
 
@@ -31,7 +31,7 @@ class TestScramble:
     YES = 'Y'
 
     @classmethod
-    @patch('scramble_and_lock.shopper_actions.interface.post')
+    @patch('shopper_actions.interface.post')
     def setup_class(cls, mock_post):
         """
         :return: None
@@ -74,7 +74,7 @@ class TestScramble:
         """
         assert_false(Action._is_affirmative(self.NO))
 
-    @patch('scramble_and_lock.shopper_actions.interface.post')
+    @patch('shopper_actions.interface.post')
     def test_get_jwt_success(self, mock_post):
         """
         Test when _get_jwt() returns successfully 201
@@ -86,7 +86,7 @@ class TestScramble:
         assert_equal(POST_DATA, Action._get_jwt(self.CERT, self.URL))
         mock_post.assert_called()
 
-    @patch('scramble_and_lock.shopper_actions.interface.post')
+    @patch('shopper_actions.interface.post')
     def test_get_jwt_fail(self, mock_post):
         """
         Test when _get_jwt() returns failed 400
@@ -98,7 +98,7 @@ class TestScramble:
         assert_is_none(Action._get_jwt(self.CERT, self.URL))
         mock_post.assert_called()
 
-    @patch('scramble_and_lock.shopper_actions.scramble.post')
+    @patch('shopper_actions.scramble.post')
     def test_perform_success(self, mock_post):
         """
         Test when _perform() returns successfully 201
@@ -112,7 +112,7 @@ class TestScramble:
         assert_equal('SUCCESS: {"data": {"data": "test_jwt"}}', message)
         mock_post.assert_called()
 
-    @patch('scramble_and_lock.shopper_actions.scramble.post')
+    @patch('shopper_actions.scramble.post')
     def test_perform_fail(self, mock_post):
         """
         Test when _perform() returns failed 400
@@ -126,7 +126,7 @@ class TestScramble:
         assert_equal("FAILURE [status code:400]: ['test_shoppers']", message)
         mock_post.assert_called()
 
-    @patch('scramble_and_lock.shopper_actions.scramble.post', side_effect=Exception('MockException'))
+    @patch('shopper_actions.scramble.post', side_effect=Exception('MockException'))
     def test_perform_exception(self, mock_post):
         """
         Test when _perform() throws exception
