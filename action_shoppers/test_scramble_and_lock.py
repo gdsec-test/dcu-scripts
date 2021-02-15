@@ -4,7 +4,9 @@ from mock import patch
 from http import HTTPStatus
 from nose.tools import assert_is_none, assert_equal, assert_false, assert_true
 
-from scramble_and_lock import _inquire, _is_affirmative, ScrambleAndLock
+from action_shopper import ActionShoppers
+from shopper_actions.scramble import ScrambleShopper
+from shopper_actions.interface import Action
 
 POST_DATA = {"data": "test_jwt"}
 
@@ -15,22 +17,30 @@ class MockResponse(requests.Response):
 
 
 class TestScramble:
+    CERT = 'test_cert'
+    CONFIG = {
+        'PATH_TO_SCRAMBLE_CRT': '',
+        'PATH_TO_SCRAMBLE_KEY': '',
+        'URL_SCRAMBLE_API': '',
+        'URL_SSO_API': ''
+    }
+    LIST_OF_SHOPPERS = ['test_shoppers']
     NO = 'N'
     TEST_QUESTION = 'Test Question'
+    URL = 'http://test.url'
     YES = 'Y'
 
     @classmethod
-    @patch('scramble_and_lock.post')
+    @patch('shopper_actions.interface.post')
     def setup_class(cls, mock_post):
         """
-        Since the ScrambleAndLock constructor calls _get_jwt() which calls requests.post, we need to mock it
-        :param mock_post:
         :return: None
         """
         cls._mr = MockResponse()
         cls._mr.status_code = HTTPStatus.CREATED
         mock_post.return_value = cls._mr
-        cls._scram = ScrambleAndLock('test_crt', 'test_key', 'test_note')
+        cls._actions = ActionShoppers(1)
+        cls._scramble = ScrambleShopper(cls.CONFIG)
 
     @patch('builtins.input', return_value=YES)
     def test_inquire_yes(self, mock_input):
@@ -39,7 +49,7 @@ class TestScramble:
         :param mock_input:
         :return: None
         """
-        assert_equal(self.YES, _inquire('Test question'))
+        assert_equal(self.YES, Action._inquire('Test question'))
 
     @patch('builtins.input', return_value=NO)
     def test_inquire_no(self, mock_input):
@@ -48,23 +58,23 @@ class TestScramble:
         :param mock_input:
         :return: None
         """
-        assert_equal(self.NO, _inquire('Test question'))
+        assert_equal(self.NO, Action._inquire('Test question'))
 
     def test_is_affirmative_yes(self):
         """
         _is_affirmative should return True when provided 'Y'
         :return: None
         """
-        assert_true(_is_affirmative(self.YES))
+        assert_true(Action._is_affirmative(self.YES))
 
     def test_is_affirmative_no(self):
         """
         _is_affirmative should return False when provided anything but 'Y'
         :return: None
         """
-        assert_false(_is_affirmative(self.NO))
+        assert_false(Action._is_affirmative(self.NO))
 
-    @patch('scramble_and_lock.post')
+    @patch('shopper_actions.interface.post')
     def test_get_jwt_success(self, mock_post):
         """
         Test when _get_jwt() returns successfully 201
@@ -73,9 +83,11 @@ class TestScramble:
         """
         self._mr.status_code = HTTPStatus.CREATED
         mock_post.return_value = self._mr
-        assert_equal(POST_DATA, self._scram._get_jwt('test_cert'))
+        expected_value = 'sso-jwt {}'.format(POST_DATA)
+        assert_equal(expected_value, Action._get_jwt(self.CERT, self.URL))
+        mock_post.assert_called()
 
-    @patch('scramble_and_lock.post')
+    @patch('shopper_actions.interface.post')
     def test_get_jwt_fail(self, mock_post):
         """
         Test when _get_jwt() returns failed 400
@@ -84,22 +96,24 @@ class TestScramble:
         """
         self._mr.status_code = HTTPStatus.BAD_REQUEST
         mock_post.return_value = self._mr
-        assert_is_none(self._scram._get_jwt('test_cert'))
+        assert_is_none(Action._get_jwt(self.CERT, self.URL))
+        mock_post.assert_called()
 
-    @patch('scramble_and_lock.post')
+    @patch('shopper_actions.scramble.post')
     def test_perform_success(self, mock_post):
         """
         Test when _perform() returns successfully 201
         :param mock_post:
         :return: None
         """
-        self._mr.status_code = HTTPStatus.CREATED
+        self._mr.status_code = HTTPStatus.OK
         mock_post.return_value = self._mr
-        success, message = self._scram._perform('test_action', ['test_shoppers'])
+        success, message = self._scramble.perform(self.LIST_OF_SHOPPERS)
         assert_true(success)
-        assert_equal('SUCCESS: 1: {"data": {"data": "test_jwt"}}', message)
+        assert_equal('SUCCESS: {"data": {"data": "test_jwt"}}', message)
+        mock_post.assert_called()
 
-    @patch('scramble_and_lock.post')
+    @patch('shopper_actions.scramble.post')
     def test_perform_fail(self, mock_post):
         """
         Test when _perform() returns failed 400
@@ -108,17 +122,19 @@ class TestScramble:
         """
         self._mr.status_code = HTTPStatus.BAD_REQUEST
         mock_post.return_value = self._mr
-        success, message = self._scram._perform('test_action', ['test_shoppers'])
+        success, message = self._scramble.perform(self.LIST_OF_SHOPPERS)
         assert_false(success)
         assert_equal("FAILURE [status code:400]: ['test_shoppers']", message)
+        mock_post.assert_called()
 
-    @patch('scramble_and_lock.post', side_effect=Exception('MockException'))
+    @patch('shopper_actions.scramble.post', side_effect=Exception('MockException'))
     def test_perform_exception(self, mock_post):
         """
         Test when _perform() throws exception
         :param mock_post:
         :return: None
         """
-        success, message = self._scram._perform('test_action', ['test_shoppers'])
+        success, message = self._scramble.perform(self.LIST_OF_SHOPPERS)
         assert_false(success)
         assert_equal("MockException: Exception while updating block: ['test_shoppers']", message)
+        mock_post.assert_called()
