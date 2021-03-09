@@ -18,13 +18,37 @@ class ProductionAppConfig():
         self.COLLECTION = _config.get('COLLECTION')
         self.DB = _config.get('DB')
         self.DBURL = 'mongodb://{}:{}@{}/{}'.format(_config.get('DB_USER'),
-                                                     _config.get('DB_PASS'),
-                                                     _config.get('DB_IP'),
-                                                     self.DB)
+                                                    _config.get('DB_PASS'),
+                                                    _config.get('DB_IP'),
+                                                    self.DB)
+
+
+def _inquire(_question):
+    """
+    Ask the user a question, force a non null response
+    :param _question: string
+    :return: string
+    """
+    while True:
+        _answer = input('\n{} '.format(_question))
+        _answer = _answer.lstrip('\"\'').rstrip('\"\'')
+        if _answer:
+            break
+    return _answer
+
+
+def _is_affirmative(_response):
+    """
+    Did the user respond affirmatively?
+    :param _response: string
+    :return: boolean
+    """
+    if _response.lower() == 'y':
+        return True
+    return False
 
 
 if __name__ in '__main__':
-    # exit('Comment out this line if you want to close tickets')
     PAYLOAD = {'closed': 'true', 'close_reason': 'resolved'}
     RUN_ENVIRONMENT = 'prod'
     _config_file = configparser.ConfigParser()
@@ -41,12 +65,16 @@ if __name__ in '__main__':
     }
     #####################################################################
 
+    _answer = _inquire('Do you want to close tickets with this query? (y/n)\n{} '.format(_query))
+    if not _is_affirmative(_answer):
+        exit('\n\nBailing...')
+
     try:
         _db = PhishstoryMongo(ProductionAppConfig(_config))
         _cursor = _db.find_incidents(_query)
     except Exception as e:
         exit('DB query failed. Check variable defined in settings file: {}'.format(e))
-    _cnt = 0
+    _cnt = _success = 0
 
     for _row in _cursor:
         if _cnt % 10 == 0:
@@ -58,8 +86,10 @@ if __name__ in '__main__':
                                 json=PAYLOAD,
                                 headers=HEADER)
             if _r.status_code == 204:
+                _success += 1
                 print('{}: Closed {}'.format(_cnt, _ticket_id))
             else:
                 print('{}: Unable to close ticket {} {}'.format(_cnt, _ticket_id, _r.content))
         except Exception as e:
             print('{}: Exception while closing ticket {} {}'.format(_cnt, _ticket_id, e))
+    print('Process complete. Successfully closed {} records'.format(_success))
