@@ -1,5 +1,5 @@
 import csv
-import os
+import uuid
 import requests
 from datetime import datetime
 from json import dumps, loads
@@ -181,7 +181,7 @@ if __name__ in '__main__':
     settings = AppConfig(config[RUN_ENVIRONMENT])
 
     fields = ['account_id', 'shopper_id', 'orion-result', 'error', 'snow-result', 'snow-ticket', 'mongo-id']
-    with open('results.csv', 'w') as csvfile:
+    with open(f'results-{uuid.uuid4()}.csv', 'w') as csvfile:
         # Build output CSV.
         writer = csv.DictWriter(csvfile, fieldnames=fields)
         writer.writeheader()
