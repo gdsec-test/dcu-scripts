@@ -9,7 +9,7 @@ Automatically suspend W&M accounts, and then create SNOW/Mongo tickets to track 
 pip install private_pips.txt
 pip install requirements.txt
 ```
-1. Add the required information to a csv file called `accounts_to_suspend.csv`.
+1. Add the required information to a csv file called `accounts_to_suspend.csv`. This file must start with a header and the headers must be `account_id,shopper_id,domain_name`.
 ```csv
 account_id,shopper_id,domain_name
 ade82ff0-85ac-11eb-8139-0050569a4acb,4038908,nick.dev.godaddysites.com
