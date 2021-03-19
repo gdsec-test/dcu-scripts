@@ -1,5 +1,5 @@
 # Overview
-Automatically suspend W&M accounts, and then create SNOW/Mongo tickets to track the change. This script was built/tested with python3.
+Automatically suspend W&M accounts, and then create SNOW/Mongo tickets to track the change. This script was built/tested with python3. We suspend a W+M using this Orion, which creates an anomaly where the Orion account becomes suspended but the EComm account still shows active. The accounts end up out of sync.
 
 ## To Run
 1. Change the variable `RUN_ENVIRONMENT` in suspend_csv.py to have a value of `prod`.
