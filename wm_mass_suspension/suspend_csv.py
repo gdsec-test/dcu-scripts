@@ -4,25 +4,22 @@ import requests
 from datetime import datetime
 from json import dumps, loads
 from dcdatabase.phishstorymongo import PhishstoryMongo
-
-"""
-"""
+import configparser
 
 
 class AppConfig():
-    def __init__(self):
-        self.COLLECTION = os.getenv('COLLECTION')
-        self.DB = os.getenv('DB')
-        self.DBURL = f'mongodb://{os.getenv("DB_USER")}:{os.getenv("DB_PASS")}@{os.getenv("DB_IP")}/?authSource={self.DB}'
-        self.GOCENTRAL_URL = os.getenv('GOCENTRAL_URL')
-        self.GOCENTRAL_SSL_CERT = os.getenv('GOCENTRAL_SSL_CERT')
-        self.GOCENTRAL_SSL_KEY = os.getenv('GOCENTRAL_SSL_KEY')
-        self.SNOW_USER = os.getenv('SNOW_USER')
-        self.SNOW_PASS = os.getenv('SNOW_PASS')
-        self.SNOW_URL = os.getenv('SNOW_URL')
-        self.SUSPENSION_NOTE = os.getenv(
-            'SUSPENSION_NOTE', 'Auto-suspending W&M account')
-        self.REPORTER = os.getenv('REPORTER', 'automation')
+    def __init__(self, config):
+        self.COLLECTION = config.get('COLLECTION')
+        self.DB = config.get('DB')
+        self.DBURL = f'mongodb://{config.get("DB_USER")}:{config.get("DB_PASS")}@{config.get("DB_IP")}/?authSource={self.DB}'
+        self.GOCENTRAL_URL = config.get('GOCENTRAL_URL')
+        self.GOCENTRAL_SSL_CERT = config.get('GOCENTRAL_SSL_CERT')
+        self.GOCENTRAL_SSL_KEY = config.get('GOCENTRAL_SSL_KEY')
+        self.SNOW_USER = config.get('SNOW_USER')
+        self.SNOW_PASS = config.get('SNOW_PASS')
+        self.SNOW_URL = config.get('SNOW_URL')
+        self.SUSPENSION_NOTE = config.get('SUSPENSION_NOTE', 'Auto-suspending W&M account')
+        self.REPORTER = config.get('REPORTER', 'automation')
 
 
 ORION_SUSPENSION_HEADERS = {
@@ -151,7 +148,6 @@ def process_row(writer, row, settings):
         # Kick an event to orion.
         orion_result, orion_code, error = suspend_via_orion(
             account, shopper, settings)
-        orion_result = True
         # Only create the tickets if we were able to suspend the web site.
         if orion_result:
             # Create tracking tickets in SNOW.
@@ -178,10 +174,13 @@ def process_row(writer, row, settings):
 
 
 if __name__ in '__main__':
-    settings = AppConfig()
-    fields = ['account_id', 'shopper_id',
-              'orion-result',
-              'error', 'snow-result', 'snow-ticket', 'mongo-id']
+    RUN_ENVIRONMENT = 'dev'
+
+    config = configparser.ConfigParser()
+    config.read('./settings.ini')
+    settings = AppConfig(config[RUN_ENVIRONMENT])
+
+    fields = ['account_id', 'shopper_id', 'orion-result', 'error', 'snow-result', 'snow-ticket', 'mongo-id']
     with open('results.csv', 'w') as csvfile:
         # Build output CSV.
         writer = csv.DictWriter(csvfile, fieldnames=fields)
