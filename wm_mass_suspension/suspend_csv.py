@@ -133,10 +133,10 @@ def create_mongodb_ticket(ticketId, domain, accountId, closed_time, settings):
 
 
 def process_row(writer, row, settings):
+    account = row['account_id']
+    shopper = row['shopper_id']
+    domain = row['domain_name']
     try:
-        account = row['account_id']
-        shopper = row['shopper_id']
-        domain = row['domain_name']
         orion_result = ''
         orion_code = ''
         error = ''
@@ -166,6 +166,7 @@ def process_row(writer, row, settings):
             'account_id': account,
             'shopper_id': shopper,
             'orion-result': orion_result,
+            'orion-code': orion_code,
             'error': error,
             'snow-result': snow_result,
             'snow-ticket': snow_ticket,
@@ -180,7 +181,7 @@ if __name__ in '__main__':
     config.read('./settings.ini')
     settings = AppConfig(config[RUN_ENVIRONMENT])
 
-    fields = ['account_id', 'shopper_id', 'orion-result', 'error', 'snow-result', 'snow-ticket', 'mongo-id']
+    fields = ['account_id', 'shopper_id', 'orion-result', 'orion-code', 'error', 'snow-result', 'snow-ticket', 'mongo-id']
     with open(f'results-{uuid.uuid4()}.csv', 'w') as csvfile:
         # Build output CSV.
         writer = csv.DictWriter(csvfile, fieldnames=fields)
