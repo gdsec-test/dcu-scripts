@@ -18,7 +18,7 @@ class AppConfig():
         self.SNOW_USER = config.get('SNOW_USER')
         self.SNOW_PASS = config.get('SNOW_PASS')
         self.SNOW_URL = config.get('SNOW_URL')
-        self.SUSPENSION_NOTE = config.get('SUSPENSION_NOTE', 'Auto-suspending W&M account')
+        self.SUSPENSION_NOTE = input('Please provide a suspension note: ')
         self.REPORTER = config.get('REPORTER', 'automation')
 
 
