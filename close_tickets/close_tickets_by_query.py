@@ -4,6 +4,7 @@ import time
 
 from datetime import datetime
 from dcdatabase.phishstorymongo import PhishstoryMongo
+from getpass import getuser
 
 """
 Script to close tickets given a database query.
@@ -23,6 +24,16 @@ class ProductionAppConfig():
                                                     self.DB)
 
 
+def _get_value(_question):
+    """
+    Get the value from the user
+    :param _question: string
+    :return: string
+    """
+    _response = input('\n{}'.format(_question))
+    return _response.lstrip('\"\'').rstrip('\"\'')
+
+
 def _inquire(_question):
     """
     Ask the user a question, force a non null response
@@ -30,8 +41,7 @@ def _inquire(_question):
     :return: string
     """
     while True:
-        _answer = input('\n{} '.format(_question))
-        _answer = _answer.lstrip('\"\'').rstrip('\"\'')
+        _answer = _get_value(_question)
         if _answer:
             break
     return _answer
@@ -49,12 +59,20 @@ def _is_affirmative(_response):
 
 
 if __name__ in '__main__':
-    PAYLOAD = {'closed': 'true', 'close_reason': 'resolved'}
-    RUN_ENVIRONMENT = 'prod'
+    CLOSE_REASON = 'resolved'
+    PAYLOAD = {'closed': 'true', 'close_reason': CLOSE_REASON}
+    RUN_ENVIRONMENT = 'dev'
     _config_file = configparser.ConfigParser()
     _config_file.read('./settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
     HEADER = {'Authorization': _config.get('API_TOKEN')}
+
+    _user = getuser()
+    while True:
+        _answer = _inquire('Do you want "{}" as your username in the actions sub-document? (y/n)'.format(_user))
+        if _is_affirmative(_answer):
+            break
+        _user = _get_value('Enter username to use: ')
 
     #####################################################################
     #  The database query used to select tickets to close. !!BE CAREFUL!!
@@ -65,10 +83,11 @@ if __name__ in '__main__':
     }
     #####################################################################
 
-    _answer = _inquire('Do you want to close tickets with this query? (y/n)\n{} '.format(_query))
+    _answer = _inquire('Do you want to close tickets as "{}" with this query? (y/n)\n{} '.format(CLOSE_REASON, _query))
     if not _is_affirmative(_answer):
         exit('\n\nBailing...')
 
+    _cursor = []
     try:
         _db = PhishstoryMongo(ProductionAppConfig(_config))
         _cursor = _db.find_incidents(_query)
@@ -88,6 +107,7 @@ if __name__ in '__main__':
             if _r.status_code == 204:
                 _success += 1
                 print('{}: Closed {}'.format(_cnt, _ticket_id))
+                _db.update_actions_sub_document(_ticket_id, CLOSE_REASON, user=_user)
             else:
                 print('{}: Unable to close ticket {} {}'.format(_cnt, _ticket_id, _r.content))
         except Exception as e:
