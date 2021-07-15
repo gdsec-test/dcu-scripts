@@ -298,7 +298,7 @@ def get_auth_token(user, password, path_to_crt, path_to_secret):
     :param path_to_secret: path to apiuser.cmap.int.godaddy.com.key file
     :param user: The JOMAX username of the user
     :param password: User Password
-    :return: 
+    :return:
     """
 
     data = {
@@ -401,7 +401,7 @@ def main():
         while latest_certificate_serial_number and \
                 last_certificate_serial_number == latest_certificate_serial_number:
             retry += 1
-            print('New certificate is still pending_issuance. Retrying again. Waiting for 300s. Retry#: '
+            print('New certificate is still pending_issuance. Retrying again. Waiting for 300s. Retry#: {}'
                   .format(str(retry)))
             sleep(300)
             latest_certificate_serial_number = get_certificate_serial_number()
