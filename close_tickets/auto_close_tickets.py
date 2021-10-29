@@ -19,7 +19,7 @@ phislabs, malware scanner, spam, and registered malware older then 15 days
 
 def generate_jwt():
     response = requests.post(_config.get('API_TOKEN_URL'),
-                             json={'username': _config.get('API_USER') , 'password': _config.get('API_PASS')},
+                             json={'username': _config.get('API_USER'), 'password': _config.get('API_PASS')},
                              params={'realm': 'idp'})
     print(f'response sso: {response.content}')
     body = json.loads(response.text)
@@ -80,6 +80,8 @@ if __name__ in '__main__':
     _config = _config_file[RUN_ENVIRONMENT]
     HEADER = {'Authorization': generate_jwt()}
     ONE_WEEK = 604800
+    phishlabs = _config.get("PHISHLABS")
+    malware_scanner = _config.get("MALWARE_SCANNER")
 
     _user = getuser()
     while True:
@@ -88,8 +90,6 @@ if __name__ in '__main__':
             break
         _user = _get_value('Enter username to use: ')
 
-    phishlabs = "1054985"
-    malware_scanner = "2122818"
     n = datetime.utcnow()
     sixmonths = n - relativedelta.relativedelta(months=6)
     fifteendays = n - timedelta(hours=405)
@@ -134,7 +134,6 @@ if __name__ in '__main__':
 
     _queries = [_phishing_query, _malware_hosted_query, _spam_query, _malware_scanner_query, _phishlabs_query,
                 _malware_registered_query]
-
 
     _incidents = []
     try:

@@ -19,7 +19,7 @@ phislabs, malware scanner, spam, and registered malware older then 15 days
 
 def generate_jwt():
     response = requests.post(_config.get('API_TOKEN_URL'),
-                             json={'username': _config.get('API_USER') , 'password': _config.get('API_PASS')},
+                             json={'username': _config.get('API_USER'), 'password': _config.get('API_PASS')},
                              params={'realm': 'idp'})
     print(f'response sso: {response.content}')
     body = json.loads(response.text)
@@ -79,7 +79,6 @@ if __name__ in '__main__':
     _config_file.read('./settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
     HEADER = {'Authorization': generate_jwt()}
-    ONE_WEEK = 604800
     phishlabs = _config.get("PHISHLABS")
     malware_scanner = _config.get("MALWARE_SCANNER")
     _user = getuser()
@@ -151,14 +150,13 @@ if __name__ in '__main__':
         _ticket_created = _row.get('created')
         now = datetime.utcnow()
 
-
-
         _header = {'Content-Type': 'application/json', 'Accept': 'application/json'}
         _api_url = "http://localhost:5000"
 
         try:
             with sessions.Session() as session:
-                if (_row.get('type') == "PHISHING" and _row.get('reporter') != phishlabs) or (_row.get('type') == "MALWARE" and _row.get("hosted_status") == "HOSTED") :
+                if (_row.get('type') == "PHISHING" and _row.get('reporter') != phishlabs) or (
+                        _row.get('type') == "MALWARE" and _row.get("hosted_status") == "HOSTED"):
                     _close_date = _ticket_created + relativedelta.relativedelta(months=6)
                     diff = _close_date - now
                     period = diff.total_seconds()
@@ -177,4 +175,3 @@ if __name__ in '__main__':
         except Exception as e:
             print(f'Error in scheduling attempt on {_ticket_id}: {e}')
     print('Process complete. Successfully closed {} records'.format(_success))
-
