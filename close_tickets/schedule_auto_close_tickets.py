@@ -94,38 +94,38 @@ if __name__ in '__main__':
 
     _phishing_query = {
         'type': 'PHISHING',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': {'$ne': phishlabs},
         'created': {'$gte': sixmonths}
     }
     _malware_hosted_query = {
         'type': 'MALWARE',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': {'$ne': malware_scanner},
         'hosted_status': "HOSTED",
         'created': {'$gte': sixmonths}
     }
     _spam_query = {
         'type': 'SPAM',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'created': {'$gte': fifteendays}
     }
     _phishlabs_query = {
         'type': 'PHISHING',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': phishlabs,
         'created': {'$gte': fifteendays}
     }
     _malware_registered_query = {
         'type': 'MALWARE',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': {'$ne': malware_scanner},
         'hosted_status': "REGISTERED",
         'created': {'$gte': fifteendays}
     }
     _malware_scanner_query = {
         'type': 'MALWARE',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': malware_scanner,
         'created': {'$gte': fifteendays}
     }
@@ -154,9 +154,12 @@ if __name__ in '__main__':
         _api_url = "http://localhost:5000"
 
         try:
+            _type = _row.get('type')
+            _reporter = _row.get('reporter')
             with sessions.Session() as session:
-                if (_row.get('type') == "PHISHING" and _row.get('reporter') != phishlabs) or (
-                        _row.get('type') == "MALWARE" and _row.get("hosted_status") == "HOSTED"):
+                if (_type == "PHISHING" and _reporter != phishlabs) or (
+                        _type == "MALWARE" and _row.get("hosted_status") == "HOSTED" and
+                        _reporter == malware_scanner):
                     _close_date = _ticket_created + relativedelta.relativedelta(months=6)
                     diff = _close_date - now
                     period = diff.total_seconds()

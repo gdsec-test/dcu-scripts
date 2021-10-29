@@ -96,38 +96,38 @@ if __name__ in '__main__':
 
     _phishing_query = {
         'type': 'PHISHING',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': {'$ne': phishlabs},
         'created': {'$lte': sixmonths}
     }
     _malware_hosted_query = {
         'type': 'MALWARE',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': {'$ne': malware_scanner},
         'hosted_status': "HOSTED",
         'created': {'$lte': sixmonths}
     }
     _spam_query = {
         'type': 'SPAM',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'created': {'$lte': fifteendays}
     }
     _phishlabs_query = {
         'type': 'PHISHING',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': phishlabs,
         'created': {'$lte': fifteendays}
     }
     _malware_registered_query = {
         'type': 'MALWARE',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': {'$ne': malware_scanner},
         'hosted_status': "REGISTERED",
         'created': {'$lte': fifteendays}
     }
     _malware_scanner_query = {
         'type': 'MALWARE',
-        'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
+        'phishstory_status': 'OPEN',
         'reporter': malware_scanner,
         'created': {'$lte': fifteendays}
     }
