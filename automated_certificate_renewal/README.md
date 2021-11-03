@@ -34,3 +34,4 @@ To run the unit tests, simply execute `nosetests` in the virtual environment men
 ## Certificate Renewal Process
 [Click here to watch the automated certificate renewal process](https://secureservernet-my.sharepoint.com/:v:/g/personal/agrover_godaddy_com/ES-5k4M2ToRBnqLHeTGueKQB2G19J-6gY9m9h9A4Jo6oqg?e=u8MMjQ)
 
+After you have renewed a certificate, you'll need to check [the Lookup Table](https://confluence.godaddy.com/display/ITSecurity/Lookup+Table%3A+Cert+name+to+k8s+Secret+name) to determine if the certificate needs to also be updated in Saltstack.
