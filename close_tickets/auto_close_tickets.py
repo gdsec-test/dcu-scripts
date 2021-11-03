@@ -13,7 +13,7 @@ from requests import sessions
 """
 Script to close tickets based on criteria discussed in auto-closure design:
 phishing tickets and hosted malware older than 6 months
-phislabs, malware scanner, spam, and registered malware older then 15 days 
+phislabs, malware scanner, spam, and registered malware older then 15 days
 """
 
 
