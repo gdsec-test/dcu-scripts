@@ -166,7 +166,6 @@ if __name__ in '__main__':
                     _close_date = _ticket_created + relativedelta.relativedelta(hours=360)
                     diff = _close_date - now
                     period = diff.total_seconds()
-
                 r = session.post(_api_url + '/closure/schedule/' + _ticket_id,
                                  data=json.dumps({'period': int(period)}), headers=_header)
                 if r.status_code != 201:
