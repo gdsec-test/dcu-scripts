@@ -74,7 +74,7 @@ def _is_affirmative(_response):
 if __name__ in '__main__':
     CLOSE_REASON = 'resolved'
     PAYLOAD = {'closed': 'true', 'close_reason': CLOSE_REASON}
-    RUN_ENVIRONMENT = 'dev'
+    RUN_ENVIRONMENT = 'prod'
     _config_file = configparser.ConfigParser()
     _config_file.read('./settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
@@ -158,14 +158,16 @@ if __name__ in '__main__':
             _reporter = _row.get('reporter')
             with sessions.Session() as session:
                 if (_type == "PHISHING" and _reporter != phishlabs) or (
-                        _type == "MALWARE" and _row.get("hosted_status") == "HOSTED" and _reporter == malware_scanner):
+                        _type == "MALWARE" and _row.get("hosted_status") == "HOSTED" and _reporter != malware_scanner):
                     _close_date = _ticket_created + relativedelta.relativedelta(months=6)
                     diff = _close_date - now
                     period = diff.total_seconds()
+
                 else:
                     _close_date = _ticket_created + relativedelta.relativedelta(hours=360)
                     diff = _close_date - now
                     period = diff.total_seconds()
+
                 r = session.post(_api_url + '/closure/schedule/' + _ticket_id,
                                  data=json.dumps({'period': int(period)}), headers=_header)
                 if r.status_code != 201:
