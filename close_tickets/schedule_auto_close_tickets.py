@@ -74,7 +74,7 @@ def _is_affirmative(_response):
 if __name__ in '__main__':
     CLOSE_REASON = 'resolved'
     PAYLOAD = {'closed': 'true', 'close_reason': CLOSE_REASON}
-    RUN_ENVIRONMENT = 'prod'
+    RUN_ENVIRONMENT = 'dev'
     _config_file = configparser.ConfigParser()
     _config_file.read('./settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
@@ -162,7 +162,6 @@ if __name__ in '__main__':
                     _close_date = _ticket_created + relativedelta.relativedelta(months=6)
                     diff = _close_date - now
                     period = diff.total_seconds()
-
                 else:
                     _close_date = _ticket_created + relativedelta.relativedelta(hours=360)
                     diff = _close_date - now
