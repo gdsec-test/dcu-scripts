@@ -158,7 +158,7 @@ if __name__ in '__main__':
             _reporter = _row.get('reporter')
             with sessions.Session() as session:
                 if (_type == "PHISHING" and _reporter != phishlabs) or (
-                        _type == "MALWARE" and _row.get("hosted_status") == "HOSTED" and _reporter == malware_scanner):
+                        _type == "MALWARE" and _row.get("hosted_status") == "HOSTED" and _reporter != malware_scanner):
                     _close_date = _ticket_created + relativedelta.relativedelta(months=6)
                     diff = _close_date - now
                     period = diff.total_seconds()
