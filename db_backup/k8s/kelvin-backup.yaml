@@ -1,0 +1,62 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: db-kelvin-backup
+  namespace: abuse-api-prod
+  labels:
+    app: db-kelvin-backup
+spec:
+  schedule: "59  23  *  *  *"
+  # Deadline in seconds for starting the job if it misses its scheduled time.
+  startingDeadlineSeconds: 60
+  # The cron job does not allow concurrent runs
+  # if it is time for a new job run and the previous job run hasn't finished yet, the cron job skips the new job run
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 6600
+      template:
+        metadata:
+          labels:
+            app: db-kelvin-backup
+        spec:
+          restartPolicy: OnFailure
+          imagePullSecrets:
+            - name: dcu-artifactory-creds
+          containers:
+            - name: backup
+              imagePullPolicy: Always
+              image: docker-dcu-local.artifactory.secureserver.net/dcu-db-backup:REPLACE_WITH_GIT_COMMIT
+              env:
+                - name: BUILD_DATE
+                  value: THIS_STRING_IS_REPLACED_DURING_BUILD
+                - name: BACKUP_DEST
+                  value: /backup/kelvin
+                - name: BACKUP_DB
+                  value: dcu_kelvin
+                - name: COLLECTIONS
+                  value: incidents
+                - name: APP_SLACK_WEBHOOK
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-backup-slack
+                      key: handler
+                - name: USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: kelvin-mongo-admin
+                      key: username
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: kelvin-mongo-admin
+                      key: password
+              volumeMounts:
+                - mountPath: /backup
+                  name: nfs-persistent-storage
+          volumes:
+            - name: nfs-persistent-storage
+              persistentVolumeClaim:
+                claimName: db-backup-volume
