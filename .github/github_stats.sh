@@ -34,7 +34,7 @@ get_github_differences() {
     while read repo; do
         CURRENT_RUN_ISSUES=$(gh issue list --repo $repo --json url,title | jq)
         CURRENT_RUN_PRs=$(gh pr list --repo $repo --json url,title | jq)
-        LAST_RUN_DATA=$(aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 >/dev/null && aws ssm get-parameter --name "/slackstats/repo/gdcorp-infosec/dcu-shadowfax" --region us-west-2 | jq -r '.Parameter.Value' || echo '{"issues":[],"prs":[]}')
+        LAST_RUN_DATA=$(aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 >/dev/null && aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 | jq -r '.Parameter.Value' || echo '{"issues":[],"prs":[]}')
         PREVIOUS_RUN_ISSUES=$(echo $LAST_RUN_DATA | jq '.issues')
         PREVIOUS_RUN_PRS=$(echo $LAST_RUN_DATA | jq '.prs')
         update_ssm=false
@@ -70,10 +70,12 @@ get_github_differences() {
 while getopts ":cd" option; do
     case $option in
     c)
+        echo "Running github current sync"
         get_github_current
         exit
         ;;
     d)
+        echo "Running github difference sync"
         get_github_differences
         exit
         ;;
