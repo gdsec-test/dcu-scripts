@@ -2,7 +2,7 @@ name: Github Complete Stats
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '* 14 * * 1,2,3,4,5'
+    - cron:  '0 14 * * 1,2,3,4,5'
 jobs:
   generate-stats:
     concurrency: main

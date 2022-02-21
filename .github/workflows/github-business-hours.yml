@@ -2,7 +2,7 @@ name: Github Business Hour Stats
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '* 15,16,17,18,19,20,21,22 * * 1,2,3,4,5'
+    - cron:  '0 15,16,17,18,19,20,21,22 * * 1,2,3,4,5'
 jobs:
   generate-stats:
     concurrency: main
