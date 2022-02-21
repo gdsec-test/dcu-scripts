@@ -4,7 +4,7 @@ on:
   schedule:
     - cron:  '* 15,16,17,18,19,20,21,22 * * 1,2,3,4,5'
 jobs:
-  scale-out-runner:
+  generate-stats:
     concurrency: main
     runs-on: ubuntu-latest
     timeout-minutes: 10
