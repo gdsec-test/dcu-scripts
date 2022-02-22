@@ -35,7 +35,6 @@ gdcorp-infosec/dcu-structured-logging-celery
 gdcorp-infosec/dcu-ml-agents
 gdcorp-infosec/dcu-shopper-by-email
 gdcorp-infosec/dcu-thorn-worker
-gdcorp-infosec/dcu-prometheus-es-export
 gdcorp-infosec/dcu-protobuf
 gdcorp-infosec/dcu-database
 gdcorp-infosec/dcu-shadowfax-integration-test
