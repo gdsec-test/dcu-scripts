@@ -20,14 +20,14 @@ jobs:
           role-duration-seconds: 900
           aws-region: us-west-2
       - name: Complete Stats
-        if: github.event.schedule != '15 14 * * MON-FRI'
+        if: github.event.schedule == '25 14 * * MON-FRI'
         run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && ${GITHUB_WORKSPACE}/.github/github_stats.sh -c
         env:
           SLACK_CHANNEL: customer_protection
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_TOKEN: ${{ secrets.REPO_PAT }}
       - name: Hourly Stats
-        if: github.event.schedule != '15 15-23 * * MON-FRI'
+        if: github.event.schedule == '25 15-23 * * MON-FRI'
         run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && ${GITHUB_WORKSPACE}/.github/github_stats.sh -d
         env:
           SLACK_CHANNEL: customer_protection
