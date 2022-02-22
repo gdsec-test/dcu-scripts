@@ -46,7 +46,6 @@ gdcorp-infosec/dcu-ncmec-hashsharing
 gdcorp-infosec/dcu-shadowfax-eks-poc
 gdcorp-infosec/dcu-prometheus-celery
 gdcorp-infosec/dcu-go-abuse
-gdcorp-infosec/dcu-categorizer
 gdcorp-infosec/dcu-structured-logging-flask
 gdcorp-infosec/dcu-structured-logging-grpc
 gdcorp-infosec/dcu-crm-notate
