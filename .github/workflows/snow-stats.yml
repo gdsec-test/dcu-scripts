@@ -1,0 +1,19 @@
+name: Snow Stats
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '25 14 * * MON-FRI'
+jobs:
+  generate-stats:
+    concurrency: main
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+      - name: Complete Stats
+        run: chmod +x ${GITHUB_WORKSPACE}/.github/snow_stats.sh && ${GITHUB_WORKSPACE}/.github/snow_stats.sh
+        env:
+          SLACK_CHANNEL: customer_protection
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SNOW_USER: ${{ secrets.SNOW_USER }}
+          SNOW_PASS: ${{ secrets.SNOW_PASS }}
