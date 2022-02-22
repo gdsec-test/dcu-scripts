@@ -2,8 +2,8 @@ name: Github Stats
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '15 14 * * MON-FRI'
-    - cron:  '15 15-23 * * MON-FRI'
+    - cron:  '25 14 * * MON-FRI'
+    - cron:  '25 15-23 * * MON-FRI'
 jobs:
   generate-stats:
     concurrency: main
