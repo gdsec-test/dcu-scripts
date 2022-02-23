@@ -291,7 +291,7 @@ def verify_new_certificate():
     print('Not Before: {}'.format(datetime.strptime(cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ')))
 
 
-def get_auth_token(user, password, path_to_crt, path_to_secret):
+def get_auth_token(user, password):
     """
     This function generates the signed jwt token for a user
     :param path_to_crt: path to apiuser.cmap.int.godaddy.com.crt file
@@ -307,7 +307,7 @@ def get_auth_token(user, password, path_to_crt, path_to_secret):
         "password": password
     }
 
-    response = requests.post(SSO_URL, json=data, headers=HEADERS, cert=(path_to_crt, path_to_secret))
+    response = requests.post(SSO_URL, json=data, headers=HEADERS)
 
     if response.status_code == HTTPStatus.CREATED:
         return response.json()['data']
@@ -335,8 +335,7 @@ def main():
         print('Invalid Credentials - Exiting')
         exit(1)
 
-    authorization_token = get_auth_token(user, password, config['DEFAULT'].get('PATH_TO_CRT'),
-                                         config['DEFAULT'].get('PATH_TO_KEY'))
+    authorization_token = get_auth_token(user, password)
 
     if authorization_token:
         print('Authorization Token retrieved')
