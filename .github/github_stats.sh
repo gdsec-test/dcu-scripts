@@ -75,7 +75,7 @@ get_github_differences() {
             update_ssm=true
         fi
         if [ "$CURRENT_DEPENDABOT_ALERTS" != "$PREVIOUS_RUN_DEPENDABOT_ALERTS" ]; then
-            DIFFERENCE=$(python -c "curr = $CURRENT_DEPENDABOT_ALERTS; prev = $PREVIOUS_RUN_DEPENDABOT_ALERTS; diff = list(set(x['url'] for x in curr) - set(x['url'] for x in prev)); print(diff)")
+            DIFFERENCE=$(python -c "curr = $CURRENT_DEPENDABOT_ALERTS; prev = $PREVIOUS_RUN_DEPENDABOT_ALERTS; diff = list(set(curr) - set(prev)); print(diff)")
             if [ "$DIFFERENCE" != "[]" ]; then
                 outstanding_security_alerts=true
                 outstanding_alert_body="$outstanding_alert_body\n<https://github.com/$repo/security/dependabot|$repo>"
