@@ -12,8 +12,12 @@ class ScrambleShopper(Action):
         """
         :param _config: object containing required cert path and api url
         """
-        self._headers = dict(Authorization=Action._get_jwt((_config.get('PATH_TO_SCRAMBLE_CRT'),
-                                                            _config.get('PATH_TO_SCRAMBLE_KEY')),
+        self._headers = dict(Authorization=Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
+                                                            _config.get('PATH_TO_SHOPLOCKED_KEY')),
+                                                           _config.get('URL_SSO_API')))
+        print("made it here")
+        print(Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
+                                                            _config.get('PATH_TO_SHOPLOCKED_KEY')),
                                                            _config.get('URL_SSO_API')))
         self._headers.update(self.HEADERS)
         self._url = _config.get('URL_SCRAMBLE_API')
@@ -31,8 +35,8 @@ class ScrambleShopper(Action):
         :return: Boolean, String
         """
         payload = {
-            'shoppers': _list_of_shoppers,
-            'reason': self._note
+            'creds': _list_of_shoppers,
+            'note': self._note
         }
         try:
             r = post(self._url, json=payload, headers=self._headers)
