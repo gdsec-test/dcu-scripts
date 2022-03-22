@@ -15,10 +15,6 @@ class ScrambleShopper(Action):
         self._headers = dict(Authorization=Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
                                                             _config.get('PATH_TO_SHOPLOCKED_KEY')),
                                                            _config.get('URL_SSO_API')))
-        print("made it here")
-        print(Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
-                                                            _config.get('PATH_TO_SHOPLOCKED_KEY')),
-                                                           _config.get('URL_SSO_API')))
         self._headers.update(self.HEADERS)
         self._url = _config.get('URL_SCRAMBLE_API')
 
