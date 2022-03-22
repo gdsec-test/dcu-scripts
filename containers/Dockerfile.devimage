@@ -1,0 +1,26 @@
+FROM python:3.7.10-slim as cython
+# Basic build tools.
+RUN apt-get update -y
+RUN apt-get install -y curl apt-transport-https ca-certificates gnupg lsb-release
+RUN curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
+RUN apt-get update -y
+RUN apt-get install -y build-essential git tcpdump jq procps htop kubectl direnv docker-ce docker-ce-cli containerd.io
+RUN echo "$(direnv hook bash)" >> /etc/bash.bashrc
+# Install GoLang
+RUN curl https://dl.google.com/go/go1.17.8.linux-amd64.tar.gz > go1.17.8.linux-amd64.tar.gz
+RUN tar -xvf go1.17.8.linux-amd64.tar.gz
+RUN mv go /usr/local/
+RUN cp /usr/local/go/bin/* /usr/local/bin
+# Install GoLang tools
+RUN go install -v github.com/ramya-rao-a/go-outline@latest
+RUN go install -v github.com/cweill/gotests/gotests@latest
+RUN go install -v github.com/fatih/gomodifytags@latest
+RUN go install -v github.com/josharian/impl@latest
+RUN go install -v github.com/haya14busa/goplay/cmd/goplay@latest
+RUN go install -v github.com/go-delve/delve/cmd/dlv@latest
+RUN go install -v honnef.co/go/tools/cmd/staticcheck@latest
+RUN go install -v golang.org/x/tools/gopls@latest
+RUN go install -v github.com/tsenart/vegeta@latest
