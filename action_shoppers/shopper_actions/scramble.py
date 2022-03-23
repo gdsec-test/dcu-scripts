@@ -12,8 +12,8 @@ class ScrambleShopper(Action):
         """
         :param _config: object containing required cert path and api url
         """
-        self._headers = dict(Authorization=Action._get_jwt((_config.get('PATH_TO_SHOPLOCKED_CRT'),
-                                                            _config.get('PATH_TO_SHOPLOCKED_KEY')),
+        self._headers = dict(Authorization=Action._get_jwt((_config.get('PATH_TO_SCRAMBLE_CRT'),
+                                                            _config.get('PATH_TO_SCRAMBLE_KEY')),
                                                            _config.get('URL_SSO_API')))
         self._headers.update(self.HEADERS)
         self._url = _config.get('URL_SCRAMBLE_API')
