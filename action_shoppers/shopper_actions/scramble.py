@@ -36,7 +36,7 @@ class ScrambleShopper(Action):
         }
         try:
             r = post(self._url, json=payload, headers=self._headers)
-            if r.status_code not in [200]:
+            if r.status_code not in [201]:
                 return False, 'FAILURE [status code:{}]: {}'.format(r.status_code, _list_of_shoppers)
             else:
                 return True, 'SUCCESS: {}'.format(r.text)
