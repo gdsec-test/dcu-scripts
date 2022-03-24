@@ -39,6 +39,6 @@ class ScrambleShopper(Action):
             if r.status_code not in [201]:
                 return False, 'FAILURE [status code:{}]: {}'.format(r.status_code, _list_of_shoppers)
             else:
-                return True, 'SUCCESS: {}'.format(r.text)
+                return True, 'SUCCESS All shoppers not listed in failed or ignored succeeded {}'.format(r.text)
         except Exception as e:
             return False, '{}: Exception while updating block: {}'.format(e, _list_of_shoppers)
