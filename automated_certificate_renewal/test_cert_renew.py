@@ -1,13 +1,29 @@
+import sys
 import unittest
-from http import HTTPStatus
-from unittest.mock import patch
 
-from automated_certificate_renewal.cert_renew import get_auth_token, read_certificate_secret_mapping_file, \
-    get_latest_certificate, get_user_selection, Action
+from datetime import datetime
+from http import HTTPStatus
+from mock import patch
+
+from automated_certificate_renewal import cert_renew
+
 
 POST_DATA = {"foo": "bar"}
-VALID_CERTIFICATE = 'autorenew.int.dev-godaddy.com'
+VALID_CERTIFICATE = 'abuse.api.int.ote-godaddy.com'
 INVALID_CERTIFICATE = 'no.certificate'
+CERT_LIST = {'test-cert-name': {
+    'secret': {
+        'tls-test': ['test']
+    }
+}}
+CERT_INFO = {'certificate': {
+    'commonName': 'test-cert-name',
+    'notValidAfter': datetime.strftime(datetime.utcnow(), '%Y-%m-%dT%H:%M:%SZ'),
+    'notValidBefore': '2021-12-20T08:00:15Z',
+    'issuedOn': '2021-12-20T08:00:15Z'}
+}
+BODY = {'group': 'test-group',
+        'commonName': 'test-cert-name'}
 
 
 class MockPost:
@@ -21,17 +37,17 @@ class MockPost:
 class AutomatedCertificateRenewalTestCases(unittest.TestCase):
 
     def test_read_certificate_secret_mapping_file_secret_exists(self):
-        self.assertIsNotNone(read_certificate_secret_mapping_file(VALID_CERTIFICATE))
+        self.assertIsNotNone(cert_renew.read_certificate_secret_mapping_file(VALID_CERTIFICATE))
 
     def test_read_certificate_secret_mapping_file_secret_does_not_exist(self):
-        self.assertIsNone(read_certificate_secret_mapping_file(INVALID_CERTIFICATE))
+        self.assertIsNone(cert_renew.read_certificate_secret_mapping_file(INVALID_CERTIFICATE))
 
     @patch('cert_renew.requests.get')
     def test_get_latest_certificate_success(self, mock_post):
         mp = MockPost()
         mp.status_code = 200
         mock_post.return_value = mp
-        ret_val = get_latest_certificate()
+        ret_val = cert_renew.get_latest_certificate(BODY)
         self.assertEqual(ret_val, {'data': POST_DATA})
 
     @patch('cert_renew.requests.get')
@@ -40,12 +56,12 @@ class AutomatedCertificateRenewalTestCases(unittest.TestCase):
         mp.status_code = 400
         mock_post.return_value = mp
         with self.assertRaises(SystemExit) as cm:
-            get_latest_certificate()
+            cert_renew.get_latest_certificate(BODY)
         self.assertEqual(cm.exception.code, 1)
 
     @patch('cert_renew.requests.post', return_value=MockPost())
     def test_getAuthToken_success(self, mock_post):
-        ret_val = get_auth_token('user', 'pass', 'cert', 'key')
+        ret_val = cert_renew.get_auth_token('user', 'pass')
         self.assertEqual(ret_val, POST_DATA)
 
     @patch('cert_renew.requests.post')
@@ -54,17 +70,77 @@ class AutomatedCertificateRenewalTestCases(unittest.TestCase):
         mp.status_code = 400
         mock_post.return_value = mp
         with self.assertRaises(SystemExit) as cm:
-            get_auth_token('user', 'pass', 'cert', 'key')
+            cert_renew.get_auth_token('user', 'pass')
         self.assertEqual(cm.exception.code, 1)
 
     @patch('builtins.input', return_value=3)
     def test_user_selection_renew(self, input):
-        self.assertEqual(get_user_selection(), Action.Renew)
+        self.assertEqual(cert_renew.get_user_selection(), cert_renew.Action.Renew)
 
     @patch('builtins.input', return_value=2)
     def test_user_selection_retire(self, input):
-        self.assertEqual(get_user_selection(), Action.Retire)
+        self.assertEqual(cert_renew.get_user_selection(), cert_renew.Action.Retire)
 
     @patch('builtins.input', return_value=1)
     def test_user_selection_issue(self, input):
-        self.assertEqual(get_user_selection(), Action.Issue)
+        self.assertEqual(cert_renew.get_user_selection(), cert_renew.Action.Issue)
+
+    @patch.object(cert_renew, 'slack_message', return_value=None)
+    @patch.object(cert_renew, 'get_expiring_certificates_list', return_value=None)
+    def test_successful_expiring_certificates(self, mock_certs_list, mock_slack_message):
+        cert_renew.SYS_ARGV_TWO = '1'
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.expiring_certificates(BODY)
+            assert mock_certs_list.called
+            assert mock_slack_message.called
+        self.assertEqual(e.exception.code, 0)
+
+    @patch.object(cert_renew, 'slack_message', return_value=None)
+    @patch.object(cert_renew, 'get_expiring_certificates_list', return_value=None)
+    def test_not_int_expiring_certificates(self, mock_certs_list, mock_slack_message):
+        cert_renew.SYS_ARGV_TWO = 'a'
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.expiring_certificates(BODY)
+            assert mock_certs_list.notcalled
+            assert mock_slack_message.notcalled
+        self.assertEqual(e.exception.code, 1)
+
+    @patch.object(cert_renew, 'slack_message', return_value=None)
+    @patch.object(cert_renew, 'get_expiring_certificates_list', return_value=None)
+    def test_no_argv_expiring_certificates(self, mock_certs_list, mock_slack_message):
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.expiring_certificates(BODY)
+            assert mock_certs_list.notcalled
+            assert mock_slack_message.notcalled
+        self.assertEqual(e.exception.code, 1)
+
+    def test_convert_list_to_csv(self):
+        test_list = ['1', '2', '3']
+        expected_return = '1,2,3'
+        self.assertEqual(cert_renew.convert_list_to_csv(test_list), expected_return)
+
+    @patch.object(cert_renew, 'get_latest_certificate', return_value=CERT_INFO)
+    @patch.object(cert_renew, 'read_mapping_file', return_value=CERT_LIST)
+    def test_successful_get_expiring_certificates_list(self, mock_map_file, mock_latest_cert):
+        expected_result = 'test-cert-name'
+        self.assertEqual(cert_renew.get_expiring_certificates_list(90, BODY), expected_result)
+
+    @patch.object(cert_renew, 'get_latest_certificate', return_value=CERT_INFO)
+    @patch.object(cert_renew, 'read_mapping_file', return_value=CERT_LIST)
+    def test_not_int_get_expiring_certificates_list(self, mock_map_file, mock_latest_cert):
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.get_expiring_certificates_list('not an int', BODY)
+            assert mock_map_file.notcalled
+            assert mock_latest_cert.notcalled
+        self.assertEqual(e.exception.code, 1)
+
+    @patch('requests.post')
+    def test_successful_slack_message(self, mock_post):
+        cert_renew.SLACK_WEBHOOK_URL = 'test webhook url'
+        cert_renew.slack_message('test')
+        assert mock_post.called
+
+    @patch('requests.post')
+    def test_no_webhook_slack_message(self, mock_post):
+        cert_renew.slack_message('test')
+        assert mock_post.notcalled
