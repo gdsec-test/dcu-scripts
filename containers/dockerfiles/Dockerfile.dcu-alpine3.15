@@ -1,0 +1,7 @@
+FROM 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine:3.15
+USER root
+RUN apk --no-cache add ca-certificates bash
+RUN addgroup dcu && adduser -D -H -G dcu -S dcu
+USER dcu
+LABEL MAINTAINER=dcueng@godaddy.com
+CMD ["/bin/bash"]
