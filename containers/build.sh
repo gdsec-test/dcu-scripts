@@ -37,6 +37,6 @@ for file in dockerfiles/Dockerfile.*; do
         DOCKER_TAG="$CURRENT_LOCAL_VERSION.$CURRENT_BASE_VERSION" make $BUILD_TARGET
         NEW_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' docker-dcu-local.artifactory.secureserver.net/$BUILD_TARGET:$CURRENT_LOCAL_VERSION.$CURRENT_BASE_VERSION)
         aws ssm put-parameter --region us-west-2 --name "/gci/$BUILD_TARGET" --type "String" --value "{\"digest\":\"$NEW_DIGEST\",\"base_digest\":\"$CURRENT_BASE_DIGEST\",\"base-version\":\"$CURRENT_BASE_VERSION\",\"local-version\":\"$CURRENT_LOCAL_VERSION\", \"md5\":\"$CURRENT_MD5SUM\"}" --overwrite >/dev/null
-        send_github_notification "Image Rebuilt" "$NEW_DIGEST"
+        send_github_notification "Image Rebuilt" "docker-dcu-local.artifactory.secureserver.net/$BUILD_TARGET:$CURRENT_LOCAL_VERSION.$CURRENT_BASE_VERSION"
     fi
 done
