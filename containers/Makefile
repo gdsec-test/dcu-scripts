@@ -10,8 +10,8 @@ endef
 .PHONY: devimage
 devimage:
 	@echo "----- building $(dockerrepo)/cset-dev-image:latest -----"
-	docker build -t $(dockerrepo)/cset-dev-image:latest -f dockerfiles/Dockerfile.devimage .
-	docker push $(dockerrepo):latest
+	docker build -t $(dockerrepo)/cset-dev-image:latest -f Dockerfile.devimage .
+	docker push $(dockerrepo)/cset-dev-image:latest
 
 .PHONY: alpine3.15
 dcu-alpine3.15:

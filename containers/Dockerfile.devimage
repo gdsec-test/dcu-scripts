@@ -1,4 +1,4 @@
-FROM python:3.7.10-slim as cython
+FROM python:3.7.10-slim
 # Basic build tools.
 RUN apt-get update -y
 RUN apt-get install -y curl apt-transport-https ca-certificates gnupg lsb-release
@@ -24,3 +24,26 @@ RUN go install -v github.com/go-delve/delve/cmd/dlv@latest
 RUN go install -v honnef.co/go/tools/cmd/staticcheck@latest
 RUN go install -v golang.org/x/tools/gopls@latest
 RUN go install -v github.com/tsenart/vegeta@latest
+# Install ASDF and the primary tool versions
+RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.9.0
+RUN echo ". ~/.asdf/asdf.sh" >> /etc/bash.bashrc
+RUN echo ". ~/.asdf/completions/asdf.bash" >> /etc/bash.bashrc
+RUN bash -c "source ~/.asdf/asdf.sh && asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf plugin add python"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf install nodejs 14.17.5"
+RUN apt-get install -y zlib1g-dev libbluetooth-dev libbz2-dev libc6-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev tk-dev uuid-dev xz-utils zlib1g-dev
+RUN bash -c "source ~/.asdf/asdf.sh && asdf install python 3.7.10"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf global python 3.7.10"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf global nodejs 14.17.5"
+RUN bash -c "source ~/.asdf/asdf.sh && pip install poetry"
+RUN bash -c "source ~/.asdf/asdf.sh && echo 'alias poetry=\"python -m poetry\"' >> /etc/bash.bashrc"
+RUN bash -c "source ~/.asdf/asdf.sh && python -m poetry config virtualenvs.in-project true"
+# pipx tools
+RUN python3 -m pip install --user pipx
+RUN bash -c "source ~/.asdf/asdf.sh && echo 'alias pipx=\"python -m pipx\"' >> /etc/bash.bashrc"
+RUN python -m pipx install pre-commit
+RUN python -m pipx install tartufo
+RUN python -m pipx ensurepath
+# Configure npmrc
+RUN echo "//\${NPM_REGISTRY}:_authToken=\${NPM_TOKEN}" >> ~/.npmrc
+RUN echo "registry=https://\${NPM_REGISTRY}" >> ~/.npmrc
