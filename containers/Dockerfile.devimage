@@ -47,3 +47,8 @@ RUN python -m pipx ensurepath
 # Configure npmrc
 RUN echo "//\${NPM_REGISTRY}:_authToken=\${NPM_TOKEN}" >> ~/.npmrc
 RUN echo "registry=https://\${NPM_REGISTRY}" >> ~/.npmrc
+# Install kustomize
+RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.4/kustomize_v4.5.4_linux_amd64.tar.gz > kustomize.tar.gz
+RUN tar xf kustomize.tar.gz
+RUN mv kustomize /usr/local/bin/
+RUN rm kustomize.tar.gz
