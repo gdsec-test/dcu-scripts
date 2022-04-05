@@ -52,3 +52,6 @@ RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kusto
 RUN tar xf kustomize.tar.gz
 RUN mv kustomize /usr/local/bin/
 RUN rm kustomize.tar.gz
+# docker-compose
+RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
