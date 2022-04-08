@@ -5,7 +5,7 @@ import sys
 import os
 from typing import Dict, List
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     context = 'dev-admin'
     prefix = 'docker-dcu-local.artifactory.secureserver.net'
 else:
