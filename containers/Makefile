@@ -3,7 +3,7 @@ DOCKER_TAG ?= latest
 
 define build_docker_base
 	docker pull $$(cat $(1)| grep FROM | awk '{print $$2}')
-	docker build --label "BASE_DIGEST=$$(docker inspect --format='{{index .RepoDigests 0}}' $$(cat $(1)| grep FROM | awk '{print $$2}'))" -t $(dockerrepo)/$(2):$(DOCKER_TAG) -f $(1) .
+	docker build --label "BASE_DIGEST=$(dockerrepo)/$(2):$(DOCKER_TAG)" -t $(dockerrepo)/$(2):$(DOCKER_TAG) -f $(1) .
 	docker push $(dockerrepo)/$(2):$(DOCKER_TAG)
 endef
 

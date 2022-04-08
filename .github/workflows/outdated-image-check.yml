@@ -1,4 +1,4 @@
-name: GCI Image Check
+name: Outdated Image Check
 on:
   workflow_dispatch:
   schedule:
@@ -22,10 +22,10 @@ jobs:
           aws-secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
           aws-deploy-role: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
           repo-pat: ${{ secrets.REPO_PAT }}
-  rebuild-docker-images:
+  outdated-image-check:
     concurrency: main
     runs-on: [ec2ubuntu]
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - name: Configure AWS credentials
@@ -34,25 +34,24 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
-          role-duration-seconds: 900
+          role-duration-seconds: 3600
           aws-region: us-west-2
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1.3.3
-      - name: Docker login for Golden Containers ECR
-        env:
-          ECR_REGISTRY: 764525110978.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com
+      - name: Pull down credentials
         run: |
-          echo "Using: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-      - name: Docker login for Artifactory
-        env:
-          ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        run: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_PASSWORD} docker-dcu-local.artifactory.secureserver.net
-      - name: Check and rebuild images
-        run: cd containers && ./build.sh
+          export AWS_REGION='us-west-2'
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3dabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3dabuse01-client.crt
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3dabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3dabuse01-client.key
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3pabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.crt
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3pabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.key
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.10
+          architecture: 'x64'
+      - uses: azure/setup-kubectl@v2.0
+        with:
+          version: 'v1.16.3'
+      - name: Hourly Stats
+        run: chmod +x ${GITHUB_WORKSPACE}/.github/check_image_updates.sh && ${GITHUB_WORKSPACE}/.github/check_image_updates.sh
         env:
           SLACK_CHANNEL: customer_protection
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ secrets.REPO_PAT }}

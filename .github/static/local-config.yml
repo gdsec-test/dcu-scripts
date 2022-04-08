@@ -1,0 +1,43 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: p3pabuse01-ca.pem
+    server: https://proxy.dcu-k8s.phx3.int.godaddy.com:443
+  name: prod
+- cluster:
+    certificate-authority: p3dabuse01-ca.pem
+    server: https://proxy.dcu-k8s.phx3.int.dev-godaddy.com:443
+  name: dev
+contexts:
+- context:
+    cluster: dev
+    namespace: abuse-api-dev
+    user: p3dabuse01-admin
+  name: dev
+- context:
+    cluster: dev
+    namespace: abuse-api-test
+    user: p3dabuse01-admin
+  name: test
+- context:
+    cluster: prod
+    namespace: abuse-api-prod
+    user: p3pabuse01-admin
+  name: prod
+- context:
+    cluster: prod
+    namespace: abuse-api-ote
+    user: p3pabuse01-admin
+  name: ote
+current-context: dev
+kind: Config
+preferences: {}
+users:
+- name: p3dabuse01-admin
+  user:
+    client-certificate: p3dabuse01-client.crt
+    client-key: p3dabuse01-client.key
+- name: p3pabuse01-admin
+  user:
+    client-certificate: p3pabuse01-client.crt
+    client-key: p3pabuse01-client.key
