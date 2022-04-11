@@ -36,6 +36,18 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
           role-duration-seconds: 900
           aws-region: us-west-2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.10
+          architecture: 'x64'
+      - name: Install gh cli
+        run: |
+          curl -L https://github.com/cli/cli/releases/download/v2.7.0/gh_2.7.0_linux_amd64.tar.gz > gh_2.7.0_linux_amd64.tar.gz
+          tar xf gh_2.7.0_linux_amd64.tar.gz
+          rm gh_2.7.0_linux_amd64.tar.gz
+          mkdir -p ~/bin/
+          mv gh_2.7.0_linux_amd64/bin/gh ~/bin/
+          rm -rf gh_2.7.0_linux_amd64/
       - name: Complete Stats
         if: github.event.schedule == '25 14 * * MON-FRI'
         run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && ${GITHUB_WORKSPACE}/.github/github_stats.sh -c
@@ -45,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.REPO_PAT }}
       - name: Hourly Stats
         if: github.event.schedule == '25 15-23 * * MON-FRI' || github.event.schedule != '25 14 * * MON-FRI'
-        run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && ${GITHUB_WORKSPACE}/.github/github_stats.sh -d
+        run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_stats.sh -d
         env:
           SLACK_CHANNEL: customer_protection
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
