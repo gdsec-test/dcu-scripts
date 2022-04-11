@@ -23,7 +23,6 @@ jobs:
           aws-deploy-role: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
           repo-pat: ${{ secrets.REPO_PAT }}
   generate-stats:
-    concurrency: main
     runs-on: [ec2ubuntu]
     timeout-minutes: 25
     steps:
