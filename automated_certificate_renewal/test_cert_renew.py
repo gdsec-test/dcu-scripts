@@ -1,4 +1,3 @@
-import sys
 import unittest
 
 from datetime import datetime
@@ -89,11 +88,9 @@ class AutomatedCertificateRenewalTestCases(unittest.TestCase):
     @patch.object(cert_renew, 'get_expiring_certificates_list', return_value=None)
     def test_successful_expiring_certificates(self, mock_certs_list, mock_slack_message):
         cert_renew.SYS_ARGV_TWO = '1'
-        with self.assertRaises(SystemExit) as e:
-            cert_renew.expiring_certificates(BODY)
-            assert mock_certs_list.called
-            assert mock_slack_message.called
-        self.assertEqual(e.exception.code, 0)
+        cert_renew.expiring_certificates(BODY)
+        assert mock_certs_list.called
+        assert mock_slack_message.called
 
     @patch.object(cert_renew, 'slack_message', return_value=None)
     @patch.object(cert_renew, 'get_expiring_certificates_list', return_value=None)
@@ -144,3 +141,67 @@ class AutomatedCertificateRenewalTestCases(unittest.TestCase):
     def test_no_webhook_slack_message(self, mock_post):
         cert_renew.slack_message('test')
         assert mock_post.notcalled
+
+    @patch.object(cert_renew, 'execute', return_value=(b'api-5cf97dc97d-whs2w,default-token-s45d5,\n', None))
+    def test_success_kubernetes_secrets_search(self, mock_execute):
+        expected_results = [['api-5cf97dc97d-whs2w', 'default-token-s45d5']]
+        cert_renew.kubernetes_secrets_search('dev')
+        self.assertEqual(cert_renew.kubernetes_secrets_search('dev'), expected_results)
+        assert mock_execute.called
+
+    @patch.object(cert_renew, 'execute', return_value=None)
+    def test_failed_kubernetes_secrets_search(self, mock_execute):
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.kubernetes_secrets_search('dev')
+            assert mock_execute.called
+        self.assertEqual(e.exception.code, 1)
+
+    def test_missing_arg_certificates_renewal(self):
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.certificates_renewal(BODY)
+        self.assertEqual(e.exception.code, 1)
+
+    def test_no_valid_certs_certificates_renewal(self):
+        cert_renew.SYS_ARGV_TWO = INVALID_CERTIFICATE
+        with self.assertRaises(SystemExit) as e:
+            cert_renew.certificates_renewal(BODY)
+        self.assertEqual(e.exception.code, 1)
+
+    @patch.object(cert_renew, 'slack_message', return_value=None)
+    @patch.object(cert_renew, 'find_pods_to_roll', return_value=[])
+    @patch.object(cert_renew, 'process_cert_renewal', return_value=None)
+    def test_no_valid_certs_certificates_renewal(self, mock_process_cert, mock_find_pods, mock_slack):
+        cert_renew.DEV_SECRETS_LIST = ['test-secret']
+        cert_renew.SYS_ARGV_TWO = VALID_CERTIFICATE
+        cert_renew.certificates_renewal(BODY)
+        assert mock_process_cert.called
+        assert mock_find_pods.called
+        assert mock_slack.called
+
+    @patch.object(cert_renew, 'delete_downloaded_files', return_value=None)
+    @patch.object(cert_renew, 'retire_old_certificate', return_value=None)
+    @patch.object(cert_renew, 'create_new_secret', return_value=None)
+    @patch.object(cert_renew, 'delete_old_secret', return_value=None)
+    @patch.object(cert_renew, 'backup_old_secret', return_value=None)
+    @patch.object(cert_renew, 'verify_new_certificate', return_value=None)
+    @patch.object(cert_renew, 'generate_new_cert_package', return_value=None)
+    @patch.object(cert_renew, 'download_file', return_value='test')
+    @patch.object(cert_renew, 'issue_new_certificate', return_value=None)
+    @patch.object(cert_renew, 'get_latest_certificate', return_value={'certificate': {'serialNumber': None}})
+    def test_process_cert_renewal(self, mock_latest_cert, mock_new_cert, mock_download, mock_gen_cert, mock_verify_cert,
+                                  mock_backup_secret, mock_delete_secret, mock_create_secret, mock_retire,
+                                  mock_delete_files):
+        cert = 'dcu.zeus.int.dev-godaddy.com'
+        BODY['commonName'] = cert
+        cert_renew.process_cert_renewal(BODY)
+        self.assertEqual(cert_renew.DEV_SECRETS_LIST, ['tls-zeus'])
+        assert mock_latest_cert.called
+        assert mock_new_cert.called
+        assert mock_download.called
+        assert mock_gen_cert.called
+        assert mock_verify_cert.called
+        assert mock_backup_secret.called
+        assert mock_delete_secret.called
+        assert mock_create_secret.called
+        assert mock_retire.called
+        assert mock_delete_files.called

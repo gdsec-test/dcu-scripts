@@ -34,6 +34,11 @@ SYS_ARGV_TWO = sys.argv[2] if len(sys.argv) >= 3 else None
 USER_NAME = os.getenv('USER_NAME')
 USER_PASSWORD = os.getenv('USER_PASSWORD')
 
+DEV_SECRETS_LIST = []
+OTE_SECRETS_LIST = []
+PROD_SECRETS_LIST = []
+SALT_LIST = []
+
 encoding = encodings.utf_8.getregentry().name
 
 HEADERS = {
@@ -333,6 +338,68 @@ def get_user_selection():
     return action
 
 
+def certificates_renewal(body: dict):
+    if SYS_ARGV_TWO:
+        try:
+            certs_to_renew = SYS_ARGV_TWO.split(',')
+        except Exception as e:
+            print(f'Failed to convert provided certificates CSV to a list. {e}')
+            exit(1)
+
+        full_certs_list = read_mapping_file()
+
+        # Verify provided certificates are in certificate_secret_mapping.json
+        verified_to_renew = []
+        for common_name in certs_to_renew:
+            if common_name in full_certs_list:
+                verified_to_renew.append(common_name)
+            else:
+                print(f'Certificate name {common_name} not found in certificate_secret_mapping.json and will not be '
+                      f'renewed')
+
+        if not verified_to_renew:
+            print('No valid certificates found in provided list to renew. Check spelling and that they are listed in '
+                  'mapping file')
+            exit(1)
+
+        # Renew certificates and update the associated Kubernetes secrets
+        renewed_certs = []
+        for common_name in verified_to_renew:
+            body[KEY_COMMON_NAME] = common_name
+            process_cert_renewal(body)
+            renewed_certs.append(common_name)
+        certs_message = f"Certs renewed: {renewed_certs}\n\n"
+
+        # For each Kubernetes environment that had secrets updated, get a list of pods and their associated secrets.
+        # Compare the lists to find which pods in each environment must be rolled.
+        dev_message = f"Dev pods to roll: None\n\n"
+        if DEV_SECRETS_LIST:
+            dev_roll_pods = find_pods_to_roll(DEV_SECRETS_LIST, 'dev')
+            dev_message = f"Dev pods to roll: {dev_roll_pods}\n\n"
+
+        ote_message = f"OTE pods to roll: None\n\n"
+        if OTE_SECRETS_LIST:
+            ote_roll_pods = find_pods_to_roll(OTE_SECRETS_LIST, 'ote')
+            ote_message = f"OTE pods to roll: {ote_roll_pods}\n\n"
+
+        prod_message = f"Prod pods to roll: None\n\n"
+        if PROD_SECRETS_LIST:
+            prod_roll_pods = find_pods_to_roll(PROD_SECRETS_LIST, 'prod')
+            prod_message = f"Prod pods to roll: {prod_roll_pods}\n\n"
+
+        if SALT_LIST:
+            salt_message = f"Needs updating in Salt: {SALT_LIST}"
+        else:
+            salt_message = f"Needs updating in Salt: None"
+
+        slack_message(f"Certificates renewed and secrets updated in Kubernetes.\n```{certs_message}{dev_message}"
+                      f"{ote_message}{prod_message}{salt_message}```")
+    else:
+        print('"certs_renewal" requires an argument of comma separated certificate common names as a string. Ex: '
+              'python3 cert_renew.py certs_renewal abuse.api.int.ote-godaddy.com,abuse.api.int.godaddy.com')
+        exit(1)
+
+
 def convert_list_to_csv(certs_list: list) -> str:
     output = io.StringIO()
     csv_data = certs_list
@@ -356,6 +423,19 @@ def expiring_certificates(body: dict) -> None:
 
     expiring_certs = get_expiring_certificates_list(expires_within_days, body)
     slack_message(f"Certificates expiring within {expires_within_days} days:\n```{expiring_certs}```")
+
+
+def find_pods_to_roll(secrets: list, kube_env: str) -> list:
+    roll_pods_list = []
+
+    kube_list = kubernetes_secrets_search(kube_env)
+    for secret in secrets:
+        for pods in kube_list:
+            if secret in pods:
+                if pods[0] not in roll_pods_list:
+                    roll_pods_list.append(pods[0])
+
+    return roll_pods_list
 
 
 def get_expiring_certificates_list(days: int, body: dict) -> str:
@@ -400,6 +480,144 @@ def get_user_credentials() -> None:
     HEADERS['Authorization'] = 'sso-jwt {}'.format(authorization_token)
 
 
+def kubernetes_secrets_search(kube_env: str) -> list:
+    p = r"""'{range .items[*]}{.metadata.name}{","}{range .spec.volumes[*]}{.secret.secretName}{","}{end}{"\n"}{end}'"""
+    kube_script = [f"kubectl --context={kube_env}-dcu get pods -o=jsonpath={p}"]
+
+    try:
+        results = execute(kube_script)
+        # out example: 'api-76fff4dc9c-rr585,default-token-s45d5,\nauto-abuse-id-59c65ddb4f-cg9hj,default-token-s45d5,'
+        out = results[0].decode(encoding)
+    except Exception as e:
+        print(f'Unable to execute Kubernetes pod and secrets search command and decode the results. {e}')
+        exit(1)
+
+    split_list = out.splitlines()  # list of strings in format of: ['api-76fff4dc9c-rr585,default-token-s45d5,']
+
+    pods_secrets_list = []
+    for pod_or_secret in split_list:
+        pods_secrets_list.append(pod_or_secret.rstrip(',').split(','))
+
+    return pods_secrets_list  # list of lists in format of: [['api-76fff4dc9c-rr585', 'default-token-s45d5']]
+
+
+def process_cert_renewal(body: dict, user_input_required=False):
+    cert_secret_mapping = read_certificate_secret_mapping_file(body[KEY_COMMON_NAME])
+
+    if not cert_secret_mapping:
+        print('Unable to fetch information of {} certificate from certificate_secret_mapping.json file - Exiting ')
+        exit(1)
+
+    print('The following certificate and secret(s) will get renewed under respective context')
+    print('Certificate_Name \t Secret_Name \t Context')
+
+    for secret_name in cert_secret_mapping['secret']:
+        for context in cert_secret_mapping['secret'][secret_name]:
+            context = '{}-dcu'.format(context)
+            print('{} \t {} \t {} \n'.format(body[KEY_COMMON_NAME], secret_name, context))
+
+    if user_input_required:
+        user_input = input('Do you wish to continue (Y/N)? ').strip()
+
+        if user_input.lower() != 'y':
+            print('You do not wish to continue. - Exiting')
+            exit(1)
+
+    # Step 1: Get the last certificate's serial Number
+    last_certificate = get_latest_certificate(body)
+    last_certificate_serial_number = last_certificate['certificate']['serialNumber']
+
+    # Step 2: Issue a new certificate
+    issue_new_certificate(body)
+    latest_certificate = get_latest_certificate(body)
+
+    # Step 3: Get Serial Number of the newly issued certificate
+    latest_certificate_serial_number = latest_certificate['certificate']['serialNumber']
+
+    # Step 4: Wait until the latest_certificate_serial_number != last_certificate_serial_number
+    retry = 0
+
+    while latest_certificate_serial_number and \
+            last_certificate_serial_number == latest_certificate_serial_number:
+        retry += 1
+        print('New certificate is still pending_issuance. Retrying again. Waiting for 300s. Retry#: {}'
+              .format(str(retry)))
+        sleep(300)
+        latest_certificate_serial_number = get_certificate_serial_number(body)
+        if retry >= 5:
+            print('Exceeded maximum number of retries')
+            exit(1)
+
+    # Step 5: Download the crt text from the latest certificate
+    latest_certificate_crt = download_file('crt', body)
+
+    # Step 6: Download the chain text from the latest certificate
+    latest_certificate_intermediate_chain = download_file('chain', body)
+
+    # Step 7: Download the key text from the latest certificate
+    latest_certificate_key = download_file('key', body)
+
+    if not latest_certificate_crt or not latest_certificate_intermediate_chain or \
+            not latest_certificate_key:
+        print('Unable to download cert, chain or key file - Exiting')
+        exit(1)
+
+    # Step 8: Generate the new cert package
+    generate_new_cert_package(latest_certificate_crt, latest_certificate_intermediate_chain, latest_certificate_key,
+                              body[KEY_COMMON_NAME])
+
+    # Step 9: Verify the new date of the certificate
+    verify_new_certificate()
+
+    if user_input_required:
+        user_input = input('Do you wish to continue (Y/N)? ').strip()
+
+        if user_input.lower() != 'y':
+            print('New certificate- {} is issued, but you do not wish to continue - Exiting. '
+                  'Please perform manual updates to secrets'.format(body[KEY_COMMON_NAME]))
+            exit(1)
+
+    # Step 10: Loop over all cert_secret_mappings
+    for secret_name in cert_secret_mapping['secret']:
+        for context in cert_secret_mapping['secret'][secret_name]:
+            context = '{}-dcu'.format(context)
+            # Step 10.1: Back up the old secret in kubernetes
+            backup_old_secret(context, secret_name)
+
+            # Step 10.2: Delete old secret from the kubernetes
+            delete_old_secret(context, secret_name)
+
+            # Step 10.3: Create new secret in kubernetes
+            create_new_secret(context, secret_name)
+
+            if context == 'prod-dcu':
+                if secret_name not in PROD_SECRETS_LIST:
+                    PROD_SECRETS_LIST.append(secret_name)
+            elif context == 'ote-dcu':
+                if secret_name not in OTE_SECRETS_LIST:
+                    OTE_SECRETS_LIST.append(secret_name)
+            elif context == 'dev-dcu':
+                if secret_name not in DEV_SECRETS_LIST:
+                    DEV_SECRETS_LIST.append(secret_name)
+
+    if 'salt' in cert_secret_mapping:
+        if cert_secret_mapping['salt'] not in SALT_LIST:
+            SALT_LIST.append(cert_secret_mapping['salt'])
+
+    # Step 11: Retire old certificate
+    retire_old_certificate(last_certificate_serial_number, body)
+
+    # Step 12: Delete all the generated files
+    delete_downloaded_files()
+
+    print('Certificate and corresponding secrets are updated')
+
+    # Step 13: If salt key is found, print the statement to update the same.
+    if 'salt' in cert_secret_mapping:
+        print('Kindly update salt: {}. Visit the confluence page- {} for more information.'
+              .format(cert_secret_mapping['salt'], CONFLUENCE_URL))
+
+
 def read_mapping_file():
     with open('certificate_secret_mapping.json') as f:
         certificate_secret_mapping = json.load(f)
@@ -439,7 +657,10 @@ def main():
     if SYS_ARGV_ONE == 'expiring_certs':
         expiring_certificates(body)
         exit(0)
-    elif SYS_ARGV_ONE:
+    elif SYS_ARGV_ONE == 'certs_renewal':
+        certificates_renewal(body)
+        exit(0)
+    else:
         print('The only current argument is "expiring_certs" which requires a 2nd argument of days as an integer. '
               'Ex: python3 cert_renew.py expiring_certs 90')
         exit(1)
@@ -463,105 +684,7 @@ def main():
     elif user_action == Action.Issue:
         issue_new_certificate(body)
     elif user_action == Action.Renew:
-
-        cert_secret_mapping = read_certificate_secret_mapping_file(certificate_name)
-        if not cert_secret_mapping:
-            print('Unable to fetch information of {} certificate from certificate_secret_mapping.json file - Exiting ')
-            exit(1)
-
-        print('The following certificate and secret(s) will get renewed under respective context')
-        print('Certificate_Name \t Secret_Name \t Context')
-
-        for secret_name in cert_secret_mapping['secret']:
-            for context in cert_secret_mapping['secret'][secret_name]:
-                context = '{}-dcu'.format(context)
-                print('{} \t {} \t {} \n'.format(certificate_name, secret_name, context))
-
-        user_input = input('Do you wish to continue (Y/N)? ').strip()
-
-        if user_input.lower() != 'y':
-            print('You do not wish to continue. - Exiting')
-            exit(1)
-
-        retry = 0
-
-        # Step 1: Get the last certificate's serial Number
-        last_certificate = get_latest_certificate(body)
-        last_certificate_serial_number = last_certificate['certificate']['serialNumber']
-
-        # Step 2: Issue a new certificate
-        issue_new_certificate(body)
-        latest_certificate = get_latest_certificate(body)
-
-        # Step 3: Get Serial Number of the newly issued certificate
-        latest_certificate_serial_number = latest_certificate['certificate']['serialNumber']
-
-        # Step 4: Wait until the latest_certificate_serial_number != last_certificate_serial_number
-        while latest_certificate_serial_number and \
-                last_certificate_serial_number == latest_certificate_serial_number:
-            retry += 1
-            print('New certificate is still pending_issuance. Retrying again. Waiting for 300s. Retry#: {}'
-                  .format(str(retry)))
-            sleep(300)
-            latest_certificate_serial_number = get_certificate_serial_number(body)
-            if retry >= 5:
-                print('Exceeded maximum number of retries')
-                exit(1)
-
-        # Step 5: Download the crt text from the latest certificate
-        latest_certificate_crt = download_file('crt', body)
-
-        # Step 6: Download the chain text from the latest certificate
-        latest_certificate_intermediate_chain = download_file('chain', body)
-
-        # Step 7: Download the key text from the latest certificate
-        latest_certificate_key = download_file('key', body)
-
-        if not latest_certificate_crt or not latest_certificate_intermediate_chain or \
-                not latest_certificate_key:
-            print('Unable to download cert, chain or key file - Exiting')
-            exit(1)
-
-        # Step 8: Generate the new cert package
-        generate_new_cert_package(latest_certificate_crt, latest_certificate_intermediate_chain, latest_certificate_key,
-                                  certificate_name)
-
-        # Step 9: Verify the new date of the certificate
-        verify_new_certificate()
-
-        user_input = input('Do you wish to continue (Y/N)? ').strip()
-
-        if user_input.lower() != 'y':
-            print('New certificate- {} is issued, but you do not wish to continue - Exiting. '
-                  'Please perform manual updates to secrets'.format(certificate_name))
-            exit(1)
-
-        # Step 10: Loop over all cert_secret_mappings
-        for secret_name in cert_secret_mapping['secret']:
-            for context in cert_secret_mapping['secret'][secret_name]:
-                context = '{}-dcu'.format(context)
-                # Step 10.1: Back up the old secret in kubernetes
-                backup_old_secret(context, secret_name)
-
-                # Step 10.2: Delete old secret from the kubernetes
-                delete_old_secret(context, secret_name)
-
-                # Step 10.3: Create new secret in kubernetes
-                create_new_secret(context, secret_name)
-
-        # Step 11: Retire old certificate
-        retire_old_certificate(last_certificate_serial_number, body)
-
-        # Step 12: Delete all the generated files
-        delete_downloaded_files()
-
-        print('Certificate and corresponding secrets are updated')
-
-        # Step 13: If salt key is found, print the statement to update the same.
-        if 'salt' in cert_secret_mapping:
-            print('Kindly update salt: {}. Visit the confluence page- {} for more information.'
-                  .format(cert_secret_mapping['salt'], CONFLUENCE_URL))
-
+        process_cert_renewal(body, True)
         print('Done')
     else:
         print('Invalid Selection - Exiting')
