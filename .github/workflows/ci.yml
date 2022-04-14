@@ -10,7 +10,6 @@ on:
       - master
 jobs:
   ci:
-    needs: scale-out-runner
     runs-on: [csetkube]
     steps:
       - uses: actions/checkout@v2
