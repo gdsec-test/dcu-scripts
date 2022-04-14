@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   sync-cloudservice-credentials:
-    runs-on: [csetkube]
+    runs-on: ubuntu-latest
     steps:
       - name: Check out build actions
         uses: actions/checkout@v2
