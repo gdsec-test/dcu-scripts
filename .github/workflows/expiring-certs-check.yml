@@ -51,6 +51,7 @@ jobs:
           version: 'v1.16.3'
       - name: Results
         run: | 
+          export AWS_REGION='us-west-2'
           export USER_NAME=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq -r '.SecretString.username')
           export USER_PASSWORD=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq -r '.SecretString.password')
           chmod +x ${GITHUB_WORKSPACE}/.github/expiring_certs_check.sh && ${GITHUB_WORKSPACE}/.github/expiring_certs_check.sh
