@@ -52,8 +52,8 @@ jobs:
       - name: Results
         run: | 
           export AWS_REGION='us-west-2'
-          export USER_NAME=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq -r '.SecretString.username')
-          export USER_PASSWORD=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq -r '.SecretString.password')
+          export USER_NAME=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq --raw-output '.SecretString' | jq -r .username)
+          export USER_PASSWORD=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq --raw-output '.SecretString' | jq -r .password)
           chmod +x ${GITHUB_WORKSPACE}/.github/expiring_certs_check.sh && ${GITHUB_WORKSPACE}/.github/expiring_certs_check.sh
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
