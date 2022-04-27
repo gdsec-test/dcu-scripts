@@ -170,7 +170,7 @@ class AutomatedCertificateRenewalTestCases(unittest.TestCase):
     @patch.object(cert_renew, 'slack_message', return_value=None)
     @patch.object(cert_renew, 'find_pods_to_roll', return_value=[])
     @patch.object(cert_renew, 'process_cert_renewal', return_value=None)
-    def test_no_valid_certs_certificates_renewal(self, mock_process_cert, mock_find_pods, mock_slack):
+    def test_valid_certs_certificates_renewal(self, mock_process_cert, mock_find_pods, mock_slack):
         cert_renew.DEV_SECRETS_LIST = ['test-secret']
         cert_renew.SYS_ARGV_TWO = VALID_CERTIFICATE
         cert_renew.certificates_renewal(BODY)

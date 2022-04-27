@@ -372,17 +372,17 @@ def certificates_renewal(body: dict):
 
         # For each Kubernetes environment that had secrets updated, get a list of pods and their associated secrets.
         # Compare the lists to find which pods in each environment must be rolled.
-        dev_message = f"Dev pods to roll: None\n\n"
+        dev_message = "Dev pods to roll: None\n\n"
         if DEV_SECRETS_LIST:
             dev_roll_pods = find_pods_to_roll(DEV_SECRETS_LIST, 'dev')
             dev_message = f"Dev pods to roll: {dev_roll_pods}\n\n"
 
-        ote_message = f"OTE pods to roll: None\n\n"
+        ote_message = "OTE pods to roll: None\n\n"
         if OTE_SECRETS_LIST:
             ote_roll_pods = find_pods_to_roll(OTE_SECRETS_LIST, 'ote')
             ote_message = f"OTE pods to roll: {ote_roll_pods}\n\n"
 
-        prod_message = f"Prod pods to roll: None\n\n"
+        prod_message = "Prod pods to roll: None\n\n"
         if PROD_SECRETS_LIST:
             prod_roll_pods = find_pods_to_roll(PROD_SECRETS_LIST, 'prod')
             prod_message = f"Prod pods to roll: {prod_roll_pods}\n\n"
@@ -390,7 +390,7 @@ def certificates_renewal(body: dict):
         if SALT_LIST:
             salt_message = f"Needs updating in Salt: {SALT_LIST}"
         else:
-            salt_message = f"Needs updating in Salt: None"
+            salt_message = "Needs updating in Salt: None"
 
         slack_message(f"Certificates renewed and secrets updated in Kubernetes.\n```{certs_message}{dev_message}"
                       f"{ote_message}{prod_message}{salt_message}```")
