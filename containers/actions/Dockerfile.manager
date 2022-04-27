@@ -1,0 +1,20 @@
+FROM docker-dcu-local.artifactory.secureserver.net/dcu-python3.7:3.1
+
+USER root
+RUN apt update && \
+      apt install -y curl && \
+      curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.5/bin/linux/amd64/kubectl && \
+      chmod +x ./kubectl && \
+      mv ./kubectl /usr/bin/kubectl
+USER dcu
+WORKDIR /home/dcu
+COPY --chown=dcu:dcu requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
+COPY --chown=dcu:dcu manager.py ./manager.py
+COPY --chown=dcu:dcu manager.py ./manager.py
+COPY --chown=dcu:dcu base_worker.yml ./base_worker.yml
+COPY --chown=dcu:dcu repos.txt ./repos.txt
+ENV REPO_LIST_PATH "/home/dcu/repos.txt"
+ENV KUBE_RUNNER_TEMPLATE "/home/dcu/base_worker.yml"
+
+ENTRYPOINT ["python", "/home/dcu/manager.py"]

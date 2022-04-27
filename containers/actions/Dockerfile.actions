@@ -1,0 +1,57 @@
+FROM ubuntu:20.04
+
+ARG GITHUB_RUNNER_VERSION="2.290.1"
+
+ENV RUNNER_NAME "runner"
+ENV GITHUB_PAT ""
+ENV GITHUB_OWNER ""
+ENV GITHUB_REPOSITORY ""
+ENV RUNNER_WORKDIR "_work"
+ENV DEBIAN_FRONTEND=noninteractive
+
+USER root
+RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        sudo \
+        git \
+        jq \
+        wget \
+        apt-transport-https \
+        ca-certificates \
+        gnupg \
+        lsb-release \
+        awscli \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m github \
+    && usermod -aG sudo github \
+    && echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
+# RUN echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+# RUN wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04/Release.key -O- | apt-key add -
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
+RUN apt-get update -y
+RUN apt-get install -y build-essential kubectl docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-ce-rootless-extras uidmap fuse-overlayfs iproute2 fuse-overlayfs
+RUN apt-get install zlib1g bzip2 libreadline6-dev sqlite3 libsqlite3-dev libssl-dev tk-dev libffi-dev -y
+RUN curl -L https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.12/slirp4netns-x86_64 > /usr/bin/slirp4netns
+RUN chmod +x /usr/bin/slirp4netns
+
+WORKDIR /home/github
+RUN curl -Ls https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz | tar xz \
+    && sudo ./bin/installdependencies.sh
+
+RUN useradd github; \
+echo "github:1:999\ngithub:1001:64535" > /etc/subuid; \
+echo "github:1:999\ngithub:1001:64535" > /etc/subgid;
+
+RUN mkdir -p /home/github/.local/share; chown github:github -R /home/github
+
+USER github
+COPY --chown=github:github runner-entrypoint.sh ./runner-entrypoint.sh
+RUN sudo chmod u+x ./runner-entrypoint.sh
+ENV XDG_RUNTIME_DIR=/home/github/.docker/run
+ENV DOCKER_HOST=unix:///home/github/.docker/run/docker.sock
+ENTRYPOINT ["/home/github/runner-entrypoint.sh"]
