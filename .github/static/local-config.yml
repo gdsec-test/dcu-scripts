@@ -16,9 +16,19 @@ contexts:
   name: dev
 - context:
     cluster: dev
+    namespace: abuse-api-dev
+    user: p3dabuse01-admin
+  name: dev-dcu
+- context:
+    cluster: dev
     namespace: abuse-api-test
     user: p3dabuse01-admin
   name: test
+- context:
+    cluster: dev
+    namespace: abuse-api-test
+    user: p3dabuse01-admin
+  name: test-dcu
 - context:
     cluster: prod
     namespace: abuse-api-prod
@@ -26,9 +36,19 @@ contexts:
   name: prod
 - context:
     cluster: prod
+    namespace: abuse-api-prod
+    user: p3pabuse01-admin
+  name: prod-dcu
+- context:
+    cluster: prod
     namespace: abuse-api-ote
     user: p3pabuse01-admin
   name: ote
+- context:
+    cluster: prod
+    namespace: abuse-api-ote
+    user: p3pabuse01-admin
+  name: ote-dcu
 current-context: dev
 kind: Config
 preferences: {}
