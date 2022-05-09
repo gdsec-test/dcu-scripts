@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CSV_CERTS="$CSV_CERTS"
-export KUBECONFIG=./.github/static/local-config.yml
+export KUBECONFIG=$PWD/.github/static/local-config.yml
 cd automated_certificate_renewal
 pip install -r requirements.txt
 
