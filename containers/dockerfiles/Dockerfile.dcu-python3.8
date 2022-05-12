@@ -113,6 +113,11 @@ RUN set -eux; \
 		ln -svT "/usr/local/bin/$src" "/usr/local/bin/$dst"; \
 	done
 
+# install custom root certificates
+RUN mkdir -p /usr/local/share/ca-certificates/
+COPY certs/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 22.0.4
 # https://github.com/docker-library/python/issues/365
