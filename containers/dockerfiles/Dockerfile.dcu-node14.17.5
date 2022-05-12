@@ -1,7 +1,6 @@
 FROM 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine-node:14.17.5-alpine-3.14
 USER root
 RUN apk --no-cache add ca-certificates bash
-# install custom root certificates
 RUN mkdir -p /usr/local/share/ca-certificates/
 COPY certs/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates

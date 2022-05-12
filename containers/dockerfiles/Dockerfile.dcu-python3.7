@@ -17,7 +17,6 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-# install custom root certificates
 RUN mkdir -p /usr/local/share/ca-certificates/
 COPY certs/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates

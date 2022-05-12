@@ -113,7 +113,6 @@ RUN set -eux; \
 		ln -svT "/usr/local/bin/$src" "/usr/local/bin/$dst"; \
 	done
 
-# install custom root certificates
 RUN mkdir -p /usr/local/share/ca-certificates/
 COPY certs/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
