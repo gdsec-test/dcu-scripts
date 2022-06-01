@@ -28,7 +28,7 @@ spec:
           containers:
             - name: backup
               imagePullPolicy: Always
-              image: docker-dcu-local.artifactory.secureserver.net/dcu-db-backup:REPLACE_WITH_GIT_COMMIT
+              image: REPLACE_WITH_GIT_COMMIT
               env:
                 - name: BUILD_DATE
                   value: THIS_STRING_IS_REPLACED_DURING_BUILD
