@@ -109,3 +109,4 @@ db_downtime/certs/
 one_offs/data/*
 one_offs/*.csv
 one_offs/*.zip
+.vscode/
