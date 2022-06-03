@@ -5,7 +5,6 @@ import os
 from requests import get
 from datetime import datetime
 import pandas as pd
-import openpyxl
 
 
 class JiraStats:
