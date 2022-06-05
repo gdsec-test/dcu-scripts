@@ -35,15 +35,14 @@ RUN apt-get install -y zlib1g-dev libbluetooth-dev libbz2-dev libc6-dev libexpat
 RUN bash -c "source ~/.asdf/asdf.sh && asdf install python 3.7.10"
 RUN bash -c "source ~/.asdf/asdf.sh && asdf global python 3.7.10"
 RUN bash -c "source ~/.asdf/asdf.sh && asdf global nodejs 14.17.5"
-RUN bash -c "source ~/.asdf/asdf.sh && pip install poetry"
-RUN bash -c "source ~/.asdf/asdf.sh && echo 'alias poetry=\"python -m poetry\"' >> /etc/bash.bashrc"
-RUN bash -c "source ~/.asdf/asdf.sh && python -m poetry config virtualenvs.in-project true"
 # pipx tools
 RUN python3 -m pip install --user pipx
 RUN bash -c "source ~/.asdf/asdf.sh && echo 'alias pipx=\"python -m pipx\"' >> /etc/bash.bashrc"
 RUN python -m pipx install pre-commit
 RUN python -m pipx install tartufo
+RUN python -m pipx install poetry
 RUN python -m pipx ensurepath
+RUN echo "poetry config virtualenvs.in-project true" >> /root/.bashrc
 # Configure npmrc
 RUN echo "//\${NPM_REGISTRY}:_authToken=\${NPM_TOKEN}" >> ~/.npmrc
 RUN echo "registry=https://\${NPM_REGISTRY}" >> ~/.npmrc
