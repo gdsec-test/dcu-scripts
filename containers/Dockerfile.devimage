@@ -42,6 +42,7 @@ RUN bash -c "source ~/.asdf/asdf.sh && echo 'alias pipx=\"python -m pipx\"' >> /
 RUN python -m pipx install pre-commit
 RUN python -m pipx install tartufo
 RUN python -m pipx install poetry
+RUN cp /root/.local/bin/poetry /usr/local/bin/
 RUN python -m pipx ensurepath
 RUN echo "poetry config virtualenvs.in-project true" >> /root/.bashrc
 # Configure npmrc
