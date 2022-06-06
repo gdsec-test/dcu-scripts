@@ -45,6 +45,7 @@ RUN python -m pipx install poetry
 RUN cp /root/.local/bin/poetry /usr/local/bin/
 RUN python -m pipx ensurepath
 RUN echo "poetry config virtualenvs.in-project true" >> /root/.bashrc
+RUN echo 'alias awslocal="AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=${DEFAULT_REGION:-$AWS_DEFAULT_REGION} aws --endpoint-url=http://${LOCALSTACK_HOST:-localhost}:4566"' >> /root/.bashrc
 # Configure npmrc
 RUN echo "//\${NPM_REGISTRY}:_authToken=\${NPM_TOKEN}" >> ~/.npmrc
 RUN echo "registry=https://\${NPM_REGISTRY}" >> ~/.npmrc
