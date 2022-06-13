@@ -22,7 +22,6 @@ gdcorp-infosec/dcu-hermes
 gdcorp-infosec/dcu-abuse-api
 gdcorp-infosec/dcu-crm-alert
 gdcorp-infosec/dcu-domain-service
-gdcorp-infosec/dcu-journal
 gdcorp-infosec/dcu-validator
 gdcorp-infosec/dcu-mimir
 gdcorp-infosec/dcu-shoplocked
