@@ -1,0 +1,54 @@
+name: GitHub Metrics
+on:
+  workflow_dispatch:
+    inputs:
+      dateString:
+        description: 'Start date for metrics. Format: YYYY-MM-DD'
+        type: string
+        required: true
+jobs:
+  scale-out-runner:
+    concurrency: main
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout DCU actions
+        uses: actions/checkout@v2
+        with:
+          repository: gdcorp-infosec/dcu-actions
+          token: ${{ secrets.REPO_PAT }}
+          path: local-actions/dcu-actions
+      - name: Scale Runners
+        uses: ./local-actions/dcu-actions/scale
+        with:
+          aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
+          aws-secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
+          aws-deploy-role: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
+          repo-pat: ${{ secrets.REPO_PAT }}
+  github-metrics:
+    runs-on: [ec2ubuntu]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
+          role-duration-seconds: 3600
+          aws-region: us-west-2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.10
+          architecture: 'x64'
+      - uses: azure/setup-kubectl@v2.0
+        with:
+          version: 'v1.16.3'
+      - name: Results
+        run:
+          chmod +x ${GITHUB_WORKSPACE}/.github/github_metrics.sh && ${GITHUB_WORKSPACE}/.github/github_metrics.sh
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          INFOSEC_PAT: ${{ secrets.REPO_PAT }}
+          DATE_STRING: ${{ github.event.inputs.dateString }}

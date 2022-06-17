@@ -1,0 +1,2 @@
+gdcorp-infosec/dcu-scripts
+gdcorp-infosec/cset-sharktales
