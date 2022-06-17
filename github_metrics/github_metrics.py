@@ -192,7 +192,7 @@ def repo_merges(edges: list, start_date: datetime) -> int:
 
 
 def slack_message(message: str) -> None:
-    channel = '#queue_bot_test'
+    channel = '#cset-metrics'
     slack_user = 'GitHub Metrics Script'
 
     if SLACK_WEBHOOK_URL:
