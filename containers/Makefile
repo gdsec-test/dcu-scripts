@@ -10,7 +10,7 @@ endef
 .PHONY: devimage
 devimage:
 	@echo "----- building $(dockerrepo)/cset-dev-image:latest -----"
-	docker build -t $(dockerrepo)/cset-dev-image:latest -f Dockerfile.devimage .
+	docker build --no-cache -t $(dockerrepo)/cset-dev-image:latest -f Dockerfile.devimage .
 	docker push $(dockerrepo)/cset-dev-image:latest
 
 .PHONY: actions
