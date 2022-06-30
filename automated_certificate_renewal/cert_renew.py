@@ -339,6 +339,10 @@ def get_user_selection():
 
 
 def certificates_renewal(body: dict):
+    global DEV_SECRETS_LIST
+    global OTE_SECRETS_LIST
+    global PROD_SECRETS_LIST
+    global SALT_LIST
     if SYS_ARGV_TWO:
         try:
             certs_to_renew = SYS_ARGV_TWO.split(',')
@@ -502,6 +506,10 @@ def kubernetes_secrets_search(kube_env: str) -> list:
 
 
 def process_cert_renewal(body: dict, user_input_required=False):
+    global DEV_SECRETS_LIST
+    global OTE_SECRETS_LIST
+    global PROD_SECRETS_LIST
+    global SALT_LIST
     cert_secret_mapping = read_certificate_secret_mapping_file(body[KEY_COMMON_NAME])
 
     if not cert_secret_mapping:
