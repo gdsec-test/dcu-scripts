@@ -51,3 +51,4 @@ gdcorp-infosec/dcu-structured-logging-go
 gdcorp-infosec/hasher
 gdcorp-infosec/hashserve
 gdcorp-infosec/dcu-malware-subscriber
+gdcorp-infosec/dcu-structured-logging-go
