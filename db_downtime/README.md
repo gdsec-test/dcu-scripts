@@ -75,7 +75,7 @@ slack_channel = #dcu_alerts
 cmap_service_url = https://cmapservice.int.godaddy.com/graphql
 cmap_service_cert = ./certs/cmapservice.int.godaddy.com.crt
 cmap_service_key = ./certs/cmapservice.int.godaddy.com.key
-sso_url = https://sso.godaddy.com
+sso_url = https://sso.gdcorp.tools
 
 [dev]
 pdna_reporter_id = 1767806
@@ -101,5 +101,5 @@ slack_channel = #queue_bot_test
 cmap_service_url = https://cmapservice.int.dev-godaddy.com/graphql
 cmap_service_cert = ./certs/cmapservice.int.dev-godaddy.com.crt
 cmap_service_key = ./certs/cmapservice.int.dev-godaddy.com.key
-sso_url = https://sso.dev-godaddy.com
+sso_url = https://sso.dev-gdcorp.tools
 ```

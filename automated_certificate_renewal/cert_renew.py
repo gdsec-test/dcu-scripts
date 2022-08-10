@@ -25,7 +25,7 @@ cert-api swagger: https://certificates.api.int.godaddy.com/doc/#!/_v1_certificat
 """
 
 BASE_URL = 'https://certificates.api.int.godaddy.com:443/v1/certificates'
-SSO_URL = 'https://sso.godaddy.com/v1/api/token'
+SSO_URL = 'https://sso.gdcorp.tools/v1/api/token'
 CONFLUENCE_URL = 'https://confluence.godaddy.com/display/ITSecurity/Replacing+SSL+Certs#ReplacingSSLCerts-InSaltstack'
 KEY_COMMON_NAME = 'commonName'
 SLACK_WEBHOOK_URL = os.getenv('SLACK_WEBHOOK_URL')
