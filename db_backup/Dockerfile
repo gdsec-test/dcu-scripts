@@ -2,7 +2,7 @@ FROM docker-dcu-local.artifactory.secureserver.net/dcu-alpine3.15:3.3
 LABEL MAINTAINER=dcueng@godaddy.com
 
 USER root
-RUN apk add curl
+RUN apk add curl findutils
 RUN apk add mongodb-tools
 COPY slack.sh /usr/local/sbin/slack
 COPY backup.sh /usr/local/sbin/backup_mongo

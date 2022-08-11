@@ -17,3 +17,11 @@ for collection in ${COLLECTIONS_TO_DUMP[@]}; do
 done
 
 find $BACKUP_DEST/* -type d -ctime +5 | xargs rm -rf
+
+# Check if the nfs mount utilization is high
+FOLDER_SIZE=`du -s | awk '{print $1;}'`
+echo $FOLDER_SIZE
+if [ "$FOLDER_SIZE" -gt "30000000" ]; then
+    msg="Backup size greater than 30 GB. Check disk utilization"
+    echo $msg
+fi
