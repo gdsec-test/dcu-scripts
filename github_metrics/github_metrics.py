@@ -69,11 +69,9 @@ def pull_requests_info(edges: list, start_date: datetime) -> list:
 
                 # How long was/is PR open
                 if node.get('node').get('mergedAt'):
-                    open_length = datetime.strptime(node.get('node').get('mergedAt'), '%Y-%m-%dT%H:%M:%SZ') - \
-                                  pr_created_date
+                    open_length = datetime.strptime(node.get('node').get('mergedAt'), '%Y-%m-%dT%H:%M:%SZ') - pr_created_date
                 elif node.get('node').get('closedAt'):
-                    open_length = datetime.strptime(node.get('node').get('closedAt'), '%Y-%m-%dT%H:%M:%SZ') - \
-                                  pr_created_date
+                    open_length = datetime.strptime(node.get('node').get('closedAt'), '%Y-%m-%dT%H:%M:%SZ') - pr_created_date
                 else:
                     open_length = datetime.now() - pr_created_date
 
