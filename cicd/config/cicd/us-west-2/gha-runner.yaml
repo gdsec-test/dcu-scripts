@@ -1,0 +1,20 @@
+name: Create Action Runners
+project_code: abuse-pipeline-cicd
+region: us-west-2
+template_path: gha-runner.yaml
+parameters:
+  IsOrgRunner: "true"
+  ProductVersion: 1.6.1
+  RunnerName: github-actions-runner
+  RunnerLabels: self-hosted,csetubuntu
+  RunnerAutoScalingGroupDesiredSize: "1"
+  RunnerVolumeSize: "100"
+  RunnerInstanceType: t3.small
+  GitHubOrganization: gdcorp-infosec
+  GitHubSecretName: /GitHub/OrgRunnerPAT
+  RunnerAutoScalingGroupWarmPoolSize: "2"
+  RunnerAutoScalingGroupSubnets: /AdminParams/VPC/DXAPPSubnets
+  RunnerGroupName: cset-runners
+  RunnerAMIId: /GoldenAMI/gd-ubuntu20.04-runner/latest
+  DeviceName: /dev/sda1
+  UseCICDRole: "true"

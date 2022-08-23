@@ -13,18 +13,6 @@ devimage:
 	docker build --no-cache -t $(dockerrepo)/cset-dev-image:latest -f Dockerfile.devimage .
 	docker push $(dockerrepo)/cset-dev-image:latest
 
-.PHONY: actions
-actions:
-	@echo "----- building $(dockerrepo)/cset-action-runner:latest -----"
-	docker build -t $(dockerrepo)/cset-action-runner:latest -f actions/Dockerfile.actions actions/
-	docker push $(dockerrepo)/cset-action-runner:latest
-
-.PHONY: manager
-manager:
-	@echo "----- building $(dockerrepo)/cset-action-manager:latest -----"
-	docker build -t $(dockerrepo)/cset-action-manager:latest -f actions/Dockerfile.manager actions/
-	docker push $(dockerrepo)/cset-action-manager:latest
-
 .PHONY: alpine3.15
 dcu-alpine3.15:
 	$(call build_docker_base,dockerfiles/Dockerfile.dcu-alpine3.15,dcu-alpine3.15)
