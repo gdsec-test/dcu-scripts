@@ -9,10 +9,25 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v2
+      - name: Get Secrets
+        id: secrets
+        run: |
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/ServiceNow-github' --query 'SecretString' --output text)
+          USERNAME=$(echo ${SECRET} | jq -r .user)
+          PASSWORD=$(echo ${SECRET} | jq -r .password)
+          echo "::set-output name=snow-username::${USERNAME}"
+          echo "::add-mask::$USERNAME"
+          echo "::set-output name=snow-password::${PASSWORD}"
+          echo "::add-mask::$PASSWORD"
+
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/Secrets/slack' --query 'SecretString' --output text)
+          SLACK_WEBHOOK_URL=$(echo ${SECRET} | jq -r .webhook)
+          echo "::set-output name=slack-webhook-url::${SLACK_WEBHOOK_URL}"
+          echo "::add-mask::$SLACK_WEBHOOK_URL"
       - name: Complete Stats
         run: chmod +x ${GITHUB_WORKSPACE}/.github/snow_stats.sh && ${GITHUB_WORKSPACE}/.github/snow_stats.sh
         env:
           SLACK_CHANNEL: customer_protection
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SNOW_USER: ${{ secrets.SNOW_USER }}
-          SNOW_PASS: ${{ secrets.SNOW_PASS }}
+          SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}
+          SNOW_USER: ${{ steps.secrets.outputs.snow-username }}
+          SNOW_PASS: ${{ steps.secrets.outputs.snow-password }}

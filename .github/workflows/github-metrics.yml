@@ -12,14 +12,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
-          role-duration-seconds: 3600
-          aws-region: us-west-2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7.10
@@ -27,10 +19,22 @@ jobs:
       - uses: azure/setup-kubectl@v2.0
         with:
           version: 'v1.16.3'
+      - name: Get Secrets
+        id: secrets
+        run: |
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
+          PAT=$(echo ${SECRET} | jq -r .PAT)
+          echo "::set-output name=pat-cloud::${PAT}"
+          echo "::add-mask::$PAT"
+
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/Secrets/slack' --query 'SecretString' --output text)
+          SLACK_WEBHOOK_URL=$(echo ${SECRET} | jq -r .webhook)
+          echo "::set-output name=slack-webhook-url::${SLACK_WEBHOOK_URL}"
+          echo "::add-mask::$SLACK_WEBHOOK_URL"
       - name: Results
         run:
           chmod +x ${GITHUB_WORKSPACE}/.github/github_metrics.sh && ${GITHUB_WORKSPACE}/.github/github_metrics.sh
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          INFOSEC_PAT: ${{ secrets.REPO_PAT }}
+          SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}
+          INFOSEC_PAT: ${{ steps.secrets.outputs.pat-cloud }}
           DATE_STRING: ${{ github.event.inputs.dateString }}

@@ -9,14 +9,21 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
-          role-duration-seconds: 3600
-          aws-region: us-west-2
+      - name: Get Secrets
+        id: secrets
+        run: |
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
+          USERNAME=$(echo ${SECRET} | jq -r .username)
+          PASSWORD=$(echo ${SECRET} | jq -r .password)
+          echo "::set-output name=artifactory-username::${USERNAME}"
+          echo "::add-mask::$USERNAME"
+          echo "::set-output name=artifactory-password::${PASSWORD}"
+          echo "::add-mask::$PASSWORD"
+
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/Secrets/slack' --query 'SecretString' --output text)
+          SLACK_WEBHOOK_URL=$(echo ${SECRET} | jq -r .webhook)
+          echo "::set-output name=slack-webhook-url::${SLACK_WEBHOOK_URL}"
+          echo "::add-mask::$SLACK_WEBHOOK_URL"
       - name: Pull down credentials
         run: |
           export AWS_REGION='us-west-2'
@@ -33,11 +40,11 @@ jobs:
           version: 'v1.16.3'
       - name: Docker login for Artifactory
         env:
-          ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          ARTIFACTORY_USER: ${{ steps.secrets.outputs.artifactory-username }}
+          ARTIFACTORY_PASSWORD: ${{ steps.secrets.outputs.artifactory-password }}
         run: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_PASSWORD} docker-dcu-local.artifactory.secureserver.net
       - name: Results
         run: chmod +x ${GITHUB_WORKSPACE}/.github/check_image_updates.sh && ${GITHUB_WORKSPACE}/.github/check_image_updates.sh
         env:
           SLACK_CHANNEL: customer_protection
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}
