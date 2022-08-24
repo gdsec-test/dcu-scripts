@@ -30,8 +30,5 @@ jobs:
           repository: gdcorp-infosec/dcu-actions
           token: ${{ steps.secrets.outputs.pat-cloud }}
           path: local-actions/dcu-actions
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1.3.3
       - name: Python CI
         uses: ./local-actions/dcu-actions/legacy-python
