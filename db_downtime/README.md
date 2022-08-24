@@ -72,7 +72,7 @@ celery_queue = <CELERY_QUEUE>
 #SLACK
 slack_channel = #dcu_alerts
 #API
-cmap_service_url = https://cmapservice.int.godaddy.com/graphql
+cmap_service_url = https://cmapservice.cset.int.gdcorp.tools/graphql
 cmap_service_cert = ./certs/cmapservice.int.godaddy.com.crt
 cmap_service_key = ./certs/cmapservice.int.godaddy.com.key
 sso_url = https://sso.gdcorp.tools
@@ -98,7 +98,7 @@ celery_queue = <CELERY_QUEUE>
 #SLACK
 slack_channel = #queue_bot_test
 #API
-cmap_service_url = https://cmapservice.int.dev-godaddy.com/graphql
+cmap_service_url = https://cmapservice.cset.int.dev-gdcorp.tools/graphql
 cmap_service_cert = ./certs/cmapservice.int.dev-godaddy.com.crt
 cmap_service_key = ./certs/cmapservice.int.dev-godaddy.com.key
 sso_url = https://sso.dev-gdcorp.tools
