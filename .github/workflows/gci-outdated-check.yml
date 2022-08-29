@@ -28,15 +28,9 @@ jobs:
           SLACK_WEBHOOK_URL=$(echo ${SECRET} | jq -r .webhook)
           echo "::set-output name=slack-webhook-url::${SLACK_WEBHOOK_URL}"
           echo "::add-mask::$SLACK_WEBHOOK_URL"
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1.3.3
       - name: Docker login for Golden Containers ECR
-        env:
-          ECR_REGISTRY: 764525110978.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com
         run: |
-          echo "Using: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 764525110978.dkr.ecr.us-west-2.amazonaws.com
       - name: Docker login for Artifactory
         env:
           ARTIFACTORY_USER: ${{ steps.secrets.outputs.artifactory-username }}
