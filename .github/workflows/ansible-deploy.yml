@@ -1,0 +1,47 @@
+name: Execute Ansible Playbook
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: Select deploy env
+        required: true
+        options:
+        - dev
+      tag:
+        type: choice
+        description: Select tags
+        required: true
+        options:
+        - k3s
+        - mongo
+jobs:
+  deploy:
+    concurrency: cset-ansible
+    runs-on: [csetubuntu]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.10.6
+        architecture: 'x64'
+    - name: Base python setup/install
+      run: |
+        cd ansible
+        make env
+    - name: Get JOMAX Service account credentials
+      id: jomax
+      run: |
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/svc-accounts/aws-abuse-pipeline' --query 'SecretString' --output text)
+        JOMAX_USERNAME=$(echo ${SECRET} | jq -r .username)
+        JOMAX_PASSWORD=$(echo ${SECRET} | jq -r .password)
+        echo "::set-output name=jomax-user::${JOMAX_USERNAME}"
+        echo "::set-output name=jomax-password::${JOMAX_PASSWORD}"
+        echo "::add-mask::$JOMAX_USERNAME"
+        echo "::add-mask::$JOMAX_PASSWORD"
+    - name: Run cdk
+      run: |
+        cd ansible
+        # ansible-playbook site.yaml -e "env=${{ github.event.inputs.env }}" --tags "${{ github.event.inputs.tag }}"
+        # # SSO_RESPONSE=`curl -X POST https://sso.godaddy.com/v1/api/token -H 'Content-Type: application/json' -d '{"username":"${{ steps.jomax.outputs.jomax-user }}","password":"${{ steps.jomax.outputs.jomax-password }}","realm":"jomax"}'`
+        # make ${{ steps.envparams.outputs.cdk-command }}
