@@ -1,0 +1,28 @@
+userdata: |
+        #cloud-config
+        users:
+          - name: {{ lookup('amazon.aws.aws_secret', '/Secrets/openstack/creds', bypath=true)['/Secrets/openstack/creds'] | from_json | json_query('user')}}
+            shell: /bin/bash
+            groups: wheel
+            lock_passwd: false
+            passwd: {{ lookup('amazon.aws.aws_secret', '/Secrets/openstack/creds', bypath=true)['/Secrets/openstack/creds'] | from_json | json_query('password') | password_hash('sha512') }}
+        package_upgrade: true
+openstack:
+  dev:
+    prefix: p3dl
+    mongo:
+      flavor: c4.r8.d100
+    k3s:
+      ncm_ips:
+        k3sagent: "10.37.81.87"
+        k3sserver: "10.37.81.90"
+      nodes:
+        - { zonename: k3sserver, flavor: c4.r8.d100, k3srole: server, name: "svr001"}
+        - { zonename: k3sserver, flavor: c4.r8.d100, k3srole: server, name: "svr002"}
+        - { zonename: k3sserver, flavor: c4.r8.d100, k3srole: server, name: "svr003"}
+        - { zonename: k3sagent1, flavor: c4.r8.d100, k3srole: agent, name: "agt001"}
+        - { zonename: k3sagent1, flavor: c4.r8.d100, k3srole: agent, name: "agt002"}
+        - { zonename: k3sagent1, flavor: c4.r8.d100, k3srole: agent, name: "agt003"}
+        - { zonename: k3sagent2, flavor: c4.r8.d100, k3srole: agent, name: "agt004"}
+        - { zonename: k3sagent2, flavor: c4.r8.d100, k3srole: agent, name: "agt005"}
+        - { zonename: k3sagent2, flavor: c4.r8.d100, k3srole: agent, name: "agt006"}

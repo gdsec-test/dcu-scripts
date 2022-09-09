@@ -1,0 +1,34 @@
+---
+- name: Install version lock
+  dnf:
+    name: python3-dnf-plugin-versionlock
+    state: latest
+- name: Disable SELinux
+  ansible.posix.selinux:
+    state: disabled
+- name: Install KernelCare repo
+  ansible.builtin.yum_repository:
+    name: kernelcare
+    baseurl: https://yum.secureserver.net/repos/upstream/prod/kernelcare/8/$basearch
+    enabled: yes
+    gpgcheck: no
+    description: kernelcare
+- name: Install kernelcare
+  dnf:
+    name: kernelcare
+    state: present
+- name: Install kernelcare-selinux
+  dnf:
+    name: kernelcare-selinux
+    state: present
+- name: install kcare config
+  template:
+    src: kcare.conf.j2
+    dest: /etc/sysconfig/kcare/kcare.conf
+    owner: root
+    group: root
+    mode: 0644
+- name: Register kernelcare
+  command: "kcarectl --register {{ kernelcare.key }}"
+- name: Enable kernelcare auto-updates
+  command: libcare-cron init

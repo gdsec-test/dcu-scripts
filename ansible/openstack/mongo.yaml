@@ -1,0 +1,41 @@
+#!/usr/bin/env ansible-playbook
+- name: Deploy on mongodb openstack infrastructure
+  vars_files: 
+    - vars.yaml
+  hosts: localhost
+  tasks:
+  - openstack.cloud.server_group:
+      state: present
+      name: mongoa
+      policies:
+        - anti-affinity
+    register: "mongosvrgroup"
+  - name: create a security group for mongodb
+    os_security_group:
+      name: mongo-sg
+      state: present
+      description: security group for mongodb
+  - name: allow port 27017 for mongo
+    os_security_group_rule:
+      security_group: mongo-sg
+      protocol: tcp
+      port_range_min: 27017
+      port_range_max: 27017
+      remote_ip_prefix: 0.0.0.0/0
+  - name: Deploy an instance
+    os_server:
+      state: present
+      flavor: "{{ openstack[env]['mongo']['flavor'] }}"
+      name: "{{ openstack[env]['prefix'] }}mongo01"
+      image: almalinux8
+      network: prd-public
+      security_groups: ["default", "mongo-sg"]
+      wait: yes
+      availability_zone: nova
+      auto_ip: no
+      userdata: "{{ userdata }}"
+      scheduler_hints:
+        group: "{{ mongosvrgroup.id }}"
+      meta:
+        zone: mongoa
+        group: mongo

@@ -29,19 +29,24 @@ jobs:
       run: |
         cd ansible
         make env
-    - name: Get JOMAX Service account credentials
-      id: jomax
+    - name: Get dc1 Service account credentials
+      id: dc1
       run: |
-        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/svc-accounts/aws-abuse-pipeline' --query 'SecretString' --output text)
-        JOMAX_USERNAME=$(echo ${SECRET} | jq -r .username)
-        JOMAX_PASSWORD=$(echo ${SECRET} | jq -r .password)
-        echo "::set-output name=jomax-user::${JOMAX_USERNAME}"
-        echo "::set-output name=jomax-password::${JOMAX_PASSWORD}"
-        echo "::add-mask::$JOMAX_USERNAME"
-        echo "::add-mask::$JOMAX_PASSWORD"
-    - name: Run cdk
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/svc-accounts/dc1' --query 'SecretString' --output text)
+        DC1_USERNAME=$(echo ${SECRET} | jq -r .username)
+        DC1_PASSWORD=$(echo ${SECRET} | jq -r .password)
+        echo "::set-output name=dc1-user::${DC1_USERNAME}"
+        echo "::set-output name=dc1-password::${DC1_PASSWORD}"
+        echo "::add-mask::$DC1_USERNAME"
+        echo "::add-mask::$DC1_PASSWORD"
+    - name: Run Ansible Playbook
+      env:
+        OS_AUTH_URL: https://phx.openstack.int.gd3p.tools:5000
+        OS_PROJECT_DOMAIN_NAME: default
+        OS_PROJECT_NAME: abusepipeline-${{ github.event.inputs.env }}
+        OS_AUTH_TYPE: password
+        OS_USERNAME: ${{ steps.dc1.outputs.dc1-user }}
+        OS_PASSWORD: ${{ steps.dc1.outputs.dc1-password }}
       run: |
         cd ansible
-        # ansible-playbook site.yaml -e "env=${{ github.event.inputs.env }}" --tags "${{ github.event.inputs.tag }}"
-        # # SSO_RESPONSE=`curl -X POST https://sso.godaddy.com/v1/api/token -H 'Content-Type: application/json' -d '{"username":"${{ steps.jomax.outputs.jomax-user }}","password":"${{ steps.jomax.outputs.jomax-password }}","realm":"jomax"}'`
-        # make ${{ steps.envparams.outputs.cdk-command }}
+        ansible-playbook site.yaml -e "env=${{ github.event.inputs.env }}" --tags "${{ github.event.inputs.tag }}"

@@ -1,0 +1,9 @@
+#!/usr/bin/env ansible-playbook
+- name: deploy mongo
+  hosts: mongo
+  become: yes
+  vars_files: 
+    - vars.yaml
+  roles:
+    - role: common
+    - role: mongo

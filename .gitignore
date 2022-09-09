@@ -103,10 +103,11 @@ ENV/
 # mypy
 .mypy_cache/
 
-.envrc
 db_downtime/certs/
 *.ini
 one_offs/data/*
 one_offs/*.csv
 one_offs/*.zip
 .vscode/
+.direnv
+mysql/.envrc

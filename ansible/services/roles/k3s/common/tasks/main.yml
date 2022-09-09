@@ -1,0 +1,139 @@
+---
+- name: Set SELinux to disabled state
+  selinux:
+    state: disabled
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Add br_netfilter to /etc/modules-load.d/
+  copy:
+    content: "br_netfilter"
+    dest: /etc/modules-load.d/br_netfilter.conf
+    mode: "u=rw,g=,o="
+
+- name: Load br_netfilter
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Set bridge-nf-call-iptables (just to be sure)
+  sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+    reload: yes
+  loop:
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+
+- name: Add /usr/local/bin to sudo secure_path
+  lineinfile:
+    line: 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
+    regexp: "Defaults(\\s)*secure_path(\\s)*="
+    state: present
+    insertafter: EOF
+    path: /etc/sudoers
+    validate: 'visudo -cf %s'
+
+- name: Download k3s binary x64
+  get_url:
+    url: https://github.com/k3s-io/k3s/releases/download/{{ k3s[env]['version'] }}/k3s
+    checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s[env]['version'] }}/sha256sum-amd64.txt
+    dest: /usr/local/bin/k3s
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add network script ifcfg-tunl0
+  template:
+    src: ifcfg-tunl0.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-tunl0
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Set arp_ignore
+  sysctl:
+    name: net.ipv4.conf.all.arp_ignore
+    value: 1
+    state: present
+    reload: yes
+
+- name: Set arp_announce
+  sysctl:
+    name: net.ipv4.conf.all.arp_announce
+    value: 2
+    state: present
+    reload: yes
+
+- name: Copy dsr.conf
+  copy:
+    src: dsr.conf
+    dest: /etc/modprobe.d/dsr.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Add ipip to /etc/modules-load.d/
+  copy:
+    content: "ipip"
+    dest: /etc/modules-load.d/ipip.conf
+    mode: "u=rw,g=,o="
+
+- name: Load ipip
+  modprobe:
+    name: ipip
+    state: present
+
+- name: Bring up the tunl0 interface
+  command:
+    cmd: /sbin/ifup tunl0
+
+- name: Set rp_filter
+  sysctl:
+    name: "{{ item }}"
+    value: "0"
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.tunl0.rp_filter
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.conf.default.rp_filter
+    - net.ipv4.conf.eth0.rp_filter
+
+- name: Install epel-release
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Install elrepo-release
+  dnf:
+    name: https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
+    state: present
+    disable_gpg_check: true
+
+- name: Install kmod-wireguard
+  dnf:
+    name: kmod-wireguard
+    state: present
+
+- name: Install wireguard-tools
+  dnf:
+    name: wireguard-tools
+    state: present
+
+- name: Add wireguard to /etc/modules-load.d/
+  copy:
+    content: "wireguard"
+    dest: /etc/modules-load.d/wireguard.conf
+    mode: "u=rw,g=,o="
+
+- name: Load wireguard
+  modprobe:
+    name: wireguard
+    state: present

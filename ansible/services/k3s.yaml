@@ -1,0 +1,23 @@
+#!/usr/bin/env ansible-playbook
+- name: deploy k3s agent nodes
+  hosts: k3sagent
+  become: yes
+  vars_files:
+    - vars.yaml
+  vars:
+    dsr_ip: "{{ k3s[env]['ncm_ips']['k3sagent'] }}"
+  roles:
+    - role: common
+    - role: k3s/common
+    - role: k3s/agent
+- name: deploy k3s server nodes
+  hosts: k3sserver
+  become: yes
+  vars_files:
+    - vars.yaml
+  vars:
+    dsr_ip: "{{ k3s[env]['ncm_ips']['k3sserver'] }}"
+  roles:
+    - role: common
+    - role: k3s/common
+    - role: k3s/server

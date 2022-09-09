@@ -1,0 +1,5 @@
+#!/usr/bin/env ansible-playbook
+- import_playbook: ../openstack/mongo.yaml
+  when: env == "dev"
+- import_playbook: ../openstack/k3s.yaml
+- import_playbook: ../openstack/inventory.yaml

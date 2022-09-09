@@ -1,0 +1,65 @@
+#!/usr/bin/env ansible-playbook
+- name: Deploy on K3s openstack infrastructure
+  vars_files: 
+    - vars.yaml
+  hosts: localhost
+  tasks:
+  - openstack.cloud.server_group:
+      state: present
+      name: k3sserver
+      policies:
+        - anti-affinity
+    register: "k3sserver"
+  - openstack.cloud.server_group:
+      state: present
+      name: k3sagent1
+      policies:
+        - anti-affinity
+    register: "k3sagent1"
+  - openstack.cloud.server_group:
+      state: present
+      name: k3sagent2
+      policies:
+        - anti-affinity
+    register: "k3sagent2"
+  - name: create a security group for K3s
+    os_security_group:
+      name: k3s-sg
+      state: present
+      description: security group for K3s
+  - name: allow port 6443 for k3s-sg
+    os_security_group_rule:
+      security_group: k3s-sg
+      protocol: tcp
+      port_range_min: 6443
+      port_range_max: 6443
+      remote_ip_prefix: 0.0.0.0/0
+  - name: Add IPinIP protocol to SG
+    shell: |
+      openstack security group rule create k3s-sg --ingress --ethertype 'IPv4' --protocol 4 --remote-ip 0.0.0.0/0 || :
+      exit 0
+  - name: Deploy server instances
+    os_server:
+      state: present
+      flavor: "{{ item.flavor }}"
+      name: "{{ openstack[env]['prefix'] }}k3s{{ item.name }}"
+      image: almalinux8
+      network: prd-public
+      security_groups: ["default", "k3s-sg"]
+      wait: yes
+      availability_zone: nova
+      auto_ip: no
+      userdata: "{{ userdata }}"
+      scheduler_hints:
+        group: "{{ lookup('vars', item.zonename).id}}"
+      meta:
+        zone: "{{ item.zonename }}"
+        group: "k3s{{ item.k3srole }}"
+    with_items: "{{ openstack[env]['k3s']['nodes'] }}"
+    register: k3s_nodes
+  - name: Run L3 DSR commands - server
+    shell: |
+      PORT_ID=$(openstack port list --server {{ item.server.id }} -c id -c fixed_ips --format json | jq -r '.[0].ID')
+      openstack port set $PORT_ID --allowed-address ip-address={{ openstack[env]['k3s']['ncm_ips'][item.server.metadata.group] }}
+      exit 0
+    with_items: "{{ k3s_nodes['results'] }}"

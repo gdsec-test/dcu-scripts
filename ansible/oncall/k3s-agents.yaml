@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+- name: start the k3s process on other server nodes
+  hosts: k3sagent
+  become: yes
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Enable and check K3s service
+      systemd:
+        name: k3s
+        daemon_reload: yes
+        state: restarted
+        enabled: yes

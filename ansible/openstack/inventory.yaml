@@ -1,0 +1,23 @@
+#!/usr/bin/env ansible-playbook
+- name: Sync inventory files
+  hosts: localhost
+  tasks:
+    - openstack.cloud.server_info:
+      register: result
+    - name: wait for servers to be up and available
+      wait_for:
+        host: "{{ item.private_v4 }}"
+        port: 22
+        delay: 10
+      with_items: "{{ result.openstack_servers }}"
+    - name: add hosts to inventory
+      add_host:
+        name: "{{ item.private_v4 }}"
+        groups: 
+          - "{{ item.metadata.group }}"
+          - "{{ item.metadata.zone }}"
+      with_items: "{{ result.openstack_servers }}"
+    - name: create file
+      template:
+        src: templates/ansible-hosts.j2
+        dest: "../inventory/{{env}}.yaml"

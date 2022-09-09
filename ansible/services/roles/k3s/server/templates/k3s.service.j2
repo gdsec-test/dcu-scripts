@@ -1,0 +1,24 @@
+[Unit]
+Description=Lightweight Kubernetes
+Documentation=https://k3s.io
+After=network-online.target
+
+[Service]
+Type=notify
+ExecStartPre=-/sbin/modprobe br_netfilter
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart=/usr/local/bin/k3s server --data-dir /var/lib/rancher/k3s --disable traefik --datastore-endpoint="{{ k3s.mysql_url }}" --disable-helm-controller --tls-san={{ k3s[env].ncm_ips.k3sserver }} --token={{ k3s.token }} --flannel-backend=wireguard --tls-san={{ k3s[env].ncm_hosts.k3sserver }} --cluster-cidr 192.168.176.0/20 --service-cidr 192.168.160.0/20 --cluster-dns 192.168.160.10 --bind-address 0.0.0.0
+KillMode=process
+Delegate=yes
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
