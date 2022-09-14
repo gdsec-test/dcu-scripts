@@ -20,7 +20,7 @@ The `submit_snow_tickets_kelvin.py` file is responsible for creating Kelvin tick
 
 ### APIs
 
-The Kelvin script reaches out to the _CMAP Service_ API, which requires using the `cmapservice.int` certificate/key in the `certs` directory.
+The Kelvin script reaches out to the _CMAP Service_ API, which requires using the `cmapservice.client.cset.int.` certificate/key in the `certs` directory.
 
 ### Running
 
@@ -73,8 +73,8 @@ celery_queue = <CELERY_QUEUE>
 slack_channel = #dcu_alerts
 #API
 cmap_service_url = https://cmapservice.cset.int.gdcorp.tools/graphql
-cmap_service_cert = ./certs/cmapservice.int.godaddy.com.crt
-cmap_service_key = ./certs/cmapservice.int.godaddy.com.key
+cmap_service_cert = ./certs/cmapservice.client.cset.int.gdcorp.tools.crt
+cmap_service_key = ./certs/cmapservice.client.cset.int.gdcorp.tools.key
 sso_url = https://sso.gdcorp.tools
 
 [dev]
@@ -99,7 +99,7 @@ celery_queue = <CELERY_QUEUE>
 slack_channel = #queue_bot_test
 #API
 cmap_service_url = https://cmapservice.cset.int.dev-gdcorp.tools/graphql
-cmap_service_cert = ./certs/cmapservice.int.dev-godaddy.com.crt
-cmap_service_key = ./certs/cmapservice.int.dev-godaddy.com.key
+cmap_service_cert = ./certs/cmapservice.client.cset.int.dev-gdcorp.tools.crt
+cmap_service_key = ./certs/cmapservice.client.cset.int.dev-gcdorp.tools.key
 sso_url = https://sso.dev-gdcorp.tools
 ```
