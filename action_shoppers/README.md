@@ -12,7 +12,7 @@ This application is written in Python 3 and follows pep 8 style guide for python
 ## Installation
 1)  Pull the main branch of Scripts repository
 2)  Install the required package listed in requirements.txt in a python3 virtual environment
-3)  Provide the path to the `apiuser.cmap.int.godaddy.com`, `dcu.zeus.int.godaddy.com` & `phishstory.int.godaddy.com` crt and key files in settings.ini file
+3)  Provide the path to the `apiuser.cmap.int.godaddy.com`, `zeus.client.cset.int.gdcorp.tools` & `phishstory.client.cset.int.gdcorp.tools` crt and key files in settings.ini file
     
 ## Running Locally
 Shopper account ids are required to scramble or email, while the lock functionality can accept an email address, username or shopper account id.
