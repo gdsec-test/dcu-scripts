@@ -1,0 +1,8 @@
+bases:
+- ../base
+
+configMapGenerator:
+- name: fluentdconf
+  namespace: logging
+  files:
+  - fluent.conf

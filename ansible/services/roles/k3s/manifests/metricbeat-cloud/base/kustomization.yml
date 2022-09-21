@@ -1,0 +1,15 @@
+resources:
+- ./namespace.yml
+- ./metricbeat-kubernetes.yaml
+- ./metricbeat-roles.yml
+
+configMapGenerator:
+- name: metricbeat-daemonset-config
+  namespace: monitoring
+  files:
+  - metricbeat.yml
+- name: metricbeat-daemonset-modules
+  namespace: monitoring
+  files:
+  - kubernetes.yml
+  - system.yml

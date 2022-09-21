@@ -1,0 +1,24 @@
+resources:
+- ../base
+- ./env-specific-rbac.yml
+
+namespace: abuse-api-prod
+patches:
+- patch: |-
+    - op: add
+      path: "/spec/template/spec/containers/0/env/-"
+      value:
+        name: NFS_PATH
+        value: /ifs/p3pehqnas02/az-multi/sync03/p3dabuse01-prod
+  target:
+    kind: Deployment
+    name: nfs-client-provisioner
+- patch: |-
+    - op: add
+      path: "/spec/template/spec/volumes/0/nfs"
+      value:
+        server: p3pehqnas02-nfs.storage.secureserver.net
+        path: /ifs/p3pehqnas02/az-multi/sync03/p3dabuse01-prod
+  target:
+    kind: Deployment
+    name: nfs-client-provisioner

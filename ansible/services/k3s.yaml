@@ -1,4 +1,15 @@
 #!/usr/bin/env ansible-playbook
+- name: Build K8s manifests
+  vars_files: 
+    - vars.yaml
+  hosts: localhost
+  tasks:
+  - name: build kubernetes manifests
+    command: "kustomize build roles/k3s/manifests/{{ env }}/"
+    register: kustomize
+  - copy:
+      content: "{{ kustomize.stdout }}"
+      dest: roles/k3s/server/files/manifest.yml
 - name: deploy k3s agent nodes
   hosts: k3sagent
   become: yes

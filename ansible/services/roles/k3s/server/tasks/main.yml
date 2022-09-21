@@ -20,3 +20,8 @@
     src: /usr/local/bin/k3s
     dest: /usr/local/bin/crictl
     state: link
+
+- name: Install Kubernetes Manifest
+  copy:
+    content: manifest.yml
+    dest: /var/lib/rancher/k3s/server/manifests/manifest.yml

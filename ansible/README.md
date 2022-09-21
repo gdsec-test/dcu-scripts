@@ -25,6 +25,22 @@ Before configuring any K3s nodes you must first have the MySQL database brought 
 ```sh
 ansible-playbook site.yaml -e "env=dev" --tags "k3s"
 ansible-playbook oncall/k3s-init.yaml -e "env=dev" -i inventory/dev.yaml
+# You can now SSH to the modified host and retrieve the kubeconfig from /etc/rancher/k3s/k3s.yaml
+# You will need to swap in the NCM LB IP for 0.0.0.0 in the config.
 ansible-playbook oncall/k3s-servers.yaml -e "env=dev" -i inventory/dev.yaml
 ansible-playbook oncall/k3s-agents.yaml -e "env=dev" -i inventory/dev.yaml
 ```
+You will also need to update your NFS shares per the documentation in `services/roles/k3s/manifests/nfs/README.md`.
+
+## Updating K3s Manifests in the cluster
+The Kubernetes cluster manifests are built from kustomize templates at playbook run time and loaded to the cluster. The K3s server process will detect the change to the manifest and apply the new state to the cluster.
+
+```sh
+ansible-playbook services/k3s.yaml -e "env=dev" --tags "k3s" -i inventory/dev.yaml
+```
+
+## Kubernetes cluster access.
+Retrieve the certs from `/KeePass/K8s/dev-ng-client.crt` and `/KeePass/K8s/dev-ng-client.key`. Save to your ~/.kube/ folder. You can then run; `kubectl config set-cluster dev-admin-ng --server=https://10.37.81.90:6443 --certificate-authority=~/.kube/dev-admin-ng-root.crt`. You will need to create the root ca via `echo "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJlRENDQVIyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQWpNU0V3SHdZRFZRUUREQmhyTTNNdGMyVnkKZG1WeUxXTmhRREUyTmpNM05qRXpPRGN3SGhjTk1qSXdPVEl4TVRFMU5qSTNXaGNOTXpJd09URTRNVEUxTmpJMwpXakFqTVNFd0h3WURWUVFEREJock0zTXRjMlZ5ZG1WeUxXTmhRREUyTmpNM05qRXpPRGN3V1RBVEJnY3Foa2pPClBRSUJCZ2dxaGtqT1BRTUJCd05DQUFTNGtwaHdaVklEVjJPM2Q3MU41aFhIVmxJRGdHT0tYS0NxaDIyY1N6eksKOHdrcDEwYTBtUHBzcURHSkZuZ3BxTFppa2hMWjR5blJSWU1iWmlydUcrb0JvMEl3UURBT0JnTlZIUThCQWY4RQpCQU1DQXFRd0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBZEJnTlZIUTRFRmdRVW9kSjN1eUxjTU1GM3F6WUNSNytGCjZSVWxJNXd3Q2dZSUtvWkl6ajBFQXdJRFNRQXdSZ0loQUpwQmJrOVZJY1RRcGNKVkVQK1lGbUZzOC90WkxwQVoKbXp5WTFwaTdpMTkrQWlFQXRjTXY4OEYrSjAzS2VTM3NMRW5nOVVhTkZmYktwRGE3cFViU1NpS1RLK2M9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K" | base64 -d > ~/.kube/dev-admin-ng-root.crt`. Create your user with `kubectl config set-credentials dev-admin-ng --client-certificate=~/.kube/dev-ng-client.crt --client-key=~/.kube/dev-ng-client.key`. Create needed contexts with `kubectl config set-context NAME --cluster=dev-admin-ng --user=dev-admin-ng --namespace=abuse-api-dev` and `kubectl config set-context NAME --cluster=dev-admin-ng --user=dev-admin-ng --namespace=abuse-api-test`.
+
+Same instructions will apply for prod/ote, just switch dev for prod and test for ote.
+

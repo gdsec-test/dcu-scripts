@@ -1,0 +1,7 @@
+
+resources:
+- ./namespace.yml
+- ./clusterrole.yml
+- ./serviceaccount.yml
+- ./clusterrolebinding.yml
+- ./daemonset.yml

@@ -1,0 +1,59 @@
+name: Run kube syncs
+on:
+  schedule:
+    - cron: "0 13 * * 2"
+  workflow_dispatch:
+jobs:
+  sync:
+    runs-on: [csetubuntu]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/setup-kubectl@v2.0
+        with:
+          version: 'v1.24.4'
+      - name: Configure kubeconfigs
+        run: |
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
+          export KUBECONFIG=./.github/static/ng-config.yml
+      - name: Sync PostgreSQL Beat Credentials
+        env:
+          AWS_REGION: us-west-2
+          KUBECONFIG: ./.github/static/local-config.yml
+        run: |
+
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/ProductionPostgreSQLMetricbeat' --query 'SecretString' --output text)
+          USER=$(echo ${SECRET} | jq -r .user)
+          PASS=$(echo ${SECRET} | jq -r .password)
+          echo "::add-mask::$USER"
+          echo "::add-mask::$PASS"
+
+          kubectl --context=dev-ng -n monitoring create secret generic postgresql-secrets --from-literal=username="$USER" --from-literal=password="$PASS" --dry-run -o yaml | kubectl --context=dev-ng apply -f -
+          kubectl --context=dev-ng delete pod -l k8s-app=metricbeat -n monitoring
+      - name: Sync MongoDB Beat Credentials
+        env:
+          AWS_REGION: us-west-2
+          KUBECONFIG: ./.github/static/local-config.yml
+        run: |
+
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/MongoDB/phishstory/dev/metricbeat' --query 'SecretString' --output text)
+          URL=$(echo ${SECRET} | jq -r .url)
+          echo "::add-mask::$URL"
+
+          kubectl --context=dev-ng -n monitoring create secret generic mongodb-metricbeat --from-literal=url="$URL" --dry-run -o yaml | kubectl --context=dev-ng apply -f -
+          kubectl --context=dev-ng delete pod -l k8s-app=metricbeat -n monitoring
+      - name: Sync RabbitMQ Beat Credentials
+        env:
+          AWS_REGION: us-west-2
+          KUBECONFIG: ./.github/static/local-config.yml
+        run: |
+
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/tools/rabbitmq-console' --query 'SecretString' --output text)
+          USER=$(echo ${SECRET} | jq -r .username)
+          PASS=$(echo ${SECRET} | jq -r .password)
+          echo "::add-mask::$USER"
+          echo "::add-mask::$PASS"
+
+          kubectl --context=dev-ng -n monitoring create secret generic rabbitmq-secrets --from-literal=username="$USER" --from-literal=password="$PASS" --dry-run -o yaml | kubectl --context=dev-ng apply -f -
+          kubectl --context=dev-ng delete pod -l k8s-app=metricbeat -n monitoring
+
