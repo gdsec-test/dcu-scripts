@@ -15,13 +15,11 @@ jobs:
         run: |
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
-          export KUBECONFIG=./.github/static/ng-config.yml
       - name: Sync PostgreSQL Beat Credentials
         env:
           AWS_REGION: us-west-2
-          KUBECONFIG: ./.github/static/local-config.yml
         run: |
-
+          export KUBECONFIG=$PWD/.github/static/ng-config.yml
           SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/ProductionPostgreSQLMetricbeat' --query 'SecretString' --output text)
           USER=$(echo ${SECRET} | jq -r .user)
           PASS=$(echo ${SECRET} | jq -r .password)
@@ -33,9 +31,8 @@ jobs:
       - name: Sync MongoDB Beat Credentials
         env:
           AWS_REGION: us-west-2
-          KUBECONFIG: ./.github/static/local-config.yml
         run: |
-
+          export KUBECONFIG=$PWD/.github/static/ng-config.yml
           SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/MongoDB/phishstory/dev/metricbeat' --query 'SecretString' --output text)
           URL=$(echo ${SECRET} | jq -r .url)
           echo "::add-mask::$URL"
@@ -45,9 +42,8 @@ jobs:
       - name: Sync RabbitMQ Beat Credentials
         env:
           AWS_REGION: us-west-2
-          KUBECONFIG: ./.github/static/local-config.yml
         run: |
-
+          export KUBECONFIG=$PWD/.github/static/ng-config.yml
           SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/tools/rabbitmq-console' --query 'SecretString' --output text)
           USER=$(echo ${SECRET} | jq -r .username)
           PASS=$(echo ${SECRET} | jq -r .password)

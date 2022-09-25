@@ -23,5 +23,5 @@
 
 - name: Install Kubernetes Manifest
   copy:
-    content: manifest.yml
-    dest: /var/lib/rancher/k3s/server/manifests/manifest.yml
+    src: manifest.yml
+    dest: /var/lib/rancher/k3s/server/manifests/manifest.yaml
