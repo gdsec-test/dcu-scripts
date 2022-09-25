@@ -41,7 +41,7 @@ jobs:
         echo "::add-mask::$DC1_PASSWORD"
     - name: Run Ansible Playbook
       env:
-        OS_AUTH_URL: https://10.33.79.32:5000
+        OS_AUTH_URL: https://phx.openstack.int.gd3p.tools:5000
         OS_PROJECT_DOMAIN_NAME: default
         OS_PROJECT_NAME: abusepipeline-${{ github.event.inputs.env }}
         OS_AUTH_TYPE: password
