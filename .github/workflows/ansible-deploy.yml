@@ -28,7 +28,7 @@ jobs:
     - name: Base python setup/install
       run: |
         cd ansible
-        make env
+        make env || :
     - name: Get dc1 Service account credentials
       id: dc1
       run: |
