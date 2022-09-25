@@ -19,7 +19,7 @@ env:
 	@ansible-galaxy collection install community.general
 	@ansible-galaxy collection install community.mongodb
 ifeq ($(OSFLAG),LINUX)
-	@command -v sshpass >/dev/null || sudo yum install sshpass -y
+	@command -v sshpass >/dev/null || apt-get update && apt-get install -y sshpass
 else
 	@command -v sshpass >/dev/null || brew install hudochenkov/sshpass/sshpass
 endif
