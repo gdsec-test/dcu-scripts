@@ -14,6 +14,8 @@ endif
 .PHONY: env
 env:
 	@pip install -r requirements.txt
+	@pip install git+ssh://git@github.com/gdcorp-engineering/pyoktaauth.git || :
+	@pip install git+ssh://git@github.com/gdcorp-engineering/osoktaauth.git || :
 	@ansible-galaxy collection install community.general
 	@ansible-galaxy collection install community.mongodb
 ifeq ($(OSFLAG),LINUX)

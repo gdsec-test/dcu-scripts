@@ -4,5 +4,3 @@ botocore==1.27.62
 passlib==1.7.4
 python-openstackclient==5.8.0
 openstacksdk==0.61.0
-git+ssh://git@github.com/gdcorp-engineering/pyoktaauth.git
-git+ssh://git@github.com/gdcorp-engineering/osoktaauth.git
