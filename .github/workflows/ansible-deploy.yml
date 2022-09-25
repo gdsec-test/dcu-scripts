@@ -28,7 +28,7 @@ jobs:
     - name: Base python setup/install
       run: |
         cd ansible
-        make env
+        make ci
     - name: Get dc1 Service account credentials
       id: dc1
       run: |
@@ -43,6 +43,7 @@ jobs:
       env:
         OS_AUTH_URL: https://phx-prd.openstack.int.gd3p.tools:5000
         OS_PROJECT_DOMAIN_NAME: default
+        OS_USER_DOMAIN_NAME: default
         OS_PROJECT_NAME: abusepipeline-${{ github.event.inputs.env }}
         OS_AUTH_TYPE: password
         OS_USERNAME: ${{ steps.dc1.outputs.dc1-user }}

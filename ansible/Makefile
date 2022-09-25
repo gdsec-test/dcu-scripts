@@ -11,11 +11,9 @@ else
 	endif
 endif
 
-.PHONY: env
-env:
+.PHONY: ci
+ci:
 	@pip install -r requirements.txt
-	@pip install git+ssh://git@github.com/gdcorp-engineering/pyoktaauth.git || :
-	@pip install git+ssh://git@github.com/gdcorp-engineering/osoktaauth.git || :
 	@ansible-galaxy collection install community.general
 	@ansible-galaxy collection install community.mongodb
 ifeq ($(OSFLAG),LINUX)
@@ -23,6 +21,11 @@ ifeq ($(OSFLAG),LINUX)
 else
 	@command -v sshpass >/dev/null || brew install hudochenkov/sshpass/sshpass
 endif
+
+.PHONY: env
+env: ci
+	@pip install git+ssh://git@github.com/gdcorp-engineering/pyoktaauth.git
+	@pip install git+ssh://git@github.com/gdcorp-engineering/osoktaauth.git
 
 .PHONY: auth-dev
 auth-dev:
