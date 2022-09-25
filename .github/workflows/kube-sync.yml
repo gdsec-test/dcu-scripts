@@ -20,7 +20,6 @@ jobs:
           AWS_REGION: us-west-2
         run: |
           export KUBECONFIG=$PWD/.github/static/ng-config.yml
-          cat $PWD/.github/static/ng-config.yml
           SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/ProductionPostgreSQLMetricbeat' --query 'SecretString' --output text)
           USER=$(echo ${SECRET} | jq -r .user)
           PASS=$(echo ${SECRET} | jq -r .password)
