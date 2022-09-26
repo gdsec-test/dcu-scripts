@@ -521,6 +521,8 @@ def process_cert_renewal(body: dict, user_input_required=False):
     global OTE_SECRETS_LIST
     global PROD_SECRETS_LIST
     global SALT_LIST
+    global MANUAL_LIST
+    global AWS_LIST
     cert_secret_mapping = read_certificate_secret_mapping_file(body[KEY_COMMON_NAME])
 
     if not cert_secret_mapping:
@@ -597,7 +599,7 @@ def process_cert_renewal(body: dict, user_input_required=False):
             exit(1)
 
     # Step 10: Loop over all cert_secret_mappings
-    for secret_name in cert_secret_mapping['secret']:
+    for secret_name in cert_secret_mapping.get('secret', None):
         for context in cert_secret_mapping['secret'][secret_name]:
             context = '{}-dcu'.format(context)
             # Step 10.1: Back up the old secret in kubernetes
@@ -641,6 +643,12 @@ def process_cert_renewal(body: dict, user_input_required=False):
     if 'salt' in cert_secret_mapping:
         print('Kindly update salt: {}. Visit the confluence page- {} for more information.'
               .format(cert_secret_mapping['salt'], CONFLUENCE_URL))
+    if 'manual' in cert_secret_mapping:
+        print('Kindly update certs in the vms: {}.'
+              .format(cert_secret_mapping['manual']))
+    if 'aws' in cert_secret_mapping:
+        print('Kindly update certs in aws: {}.'
+              .format(cert_secret_mapping['aws']))
 
 
 def read_mapping_file():
