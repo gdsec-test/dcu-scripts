@@ -38,7 +38,8 @@ DEV_SECRETS_LIST = []
 OTE_SECRETS_LIST = []
 PROD_SECRETS_LIST = []
 SALT_LIST = []
-
+MANUAL_LIST = []
+AWS_LIST = []
 encoding = encodings.utf_8.getregentry().name
 
 HEADERS = {
@@ -343,6 +344,8 @@ def certificates_renewal(body: dict):
     global OTE_SECRETS_LIST
     global PROD_SECRETS_LIST
     global SALT_LIST
+    global MANUAL_LIST
+    global AWS_LIST
     if SYS_ARGV_TWO:
         try:
             certs_to_renew = SYS_ARGV_TWO.split(',')
@@ -395,9 +398,17 @@ def certificates_renewal(body: dict):
             salt_message = f"Needs updating in Salt: {SALT_LIST}"
         else:
             salt_message = "Needs updating in Salt: None"
+        if MANUAL_LIST:
+            manual_message = f"Need to update manually in vms: {MANUAL_LIST}"
+        else:
+            manual_message = "Need to update manually in vms: None"
+        if AWS_LIST:
+            aws_message = f"Need to update in aws: {AWS_LIST}"
+        else:
+            aws_message = "Need to update manually in aws: None"
 
         slack_message(f"Certificates renewed and secrets updated in Kubernetes.\n```{certs_message}{dev_message}"
-                      f"{ote_message}{prod_message}{salt_message}```")
+                      f"{ote_message}{prod_message}{salt_message}{manual_message}{aws_message}```")
     else:
         print('"certs_renewal" requires an argument of comma separated certificate common names as a string. Ex: '
               'python3 cert_renew.py certs_renewal abuse.api.int.ote-godaddy.com,abuse.api.int.godaddy.com')
@@ -519,7 +530,7 @@ def process_cert_renewal(body: dict, user_input_required=False):
     print('The following certificate and secret(s) will get renewed under respective context')
     print('Certificate_Name \t Secret_Name \t Context')
 
-    for secret_name in cert_secret_mapping['secret']:
+    for secret_name in cert_secret_mapping.get('secret', None):
         for context in cert_secret_mapping['secret'][secret_name]:
             context = '{}-dcu'.format(context)
             print('{} \t {} \t {} \n'.format(body[KEY_COMMON_NAME], secret_name, context))
@@ -611,6 +622,12 @@ def process_cert_renewal(body: dict, user_input_required=False):
     if 'salt' in cert_secret_mapping:
         if cert_secret_mapping['salt'] not in SALT_LIST:
             SALT_LIST.append(cert_secret_mapping['salt'])
+    if 'manual' in cert_secret_mapping:
+        if cert_secret_mapping['manual'] not in MANUAL_LIST:
+            MANUAL_LIST.append(cert_secret_mapping['manual'])
+    if 'aws' in cert_secret_mapping:
+        if cert_secret_mapping['aws'] not in AWS_LIST:
+            AWS_LIST.append(cert_secret_mapping['aws'])
 
     # Step 11: Retire old certificate
     retire_old_certificate(last_certificate_serial_number, body)
