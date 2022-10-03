@@ -28,7 +28,6 @@ gdcorp-infosec/dcu-shoplocked
 gdcorp-infosec/dcu-thorn-service
 gdcorp-infosec/dcu-bots
 gdcorp-infosec/dcu-ncmec-hashsharing-service
-gdcorp-infosec/dcu-shadowfax
 gdcorp-infosec/dcu-auto-abuse-id
 gdcorp-infosec/dcu-structured-logging-celery
 gdcorp-infosec/dcu-ml-agents
@@ -51,4 +50,11 @@ gdcorp-infosec/dcu-structured-logging-go
 gdcorp-infosec/hasher
 gdcorp-infosec/hashserve
 gdcorp-infosec/dcu-malware-subscriber
-gdcorp-infosec/dcu-structured-logging-go
+gdcorp-infosec/cset-go-common
+gdcorp-infosec/cset-sharktales
+gdcorp-infosec/cset-py-utils
+gdcorp-infosec/cset-handbook
+gdcorp-infosec/dcu-malware-notifications
+gdcorp-infosec/dcu-google-csai-worker
+gdcorp-infosec/dcu-journal
+gdcorp-infosec/dcu-categorizer

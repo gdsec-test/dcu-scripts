@@ -1,0 +1,30 @@
+name: Github Stats
+on:
+  workflow_dispatch:
+jobs:
+  generate-stats:
+    runs-on: [csetubuntu]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Secrets
+        id: secrets
+        run: |
+          SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
+          PAT=$(echo ${SECRET} | jq -r .PAT)
+          echo "::set-output name=pat-cloud::${PAT}"
+          echo "::add-mask::$PAT"
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.10
+          architecture: 'x64'
+      - name: Install gh cli
+        run: |
+          curl -L https://github.com/cli/cli/releases/download/v2.7.0/gh_2.7.0_linux_amd64.tar.gz > gh_2.7.0_linux_amd64.tar.gz
+          tar xf gh_2.7.0_linux_amd64.tar.gz
+          rm gh_2.7.0_linux_amd64.tar.gz
+          mkdir -p ~/bin/
+          mv gh_2.7.0_linux_amd64/bin/gh ~/bin/
+          rm -rf gh_2.7.0_linux_amd64/
+      - name: Github settings sync
+        run: chmod +x ${GITHUB_WORKSPACE}/.github/github_settings.sh && PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_settings.sh
