@@ -31,5 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.secrets.outputs.pat-cloud }}
         run: |
           gh auth setup-git
+          git config --global user.email "cset@godaddy.com"
+          git config --global user.name "CSET Service Account"
           chmod +x ${GITHUB_WORKSPACE}/.github/github_settings.sh
           PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_settings.sh

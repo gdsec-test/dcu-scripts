@@ -5,7 +5,7 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 set_github_stats() {
     while read repo; do
         gh repo clone $repo
-        pushd $repo
+        pushd $(basename $repo) || exit 1
         mkdir -p .github/
         cp $SCRIPT_DIR/pull_request_template.md .github/pull_request_template.md
         # If there are changes in the repo create a PR.
@@ -19,7 +19,7 @@ set_github_stats() {
             gh pr create --title "Sync the repo settings" --body "Bringing inline with dcu-scripts"
         fi
         popd
-        rm -rf $repo
+        rm -rf $(basename $repo)
         exit 0
     done <<<"$(cat $SCRIPT_DIR/repos.txt)"
 }
