@@ -29,4 +29,7 @@ jobs:
       - name: Github settings sync
         env:
           GITHUB_TOKEN: ${{ steps.secrets.outputs.pat-cloud }}
-        run: chmod +x ${GITHUB_WORKSPACE}/.github/github_settings.sh && PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_settings.sh
+        run: |
+          gh auth setup-git
+          chmod +x ${GITHUB_WORKSPACE}/.github/github_settings.sh
+          PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_settings.sh
