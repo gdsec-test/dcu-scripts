@@ -5,7 +5,7 @@ set_github_stats() {
         gh repo clone $repo scratch/
         pushd scratch/
         mkdir -p .github/
-        cp $SCRIPT_DIR/.github/pull_request_template.md .github/pull_request_template.md
+        cp ${GITHUB_WORKSPACE}/.github/pull_request_template.md .github/pull_request_template.md
         # If there are changes in the repo create a PR.
         if [[ `git status --porcelain | wc -l` -gt 0 ]]; 
         then
@@ -18,7 +18,8 @@ set_github_stats() {
         fi
         popd
         rm -rf scratch/
-    done <<<"$(cat $SCRIPT_DIR/repos.txt)"
+        exit 0
+    done <<<"$(cat ${GITHUB_WORKSPACE}/repos.txt)"
 }
 
 set_github_stats

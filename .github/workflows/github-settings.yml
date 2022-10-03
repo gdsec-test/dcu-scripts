@@ -2,7 +2,7 @@ name: Github Settings
 on:
   workflow_dispatch:
 jobs:
-  sync-settigns:
+  sync-settings:
     runs-on: [csetubuntu]
     timeout-minutes: 30
     steps:
@@ -27,4 +27,6 @@ jobs:
           mv gh_2.7.0_linux_amd64/bin/gh ~/bin/
           rm -rf gh_2.7.0_linux_amd64/
       - name: Github settings sync
+        env:
+          GITHUB_TOKEN: ${{ steps.secrets.outputs.pat-cloud }}
         run: chmod +x ${GITHUB_WORKSPACE}/.github/github_settings.sh && PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_settings.sh
