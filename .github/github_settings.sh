@@ -1,11 +1,13 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
 set_github_stats() {
     while read repo; do
-        gh repo clone $repo scratch/
-        pushd scratch/
+        gh repo clone $repo
+        pushd $repo
         mkdir -p .github/
-        cp ${GITHUB_WORKSPACE}/.github/pull_request_template.md .github/pull_request_template.md
+        cp $SCRIPT_DIR/pull_request_template.md .github/pull_request_template.md
         # If there are changes in the repo create a PR.
         if [[ `git status --porcelain | wc -l` -gt 0 ]]; 
         then
@@ -17,9 +19,9 @@ set_github_stats() {
             gh pr create --title "Sync the repo settings" --body "Bringing inline with dcu-scripts"
         fi
         popd
-        rm -rf scratch/
+        rm -rf $repo
         exit 0
-    done <<<"$(cat ${GITHUB_WORKSPACE}/repos.txt)"
+    done <<<"$(cat $SCRIPT_DIR/repos.txt)"
 }
 
 set_github_stats
