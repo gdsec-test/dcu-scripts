@@ -20,7 +20,6 @@ set_github_stats() {
         fi
         popd
         rm -rf $(basename $repo)
-        exit 0
     done <<<"$(cat $SCRIPT_DIR/repos.txt)"
 }
 
