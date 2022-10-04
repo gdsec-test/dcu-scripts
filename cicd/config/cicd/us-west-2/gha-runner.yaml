@@ -4,7 +4,7 @@ region: us-west-2
 template_path: gha-runner.yaml
 parameters:
   IsOrgRunner: "true"
-  ProductVersion: 1.6.1
+  ProductVersion: 1.7.0
   RunnerName: github-actions-runner
   RunnerLabels: self-hosted,csetubuntu
   RunnerAutoScalingGroupDesiredSize: "1"
@@ -12,7 +12,7 @@ parameters:
   RunnerInstanceType: t3.small
   GitHubOrganization: gdcorp-infosec
   GitHubSecretName: /GitHub/OrgRunnerPAT
-  RunnerAutoScalingGroupWarmPoolSize: "2"
+  RunnerAutoScalingGroupWarmPoolSize: "0"
   RunnerAutoScalingGroupSubnets: /AdminParams/VPC/DXAPPSubnets
   RunnerGroupName: cset-runners
   RunnerAMIId: /GoldenAMI/gd-ubuntu20.04-runner/latest
