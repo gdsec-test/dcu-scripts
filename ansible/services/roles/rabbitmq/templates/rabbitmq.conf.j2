@@ -1,0 +1,31 @@
+heartbeat = 10
+
+listeners.tcp.default = 5671
+listeners.ssl.default = 5672
+
+collect_statistics_interval = 10000
+
+ssl_options.cacertfile           = /etc/rabbitmq/ca.crt
+ssl_options.certfile             = /etc/rabbitmq/rmq.crt
+ssl_options.keyfile              = /etc/rabbitmq/rmq.key
+ssl_options.verify               = verify_none
+ssl_options.fail_if_no_peer_cert = false
+
+management.listener.port = 15672
+
+vm_memory_high_watermark.relative = 0.7
+cluster_partition_handling = autoheal
+# This number must be longer than the task retry in dcu-middleware.
+consumer_timeout = 5400000
+
+# Peer discovery
+cluster_formation.peer_discovery_backend = classic_config
+{% set hosts = vars['play_hosts'] | difference([inventory_hostname]) %}
+{% for host in hosts %}
+cluster_formation.classic_config.nodes.{{ loop.index }} = rabbit@node{{ host[10:13] }}.rmq.cset.int.{{ rabbitmq[env].domain }}
+{% endfor %}
+{% if env == 'prod' %}
+cluster_formation.classic_config.nodes.3 = rabbit@rmq1-39.cloud.phx3.gdg
+cluster_formation.classic_config.nodes.4 = rabbit@rmq2-39.cloud.phx3.gdg
+cluster_formation.classic_config.nodes.5 = rabbit@rmq3-39.cloud.phx3.gdg
+{% endif %}

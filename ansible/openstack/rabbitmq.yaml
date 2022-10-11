@@ -1,0 +1,56 @@
+#!/usr/bin/env ansible-playbook
+- name: Deploy on RabbitMQ openstack infrastructure
+  vars_files: 
+    - vars.yaml
+  hosts: localhost
+  tasks:
+  - openstack.cloud.server_group:
+      state: present
+      name: rabbitmqservers
+      policies:
+        - anti-affinity
+    register: "rabbitmqservers"
+  - name: create a security group for rabbitmq
+    os_security_group:
+      name: rabbitmq-sg
+      state: present
+      description: security group for rabbitmq
+  - name: allow port 5671 for rabbitmq-sg
+    os_security_group_rule:
+      security_group: rabbitmq-sg
+      protocol: tcp
+      port_range_min: 5671
+      port_range_max: 5671
+      remote_ip_prefix: 0.0.0.0/0
+  - name: allow port 5672 for rabbitmq-sg
+    os_security_group_rule:
+      security_group: rabbitmq-sg
+      protocol: tcp
+      port_range_min: 5672
+      port_range_max: 5672
+      remote_ip_prefix: 0.0.0.0/0
+  - name: allow port 15672 for rabbitmq-sg
+    os_security_group_rule:
+      security_group: rabbitmq-sg
+      protocol: tcp
+      port_range_min: 15672
+      port_range_max: 15672
+      remote_ip_prefix: 0.0.0.0/0
+  - name: Deploy server instances
+    os_server:
+      state: present
+      flavor: "{{ item.flavor }}"
+      name: "{{ openstack[env]['prefix'] }}rmq{{ item.name }}"
+      image: almalinux8
+      network: prd-public
+      security_groups: ["default", "rabbitmq-sg"]
+      wait: yes
+      availability_zone: nova
+      auto_ip: no
+      userdata: "{{ userdata }}"
+      scheduler_hints:
+        group: "{{ lookup('vars', item.zonename).id}}"
+      meta:
+        zone: "{{ item.zonename }}"
+        group: rabbitmq
+    with_items: "{{ openstack[env]['rabbitmq']['nodes'] }}"

@@ -2,6 +2,6 @@
 
 [{{item}}]
 {%   for entry in groups[item] %}
-{{ entry }}
+{{ entry }} ansible_host={{hostvars[entry].ansible_host}}
 {%   endfor %}
 {% endfor %}

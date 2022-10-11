@@ -21,3 +21,11 @@ k3s:
     ncm_hosts:
       k3sserver: proxy.dcu-k8s.phx3.int.dev-godaddy.com
       k3sagent: ingress.dcu-k8s.phx3.int.dev-godaddy.com
+
+rabbitmq:
+  dev:
+    domain: dev-gdcorp.tools
+    ca: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('chain')}}"
+    cert: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('crt')}}"
+    key: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('key')}}"
+  cookie: "{{ lookup('amazon.aws.aws_secret', '/Secrets/rmq-cookie', bypath=true)['/Secrets/rmq-cookie'] | from_json | json_query(env)}}"

@@ -7,11 +7,15 @@
 - import_playbook: openstack/k3s.yaml
   tags:
     - k3s
+- import_playbook: openstack/rabbitmq.yaml
+  tags:
+    - rabbitmq
 
 - import_playbook: openstack/inventory.yaml
   tags:
     - mongo
     - k3s
+    - rabbitmq
 
 - import_playbook: services/mongo.yaml
   when: env == "dev"
@@ -21,3 +25,7 @@
 - import_playbook: services/k3s.yaml
   tags:
     - k3s
+
+- import_playbook: services/rabbitmq.yaml
+  tags:
+    - rabbitmq

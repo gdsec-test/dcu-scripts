@@ -1,0 +1,5 @@
+# This is used for etcd clustering so the appropriate hostname is reported.
+# Removing this would result in hosts that cannot peer connect e.g.
+# rabbit@rmq1 (won't resolve) vs. rabbit@rmq1.cloud.phx3.gdg (resolves)
+USE_LONGNAME=true
+RABBITMQ_NODENAME=rabbit@node{{ inventory_hostname[10:13] }}.rmq.cset.int.{{ rabbitmq[env].domain }}

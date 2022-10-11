@@ -12,8 +12,9 @@
       with_items: "{{ result.openstack_servers }}"
     - name: add hosts to inventory
       add_host:
-        name: "{{ item.private_v4 }}"
-        groups: 
+        name: "{{ item.metadata.os_fqdn }}"
+        ansible_host: '{{ item.private_v4 }}'
+        groups:
           - "{{ item.metadata.group }}"
           - "{{ item.metadata.zone }}"
       with_items: "{{ result.openstack_servers }}"

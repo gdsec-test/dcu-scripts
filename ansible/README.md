@@ -18,8 +18,9 @@ ansible-playbook oncall/k3s-agents.yaml -e "env=<env name>" -i inventory/<env na
 
 ## Github Action Usage
 TBD
+## K3s
 
-## Bootstrapping K3s
+### Bootstrapping K3s
 Before configuring any K3s nodes you must first have the MySQL database brought up to the latest version. The K3s cluster bootstrapping is semi-stateful. You need to control the VM startup in a particular order to ensure there isn't a race condition for cluster initialization. Run the playbooks in this order;
 
 ```sh
@@ -32,15 +33,64 @@ ansible-playbook oncall/k3s-agents.yaml -e "env=dev" -i inventory/dev.yaml
 ```
 You will also need to update your NFS shares per the documentation in `services/roles/k3s/manifests/nfs/README.md`.
 
-## Updating K3s Manifests in the cluster
+### Updating K3s Manifests in the cluster
 The Kubernetes cluster manifests are built from kustomize templates at playbook run time and loaded to the cluster. The K3s server process will detect the change to the manifest and apply the new state to the cluster.
 
 ```sh
 ansible-playbook services/k3s.yaml -e "env=dev" --tags "k3s" -i inventory/dev.yaml
 ```
 
-## Kubernetes cluster access.
+### Kubernetes cluster access.
 Retrieve the certs from `/KeePass/K8s/dev-ng-client.crt` and `/KeePass/K8s/dev-ng-client.key`. Save to your ~/.kube/ folder. You can then run; `kubectl config set-cluster dev-admin-ng --server=https://10.37.81.90:6443 --certificate-authority=~/.kube/dev-admin-ng-root.crt`. You will need to create the root ca via `echo "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJlRENDQVIyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQWpNU0V3SHdZRFZRUUREQmhyTTNNdGMyVnkKZG1WeUxXTmhRREUyTmpNM05qRXpPRGN3SGhjTk1qSXdPVEl4TVRFMU5qSTNXaGNOTXpJd09URTRNVEUxTmpJMwpXakFqTVNFd0h3WURWUVFEREJock0zTXRjMlZ5ZG1WeUxXTmhRREUyTmpNM05qRXpPRGN3V1RBVEJnY3Foa2pPClBRSUJCZ2dxaGtqT1BRTUJCd05DQUFTNGtwaHdaVklEVjJPM2Q3MU41aFhIVmxJRGdHT0tYS0NxaDIyY1N6eksKOHdrcDEwYTBtUHBzcURHSkZuZ3BxTFppa2hMWjR5blJSWU1iWmlydUcrb0JvMEl3UURBT0JnTlZIUThCQWY4RQpCQU1DQXFRd0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBZEJnTlZIUTRFRmdRVW9kSjN1eUxjTU1GM3F6WUNSNytGCjZSVWxJNXd3Q2dZSUtvWkl6ajBFQXdJRFNRQXdSZ0loQUpwQmJrOVZJY1RRcGNKVkVQK1lGbUZzOC90WkxwQVoKbXp5WTFwaTdpMTkrQWlFQXRjTXY4OEYrSjAzS2VTM3NMRW5nOVVhTkZmYktwRGE3cFViU1NpS1RLK2M9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K" | base64 -d > ~/.kube/dev-admin-ng-root.crt`. Create your user with `kubectl config set-credentials dev-admin-ng --client-certificate=~/.kube/dev-ng-client.crt --client-key=~/.kube/dev-ng-client.key`. Create needed contexts with `kubectl config set-context NAME --cluster=dev-admin-ng --user=dev-admin-ng --namespace=abuse-api-dev` and `kubectl config set-context NAME --cluster=dev-admin-ng --user=dev-admin-ng --namespace=abuse-api-test`.
 
 Same instructions will apply for prod/ote, just switch dev for prod and test for ote.
 
+## RabbitMQ
+
+### Bootstrapping RabbitMQ
+You will need to create some DNS records after running the first palybook.
+Run the playbooks in this order;
+
+```sh
+ansible-playbook openstack/rabbitmq.yaml -e "env=<env name>"
+# Now go to the Cloud UI and create DNS records in the format of;
+# "node001.rmq.cset.int.dev-gdcorp.tools" where the number is the node
+# id.
+ansible-playbook openstack/inventory.yaml -e "env=<env name>"
+ansible-playbook oncall/rabbitmq-init.yaml -e "env=<env name>" -i inventory/<env name>.yaml
+# At this point you will have rabbitmq nodes, but they will not be clustering. On each node you
+# will need to stop the application, join a cluster, and then start the app again. This is done
+# like so;
+#   rabbitmqctl stop_app
+#   rabbitmqctl join_cluster <env>-cset
+#   rabbitmqctl start_app
+# Example of running one of these commands with Ansible.
+#   ansible rabbitmq -i inventory/<env name>.yaml -a "rabbitmqctl stop_app"
+# If you have an existing cluster, login to the web UI to check the name. Otherwise pick a node
+# for the initial cluster name and use that one.
+
+# if creating a new cluster you will want to install the base config using this command.
+ansible-playbook oncall/rabbitmq-bootstrap.yaml -e "env=<env name>" -i inventory/<env name>.yaml
+```
+
+### Removing old RMQ nodes
+To remove a RabbitMQ node, you first must ensure all queues on that node are on other nodes. You can do this by running;
+```sh
+sudo rabbitmq-queues add_member --vhost "<vhost name>" "<queue name>" "<new node name>"
+```
+You can then delete the node from that queue.
+```sh
+sudo rabbitmq-queues delete_member --vhost "<vhost name>" "<queue name>" "<new node name>"
+```
+You can verify the changes with;
+```sh
+sudo rabbitmq-queues quorum_status --vhost "<vhost name>" "<queue name>"
+```
+Once you have done these steps for all queues to be moved off of the node, you need to stop the application on the node.
+```sh
+sudo rabbitmqctl stop_app
+```
+You then need to login to another node to remove the node from the cluster.
+```sh
+sudo rabbitmqctl forget_cluster_node <node name>
+```
