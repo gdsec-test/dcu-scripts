@@ -8,6 +8,7 @@ set_github_stats() {
         pushd $(basename $repo) || exit 1
         mkdir -p .github/
         cp $SCRIPT_DIR/pull_request_template.md .github/pull_request_template.md
+        cp $SCRIPT_DIR/../CODEOWNERS CODEOWNERS
         # If there are changes in the repo create a PR.
         if [[ `git status --porcelain | wc -l` -gt 0 ]]; 
         then
