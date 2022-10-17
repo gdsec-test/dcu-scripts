@@ -10,5 +10,5 @@ You can access the connection string in the CICD account secret `/KeePass/mysql/
 ## Configuring Users
 You can create a user via the dbmate configuration, but we can not store the password in plain text. To unlock and configure the password, you can use this command.
 ```sh
-mysql -u sau_cset --password -h 10.32.170.9 -P 3306 -D mysql -e "ALTER USER rancher IDENTIFIED BY '<changeme>' ACCOUNT UNLOCK;"
+mysql -u sau_cset --password -h 10.32.154.155 -P 3306 -D mysql -e "ALTER USER rancher IDENTIFIED BY '<changeme>' ACCOUNT UNLOCK;"
 ```
