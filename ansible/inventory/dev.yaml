@@ -1,5 +1,6 @@
 
 [all]
+p3dlbastion01.cloud.phx3.gdg ansible_host=10.36.43.214
 p3dlrmqsvr003.cloud.phx3.gdg ansible_host=10.36.40.37
 p3dlrmqsvr002.cloud.phx3.gdg ansible_host=10.36.40.139
 p3dlrmqsvr001.cloud.phx3.gdg ansible_host=10.36.40.57
@@ -15,6 +16,9 @@ p3dlk3ssvr001.cloud.phx3.gdg ansible_host=10.36.40.13
 p3dlmongo01.cloud.phx3.gdg ansible_host=10.36.41.199
 
 [ungrouped]
+
+[bastion]
+p3dlbastion01.cloud.phx3.gdg ansible_host=10.36.43.214
 
 [rabbitmq]
 p3dlrmqsvr003.cloud.phx3.gdg ansible_host=10.36.40.37

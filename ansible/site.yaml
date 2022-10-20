@@ -4,6 +4,11 @@
   tags:
     - mongo
 
+- import_playbook: openstack/bastion.yaml
+  when: env == "dev"
+  tags:
+    - bastion
+
 - import_playbook: openstack/k3s.yaml
   tags:
     - k3s
@@ -16,6 +21,7 @@
     - mongo
     - k3s
     - rabbitmq
+    - bastion
 
 - import_playbook: services/mongo.yaml
   when: env == "dev"

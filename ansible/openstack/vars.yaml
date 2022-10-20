@@ -1,5 +1,7 @@
 userdata: |
         #cloud-config
+        runcmd:
+          - godaddy-ad-groups-sudo admins_infosec-dcu
         users:
           - name: {{ lookup('amazon.aws.aws_secret', '/Secrets/openstack/creds', bypath=true)['/Secrets/openstack/creds'] | from_json | json_query('user')}}
             shell: /bin/bash
