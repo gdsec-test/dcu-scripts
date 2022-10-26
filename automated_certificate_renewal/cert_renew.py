@@ -532,10 +532,13 @@ def process_cert_renewal(body: dict, user_input_required=False):
     print('The following certificate and secret(s) will get renewed under respective context')
     print('Certificate_Name \t Secret_Name \t Context')
 
-    for secret_name in cert_secret_mapping.get('secret', None):
-        for context in cert_secret_mapping['secret'][secret_name]:
-            context = '{}-dcu'.format(context)
-            print('{} \t {} \t {} \n'.format(body[KEY_COMMON_NAME], secret_name, context))
+    # Note: only kubernetes certs have secret maps, so skip this if it is None
+    secret_map = cert_secret_mapping.get('secret', None)
+    if secret_map is not None:
+        for secret_name in secret_map:
+            for context in cert_secret_mapping['secret'][secret_name]:
+                context = '{}-dcu'.format(context)
+                print('{} \t {} \t {} \n'.format(body[KEY_COMMON_NAME], secret_name, context))
 
     if user_input_required:
         user_input = input('Do you wish to continue (Y/N)? ').strip()
@@ -599,27 +602,30 @@ def process_cert_renewal(body: dict, user_input_required=False):
             exit(1)
 
     # Step 10: Loop over all cert_secret_mappings
-    for secret_name in cert_secret_mapping.get('secret', None):
-        for context in cert_secret_mapping['secret'][secret_name]:
-            context = '{}-dcu'.format(context)
-            # Step 10.1: Back up the old secret in kubernetes
-            backup_old_secret(context, secret_name)
+    # Note: only kubernetes certs have secret maps, so skip this if it is None
+    secret_map = cert_secret_mapping.get('secret', None)
+    if secret_map is not None:
+        for secret_name in secret_map:
+            for context in cert_secret_mapping['secret'][secret_name]:
+                context = '{}-dcu'.format(context)
+                # Step 10.1: Back up the old secret in kubernetes
+                backup_old_secret(context, secret_name)
 
-            # Step 10.2: Delete old secret from the kubernetes
-            delete_old_secret(context, secret_name)
+                # Step 10.2: Delete old secret from the kubernetes
+                delete_old_secret(context, secret_name)
 
-            # Step 10.3: Create new secret in kubernetes
-            create_new_secret(context, secret_name)
+                # Step 10.3: Create new secret in kubernetes
+                create_new_secret(context, secret_name)
 
-            if context == 'prod-dcu':
-                if secret_name not in PROD_SECRETS_LIST:
-                    PROD_SECRETS_LIST.append(secret_name)
-            elif context == 'ote-dcu':
-                if secret_name not in OTE_SECRETS_LIST:
-                    OTE_SECRETS_LIST.append(secret_name)
-            elif context == 'dev-dcu':
-                if secret_name not in DEV_SECRETS_LIST:
-                    DEV_SECRETS_LIST.append(secret_name)
+                if context == 'prod-dcu':
+                    if secret_name not in PROD_SECRETS_LIST:
+                        PROD_SECRETS_LIST.append(secret_name)
+                elif context == 'ote-dcu':
+                    if secret_name not in OTE_SECRETS_LIST:
+                        OTE_SECRETS_LIST.append(secret_name)
+                elif context == 'dev-dcu':
+                    if secret_name not in DEV_SECRETS_LIST:
+                        DEV_SECRETS_LIST.append(secret_name)
 
     if 'salt' in cert_secret_mapping:
         if cert_secret_mapping['salt'] not in SALT_LIST:
