@@ -13,9 +13,10 @@ on:
         description: Select tags
         required: true
         options:
-        - k3s
         - mongo
-jobs:
+        - k3s
+        - rabbitmq
+        - bastion
   deploy:
     concurrency: cset-ansible
     runs-on: [csetubuntu]
@@ -32,7 +33,7 @@ jobs:
     - name: Get dc1 Service account credentials
       id: dc1
       run: |
-        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/svc-accounts/dc1' --query 'SecretString' --output text)
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/svc-accounts/dc1-openstack' --query 'SecretString' --output text)
         DC1_USERNAME=$(echo ${SECRET} | jq -r .username)
         DC1_PASSWORD=$(echo ${SECRET} | jq -r .password)
         echo "::set-output name=dc1-user::${DC1_USERNAME}"
