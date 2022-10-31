@@ -17,6 +17,7 @@ on:
         - k3s
         - rabbitmq
         - bastion
+jobs:
   deploy:
     concurrency: cset-ansible
     runs-on: [csetubuntu]
