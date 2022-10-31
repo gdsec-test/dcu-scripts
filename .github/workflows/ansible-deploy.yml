@@ -52,6 +52,7 @@ jobs:
         OS_USERNAME: ${{ steps.dc1.outputs.dc1-user }}
         OS_PASSWORD: ${{ steps.dc1.outputs.dc1-password }}
         OS_IDENTITY_API_VERSION: "3"
+        AWS_DEFAULT_REGION: us-west-2 
       run: |
         cd ansible
         ansible-playbook site.yaml -e "env=${{ github.event.inputs.env }}" --tags "${{ github.event.inputs.tag }}"
