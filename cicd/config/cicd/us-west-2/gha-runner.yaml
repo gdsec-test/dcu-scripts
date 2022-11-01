@@ -18,3 +18,4 @@ parameters:
   RunnerAMIId: /GoldenAMI/gd-ubuntu20.04-runner/latest
   DeviceName: /dev/sda1
   UseCICDRole: "true"
+  CustomUserData: echo "$(dig +short phx-prd.openstack.int.gd3p.tools | tail -n1) phx.openstack.int.gd3p.tools" | tee -a /etc/hosts
