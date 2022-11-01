@@ -53,7 +53,7 @@ jobs:
         OS_PASSWORD: ${{ steps.dc1.outputs.dc1-password }}
         OS_IDENTITY_API_VERSION: "3"
         AWS_DEFAULT_REGION: us-west-2 
-        OS_NOVA_URL: https://phx-prd.openstack.int.gd3p.tools:8774
+        NOVA_URL: https://phx-prd.openstack.int.gd3p.tools:8774
       run: |
         cd ansible
         ansible-playbook site.yaml -e "env=${{ github.event.inputs.env }}" --tags "${{ github.event.inputs.tag }}"
