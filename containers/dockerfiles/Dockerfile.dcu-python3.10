@@ -1,5 +1,4 @@
 FROM 764525110978.dkr.ecr.us-west-2.amazonaws.com/debian:11.5
-# ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
 
 # http://bugs.python.org/issue19846
@@ -7,7 +6,6 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 USER root
 
-# runtime dependencies
 RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
