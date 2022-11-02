@@ -15,7 +15,7 @@ metricbeat.autodiscover:
       templates:
         - config:
             - module: kubernetes
-              hosts: ["prom1-kube-state-metrics:8080"]
+              hosts: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
               period: 30s
               add_metadata: true
               metricsets:

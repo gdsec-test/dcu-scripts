@@ -1,0 +1,4 @@
+resources:
+- ./permissions.yml
+- ./deployment.yml
+- ./service.yml

@@ -1,5 +1,6 @@
 bases:
 - ../fluentd/dev/
+- ../kube-state-metrics/dev/
 - ../metricbeat-cloud/dev/
 - ../nfs/dev
 - ../ingress-nginx/base
