@@ -24,3 +24,7 @@ dcu-python3.7:
 .PHONY: python3.8
 dcu-python3.8:
 	$(call build_docker_base,dockerfiles/Dockerfile.dcu-python3.8,dcu-python3.8)
+
+.PHONY: python3.10
+dcu-python3.10:
+	$(call build_docker_base,dockerfiles/Dockerfile.dcu-python3.10,dcu-python3.10)
