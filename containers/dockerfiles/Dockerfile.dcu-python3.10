@@ -1,5 +1,6 @@
 FROM 764525110978.dkr.ecr.us-west-2.amazonaws.com/debian:11.5
 ENV PATH /usr/local/bin:$PATH
+# Bump the MD5 sum on Wed Nov 2 12:10:21 CDT 2022
 
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
