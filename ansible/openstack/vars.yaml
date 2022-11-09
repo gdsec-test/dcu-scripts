@@ -28,6 +28,7 @@ openstack:
         - { zonename: k3sagent2, flavor: c4.r8.d100, k3srole: agent, name: "agt004"}
         - { zonename: k3sagent2, flavor: c4.r8.d100, k3srole: agent, name: "agt005"}
         - { zonename: k3sagent2, flavor: c4.r8.d100, k3srole: agent, name: "agt006"}
+        - { zonename: k3sagent2, flavor: c8.r24.d250, k3srole: agent, name: "agt007"}
     rabbitmq:
       nodes:
         - { zonename: rabbitmqservers, flavor: c4.r8.d100, name: "svr001"}
