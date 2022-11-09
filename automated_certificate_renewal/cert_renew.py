@@ -437,7 +437,8 @@ def expiring_certificates(body: dict) -> None:
         exit(1)
 
     expiring_certs = get_expiring_certificates_list(expires_within_days, body)
-    slack_message(f"Certificates expiring within {expires_within_days} days:\n```{expiring_certs}```")
+    if expiring_certs:
+        slack_message(f"Certificates expiring within {expires_within_days} days:\n```{expiring_certs}```")
 
 
 def find_pods_to_roll(secrets: list, kube_env: str) -> list:
