@@ -137,3 +137,60 @@
   modprobe:
     name: wireguard
     state: present
+
+- name: Use k3s bundled iptables
+  community.general.alternatives:
+    name: iptables
+    path: /var/lib/rancher/k3s/data/current/bin/aux/iptables-nft
+    link: /usr/local/sbin/iptables
+    state: present
+    priority: 99
+- name: Use k3s bundled ip6tables
+  community.general.alternatives:
+    name: ip6tables
+    path: /var/lib/rancher/k3s/data/current/bin/aux/ip6tables-nft
+    link: /usr/local/sbin/ip6tables
+    state: present
+    priority: 99
+- name: Use k3s bundled xtables-nft-multi
+  community.general.alternatives:
+    name: xtables-nft-multi
+    path: /var/lib/rancher/k3s/data/current/bin/aux/xtables-nft-multi
+    link: /usr/local/sbin/xtables-nft-multi
+    state: present
+    priority: 99
+- name: Use k3s bundled iptables-apply
+  community.general.alternatives:
+    name: iptables-apply
+    path: /var/lib/rancher/k3s/data/current/bin/aux/iptables-apply
+    link: /usr/local/sbin/iptables-apply
+    state: present
+    priority: 99
+- name: Use k3s bundled iptables-restore
+  community.general.alternatives:
+    name: iptables-restore
+    path: /var/lib/rancher/k3s/data/current/bin/aux/iptables-restore
+    link: /usr/local/sbin/iptables-restore
+    state: present
+    priority: 99
+- name: Use k3s bundled iptables-restore-translate
+  community.general.alternatives:
+    name: iptables-restore-translate
+    path: /var/lib/rancher/k3s/data/current/bin/aux/iptables-restore-translate
+    link: /usr/local/sbin/iptables-restore-translate
+    state: present
+    priority: 99
+- name: Use k3s bundled iptables-translate
+  community.general.alternatives:
+    name: iptables-translate
+    path: /var/lib/rancher/k3s/data/current/bin/aux/iptables-translate
+    link: /usr/local/sbin/iptables-translate
+    state: present
+    priority: 99
+- name: Use k3s bundled iptables-save
+  community.general.alternatives:
+    name: iptables-save
+    path: /var/lib/rancher/k3s/data/current/bin/aux/iptables-save
+    link: /usr/local/sbin/iptables-save
+    state: present
+    priority: 99
