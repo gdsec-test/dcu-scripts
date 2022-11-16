@@ -1,41 +1,55 @@
 ---
-- name: Install MongoDB 3.6 Repo
-  ansible.builtin.yum_repository:
-    name: mongodb
-    baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
-    enabled: yes
-    gpgcheck: yes
-    gpgkey: https://www.mongodb.org/static/pgp/server-3.6.asc
-    description: MongoDB 3.6 Repo
-- name: Install MongoDB base package
-  dnf:
-    name: mongodb-org == 3.6.23
-    state: present
-- name: Install MongoDB server
-  dnf:
-    name: mongodb-org-server == 3.6.23
-    state: present
-- name: Install MongoDB shell
-  dnf:
-    name: mongodb-org-shell == 3.6.23
-    state: present
-- name: Install MongoDB mongos
-  dnf:
-    name: mongodb-org-mongos == 3.6.23
-    state: present
-- name: Install MongoDB mongos
-  dnf:
-    name: mongodb-org-tools == 3.6.23
-    state: present
-- name: Version lock mongo packages
-  community.general.dnf_versionlock:
-    name:
-      - mongodb-org
-      - mongodb-org-server
-      - mongodb-org-shell
-      - mongodb-org-mongos
-      - mongodb-org-tools
-    state: present
+# - name: Install MongoDB 3.6 Repo
+#   ansible.builtin.yum_repository:
+#     name: mongodb
+#     baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
+#     enabled: yes
+#     gpgcheck: yes
+#     gpgkey: https://www.mongodb.org/static/pgp/server-3.6.asc
+#     description: MongoDB 3.6 Repo
+# - name: Install MongoDB base package
+#   dnf:
+#     name: mongodb-org == 3.6.23
+#     state: present
+# - name: Install MongoDB server
+#   dnf:
+#     name: mongodb-org-server == 3.6.23
+#     state: present
+# - name: Install MongoDB shell
+#   dnf:
+#     name: mongodb-org-shell == 3.6.23
+#     state: present
+# - name: Install MongoDB mongos
+#   dnf:
+#     name: mongodb-org-mongos == 3.6.23
+#     state: present
+# - name: Install MongoDB mongos
+#   dnf:
+#     name: mongodb-org-tools == 3.6.23
+#     state: present
+# - name: Version lock mongo packages
+#   community.general.dnf_versionlock:
+#     name:
+#       - mongodb-org
+#       - mongodb-org-server
+#       - mongodb-org-shell
+#       - mongodb-org-mongos
+#       - mongodb-org-tools
+#     state: present
+- name: Copy remote ca.crt config
+  template:
+    src: templates/ca.crt.j2
+    dest: /etc/ca.crt
+    owner: root
+    group: root
+    mode: 0660
+- name: Copy remote mongo.crt config
+  template:
+    src: templates/mongo.crt.j2
+    dest: /etc/mongo.crt
+    owner: root
+    group: root
+    mode: 0660
 - name: Copy local only mongod config
   template:
     src: mongod.local.conf.j2
