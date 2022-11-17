@@ -27,10 +27,12 @@ jobs:
       - name: Pull down credentials
         run: |
           export AWS_REGION='us-west-2'
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3dabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3dabuse01-client.crt
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3dabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3dabuse01-client.key
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3pabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.crt
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3pabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.key
+      - name: Configure kubeconfigs
+        run: |
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7.10

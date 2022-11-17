@@ -5,8 +5,8 @@ clusters:
     server: https://proxy.dcu-k8s.phx3.int.godaddy.com:443
   name: prod
 - cluster:
-    certificate-authority: p3dabuse01-ca.pem
-    server: https://proxy.dcu-k8s.phx3.int.dev-godaddy.com:443
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJlRENDQVIyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQWpNU0V3SHdZRFZRUUREQmhyTTNNdGMyVnkKZG1WeUxXTmhRREUyTmpNM05qRXpPRGN3SGhjTk1qSXdPVEl4TVRFMU5qSTNXaGNOTXpJd09URTRNVEUxTmpJMwpXakFqTVNFd0h3WURWUVFEREJock0zTXRjMlZ5ZG1WeUxXTmhRREUyTmpNM05qRXpPRGN3V1RBVEJnY3Foa2pPClBRSUJCZ2dxaGtqT1BRTUJCd05DQUFTNGtwaHdaVklEVjJPM2Q3MU41aFhIVmxJRGdHT0tYS0NxaDIyY1N6eksKOHdrcDEwYTBtUHBzcURHSkZuZ3BxTFppa2hMWjR5blJSWU1iWmlydUcrb0JvMEl3UURBT0JnTlZIUThCQWY4RQpCQU1DQXFRd0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBZEJnTlZIUTRFRmdRVW9kSjN1eUxjTU1GM3F6WUNSNytGCjZSVWxJNXd3Q2dZSUtvWkl6ajBFQXdJRFNRQXdSZ0loQUpwQmJrOVZJY1RRcGNKVkVQK1lGbUZzOC90WkxwQVoKbXp5WTFwaTdpMTkrQWlFQXRjTXY4OEYrSjAzS2VTM3NMRW5nOVVhTkZmYktwRGE3cFViU1NpS1RLK2M9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://10.37.81.90:6443
   name: dev
 contexts:
 - context:
@@ -55,8 +55,8 @@ preferences: {}
 users:
 - name: p3dabuse01-admin
   user:
-    client-certificate: p3dabuse01-client.crt
-    client-key: p3dabuse01-client.key
+    client-certificate: dev-ng-client.crt
+    client-key: dev-ng-client.key
 - name: p3pabuse01-admin
   user:
     client-certificate: p3pabuse01-client.crt
