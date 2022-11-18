@@ -38,13 +38,13 @@
     state: present
 - name: Copy remote chain.crt
   template:
-    src: templates/chain.crt.j2
-    dest: /etc/chain.crt
+    src: templates/mongo-chain.crt.j2
+    dest: /etc/mongo-chain.crt
     owner: root
     group: mongod
     mode: 0660
 - name: Combine root certs and chain crt to make mongo-ca.pem
-  shell: cat /etc/ssl/certs/ca-bundle.crt /etc/chain.crt > /etc/mongo-ca.pem
+  shell: cat /etc/ssl/certs/ca-bundle.crt /etc/mongo-chain.crt > /etc/mongo-ca.pem
 - name: Give permission for ca
   shell: chgrp mongod /etc/mongo-ca.pem
 - name: Copy remote mongo.pem 
