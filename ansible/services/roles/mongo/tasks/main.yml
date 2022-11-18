@@ -36,17 +36,18 @@
       - mongodb-org-mongos
       - mongodb-org-tools
     state: present
-- name: Copy remote chain.crt
-  template:
-    src: templates/mongo-chain.crt.j2
-    dest: /etc/mongo-chain.crt
+- name: Copy bundle to mongo-ca
+  ansible.builtin.copy:
+    src: /etc/ssl/certs/ca-bundle.crt
+    dest: /etc/mongo-ca.pem
     owner: root
     group: mongod
     mode: 0660
-- name: Combine root certs and chain crt to make mongo-ca.pem
-  shell: cat /etc/ssl/certs/ca-bundle.crt /etc/mongo-chain.crt > /etc/mongo-ca.pem
-- name: Give permission for ca
-  shell: chgrp mongod /etc/mongo-ca.pem
+    remote_src: yes
+- name: Insert chain into file
+  ansible.builtin.blockinfile:
+    block: "{{mongo[env].chain}}"
+    path: /etc/mongo-ca.pem
 - name: Copy remote mongo.pem 
   template:
     src: templates/mongo.pem.j2
