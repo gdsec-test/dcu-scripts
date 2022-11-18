@@ -32,5 +32,6 @@ rabbitmq:
 
 mongo:
   dev:
-    ca: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('chain')}}"
-    crt: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('chain')}}"
+    chain: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('chain')}}"
+    key: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('key')}}"
+    crt: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('crt')}}"

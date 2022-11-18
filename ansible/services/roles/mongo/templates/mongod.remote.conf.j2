@@ -19,3 +19,7 @@ security:
 net:
   port: 27017
   bindIp: 127.0.0.1,{{ ansible_default_ipv4['address'] }}
+  ssl:
+    mode: allowSSL
+    PEMKeyFile: /etc/mongo.pem
+    CAFile: /etc/mongo-ca.pem
