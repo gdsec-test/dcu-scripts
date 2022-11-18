@@ -29,3 +29,9 @@ rabbitmq:
     cert: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('crt')}}"
     key: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('key')}}"
   cookie: "{{ lookup('amazon.aws.aws_secret', '/Secrets/rmq-cookie', bypath=true)['/Secrets/rmq-cookie'] | from_json | json_query(env)}}"
+
+mongo:
+  dev:
+    chain: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('chain')}}"
+    key: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('key')}}"
+    crt: "{{ lookup('amazon.aws.aws_secret', 'mongodb.cset.int.dev-gdcorp.tools', bypath=true)['mongodb.cset.int.dev-gdcorp.tools'] | from_json | json_query('crt')}}"

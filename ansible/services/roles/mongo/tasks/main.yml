@@ -36,6 +36,25 @@
       - mongodb-org-mongos
       - mongodb-org-tools
     state: present
+- name: Copy bundle to mongo-ca
+  ansible.builtin.copy:
+    src: /etc/ssl/certs/ca-bundle.crt
+    dest: /etc/mongo-ca.pem
+    owner: root
+    group: mongod
+    mode: 0660
+    remote_src: yes
+- name: Insert chain into file
+  ansible.builtin.blockinfile:
+    block: "{{mongo[env].chain}}"
+    path: /etc/mongo-ca.pem
+- name: Copy remote mongo.pem 
+  template:
+    src: templates/mongo.pem.j2
+    dest: /etc/mongo.pem
+    owner: root
+    group: mongod
+    mode: 0660
 - name: Copy local only mongod config
   template:
     src: mongod.local.conf.j2
