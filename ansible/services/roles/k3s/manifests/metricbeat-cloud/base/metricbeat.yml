@@ -58,7 +58,6 @@ metricbeat.autodiscover:
               metricsets:
                 - status
                 - dbstats
-                - collstats
               hosts: "${MONGODB_URL}"
                 
 # ======================= Elasticsearch template setting =======================

@@ -30,7 +30,7 @@ spec:
           effect: NoSchedule
       containers:
       - name: fluentd
-        image: fluent/fluentd-kubernetes-daemonset:v1.11-debian-kinesis-1
+        image: fluent/fluentd-kubernetes-daemonset:v1.15-debian-kinesis-amd64-1
         resources:
           limits:
             memory: 512Mi
