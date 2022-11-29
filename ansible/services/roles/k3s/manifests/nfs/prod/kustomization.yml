@@ -9,7 +9,7 @@ patches:
       path: "/spec/template/spec/containers/0/env/-"
       value:
         name: NFS_PATH
-        value: /ifs/p3pehqnas02/az-multi/sync03/p3dabuse01-prod
+        value: /ifs/p3pehqnas02/az-multi/sync03/p3pabuse01-prod
   target:
     kind: Deployment
     name: nfs-client-provisioner
@@ -18,7 +18,7 @@ patches:
       path: "/spec/template/spec/volumes/0/nfs"
       value:
         server: p3pehqnas02-nfs.storage.secureserver.net
-        path: /ifs/p3pehqnas02/az-multi/sync03/p3dabuse01-prod
+        path: /ifs/p3pehqnas02/az-multi/sync03/p3pabuse01-prod
   target:
     kind: Deployment
     name: nfs-client-provisioner
