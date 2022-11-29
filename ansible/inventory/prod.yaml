@@ -1,0 +1,58 @@
+
+[all]
+p3plk3sagt012.cloud.phx3.gdg ansible_host=10.36.40.183
+p3plk3sagt009.cloud.phx3.gdg ansible_host=10.36.41.196
+p3plk3sagt006.cloud.phx3.gdg ansible_host=10.36.40.46
+p3plk3sagt003.cloud.phx3.gdg ansible_host=10.36.41.55
+p3plk3ssvr003.cloud.phx3.gdg ansible_host=10.36.40.179
+p3plk3ssvr002.cloud.phx3.gdg ansible_host=10.36.41.108
+p3plk3ssvr001.cloud.phx3.gdg ansible_host=10.36.41.86
+p3plk3sagt011.cloud.phx3.gdg ansible_host=10.36.41.21
+p3plk3sagt010.cloud.phx3.gdg ansible_host=10.36.40.27
+p3plk3sagt008.cloud.phx3.gdg ansible_host=10.36.40.162
+p3plk3sagt007.cloud.phx3.gdg ansible_host=10.36.41.131
+p3plk3sagt005.cloud.phx3.gdg ansible_host=10.36.41.11
+p3plk3sagt004.cloud.phx3.gdg ansible_host=10.36.40.148
+p3plk3sagt002.cloud.phx3.gdg ansible_host=10.36.41.57
+p3plk3sagt001.cloud.phx3.gdg ansible_host=10.36.40.120
+
+[ungrouped]
+
+[k3sagent]
+p3plk3sagt012.cloud.phx3.gdg ansible_host=10.36.40.183
+p3plk3sagt009.cloud.phx3.gdg ansible_host=10.36.41.196
+p3plk3sagt006.cloud.phx3.gdg ansible_host=10.36.40.46
+p3plk3sagt003.cloud.phx3.gdg ansible_host=10.36.41.55
+p3plk3sagt011.cloud.phx3.gdg ansible_host=10.36.41.21
+p3plk3sagt010.cloud.phx3.gdg ansible_host=10.36.40.27
+p3plk3sagt008.cloud.phx3.gdg ansible_host=10.36.40.162
+p3plk3sagt007.cloud.phx3.gdg ansible_host=10.36.41.131
+p3plk3sagt005.cloud.phx3.gdg ansible_host=10.36.41.11
+p3plk3sagt004.cloud.phx3.gdg ansible_host=10.36.40.148
+p3plk3sagt002.cloud.phx3.gdg ansible_host=10.36.41.57
+p3plk3sagt001.cloud.phx3.gdg ansible_host=10.36.40.120
+
+[k3sagent4]
+p3plk3sagt012.cloud.phx3.gdg ansible_host=10.36.40.183
+p3plk3sagt011.cloud.phx3.gdg ansible_host=10.36.41.21
+p3plk3sagt010.cloud.phx3.gdg ansible_host=10.36.40.27
+
+[k3sagent3]
+p3plk3sagt009.cloud.phx3.gdg ansible_host=10.36.41.196
+p3plk3sagt008.cloud.phx3.gdg ansible_host=10.36.40.162
+p3plk3sagt007.cloud.phx3.gdg ansible_host=10.36.41.131
+
+[k3sagent2]
+p3plk3sagt006.cloud.phx3.gdg ansible_host=10.36.40.46
+p3plk3sagt005.cloud.phx3.gdg ansible_host=10.36.41.11
+p3plk3sagt004.cloud.phx3.gdg ansible_host=10.36.40.148
+
+[k3sagent1]
+p3plk3sagt003.cloud.phx3.gdg ansible_host=10.36.41.55
+p3plk3sagt002.cloud.phx3.gdg ansible_host=10.36.41.57
+p3plk3sagt001.cloud.phx3.gdg ansible_host=10.36.40.120
+
+[k3sserver]
+p3plk3ssvr003.cloud.phx3.gdg ansible_host=10.36.40.179
+p3plk3ssvr002.cloud.phx3.gdg ansible_host=10.36.41.108
+p3plk3ssvr001.cloud.phx3.gdg ansible_host=10.36.41.86

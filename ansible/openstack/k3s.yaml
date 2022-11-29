@@ -22,6 +22,20 @@
       policies:
         - anti-affinity
     register: "k3sagent2"
+  - openstack.cloud.server_group:
+      state: present
+      name: k3sagent3
+      policies:
+        - anti-affinity
+    register: "k3sagent3"
+    when: env == "prod"
+  - openstack.cloud.server_group:
+      state: present
+      name: k3sagent4
+      policies:
+        - anti-affinity
+    register: "k3sagent4"
+    when: env == "prod"
   - name: create a security group for K3s
     os_security_group:
       name: k3s-sg

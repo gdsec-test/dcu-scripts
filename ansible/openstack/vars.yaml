@@ -34,3 +34,25 @@ openstack:
         - { zonename: rabbitmqservers, flavor: c4.r8.d100, name: "svr001"}
         - { zonename: rabbitmqservers, flavor: c4.r8.d100, name: "svr002"}
         - { zonename: rabbitmqservers, flavor: c4.r8.d100, name: "svr003"}
+  prod:
+    prefix: p3pl
+    k3s:
+      ncm_ips:
+        k3sagent: "10.37.81.112"
+        k3sserver: "10.37.81.113"
+      nodes:
+        - { zonename: k3sserver, flavor: c8.r16.d200, k3srole: server, name: "svr001"}
+        - { zonename: k3sserver, flavor: c8.r16.d200, k3srole: server, name: "svr002"}
+        - { zonename: k3sserver, flavor: c8.r16.d200, k3srole: server, name: "svr003"}
+        - { zonename: k3sagent1, flavor: c8.r16.d200, k3srole: agent, name: "agt001"}
+        - { zonename: k3sagent1, flavor: c8.r16.d200, k3srole: agent, name: "agt002"}
+        - { zonename: k3sagent1, flavor: c8.r16.d200, k3srole: agent, name: "agt003"}
+        - { zonename: k3sagent2, flavor: c8.r16.d200, k3srole: agent, name: "agt004"}
+        - { zonename: k3sagent2, flavor: c8.r16.d200, k3srole: agent, name: "agt005"}
+        - { zonename: k3sagent2, flavor: c8.r16.d200, k3srole: agent, name: "agt006"}
+        - { zonename: k3sagent3, flavor: c8.r16.d200, k3srole: agent, name: "agt007"}
+        - { zonename: k3sagent3, flavor: c8.r16.d200, k3srole: agent, name: "agt008"}
+        - { zonename: k3sagent3, flavor: c8.r16.d200, k3srole: agent, name: "agt009"}
+        - { zonename: k3sagent4, flavor: c8.r16.d200, k3srole: agent, name: "agt010"}
+        - { zonename: k3sagent4, flavor: c8.r16.d200, k3srole: agent, name: "agt011"}
+        - { zonename: k3sagent4, flavor: c12.r32.d300, k3srole: agent, name: "agt012"}
