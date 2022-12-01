@@ -138,6 +138,9 @@
     name: wireguard
     state: present
 
+- name: Run k3s check-config to bootstrap env
+  shell: k3s check-config
+
 - name: Use k3s bundled iptables
   community.general.alternatives:
     name: iptables

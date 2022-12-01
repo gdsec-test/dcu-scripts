@@ -11,8 +11,8 @@ kernelcare:
     delay: 48h
 
 k3s:
-  mysql_url: "{{ lookup('amazon.aws.aws_secret', '/Secrets/k3s-config', bypath=true)['/Secrets/k3s-config'] | from_json | json_query('url')}}"
-  token: "{{ lookup('amazon.aws.aws_secret', '/Secrets/k3s-config', bypath=true)['/Secrets/k3s-config'] | from_json | json_query('token')}}"
+  mysql_url: "{{ lookup('amazon.aws.aws_secret', '/Secrets/k3s-config', bypath=true)['/Secrets/k3s-config'] | from_json | json_query(env + '.url')}}"
+  token: "{{ lookup('amazon.aws.aws_secret', '/Secrets/k3s-config', bypath=true)['/Secrets/k3s-config'] | from_json | json_query(env + '.token')}}"
   dev:
     version: v1.24.4+k3s1
     ncm_ips:
@@ -21,6 +21,14 @@ k3s:
     ncm_hosts:
       k3sserver: proxy.dcu-k8s.phx3.int.dev-godaddy.com
       k3sagent: ingress.dcu-k8s.phx3.int.dev-godaddy.com
+  prod:
+    version: v1.24.4+k3s1
+    ncm_ips:
+      k3sagent: "10.37.81.112"
+      k3sserver: "10.37.81.113"
+    ncm_hosts:
+      k3sserver: proxy.dcu-k8s.phx3.int.godaddy.com
+      k3sagent: ingress.dcu-k8s.phx3.int.godaddy.com
 
 rabbitmq:
   dev:

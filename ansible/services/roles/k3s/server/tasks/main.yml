@@ -21,6 +21,11 @@
     dest: /usr/local/bin/crictl
     state: link
 
+- name: Creates k3s manifest directory
+  file:
+    path: /var/lib/rancher/k3s/server/manifests
+    state: directory
+
 - name: Install Kubernetes Manifest
   copy:
     src: manifest.yml
