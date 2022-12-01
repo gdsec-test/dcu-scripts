@@ -139,7 +139,7 @@
     state: present
 
 - name: Run k3s check-config to bootstrap env
-  shell: k3s check-config
+  shell: k3s check-config || exit 0
 
 - name: Use k3s bundled iptables
   community.general.alternatives:
