@@ -23,6 +23,8 @@ jobs:
           export AWS_REGION='us-west-2'
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
+          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
       - uses: actions/checkout@v2
       - name: Pull down credentials
         run: |
