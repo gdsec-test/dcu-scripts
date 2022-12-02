@@ -32,7 +32,7 @@ class ProductionAppConfig():
         self.COLLECTION = _config.get('COLLECTION')
         self.DB = _config.get('DB')
         self.DB_USER = _config.get('DB_USER')
-        self.DB_PASS = config.get('DB_PASS')
+        self.DB_PASS = _config.get('DB_PASS')
         self.DB_IP = _config.get('DB_IP')
         mongo_cert = _config.get('MONGO_CLIENT_CERT')
         self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}'
