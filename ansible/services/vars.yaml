@@ -36,6 +36,11 @@ rabbitmq:
     ca: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('chain')}}"
     cert: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('crt')}}"
     key: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.dev-gdcorp.tools', bypath=true)['_.rmq.cset.int.dev-gdcorp.tools'] | from_json | json_query('key')}}"
+  prod:
+    domain: gdcorp.tools
+    ca: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.gdcorp.tools', bypath=true)['_.rmq.cset.int.gdcorp.tools'] | from_json | json_query('chain')}}"
+    cert: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.gdcorp.tools', bypath=true)['_.rmq.cset.int.gdcorp.tools'] | from_json | json_query('crt')}}"
+    key: "{{ lookup('amazon.aws.aws_secret', '_.rmq.cset.int.gdcorp.tools', bypath=true)['_.rmq.cset.int.gdcorp.tools'] | from_json | json_query('key')}}"
   cookie: "{{ lookup('amazon.aws.aws_secret', '/Secrets/rmq-cookie', bypath=true)['/Secrets/rmq-cookie'] | from_json | json_query(env)}}"
 
 mongo:

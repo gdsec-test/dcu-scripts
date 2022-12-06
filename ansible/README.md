@@ -57,6 +57,7 @@ ansible-playbook openstack/rabbitmq.yaml -e "env=<env name>"
 # "node001.rmq.cset.int.dev-gdcorp.tools" where the number is the node
 # id.
 ansible-playbook openstack/inventory.yaml -e "env=<env name>"
+ansible-playbook services/rabbitmq.yaml -e "env=<env name>"
 ansible-playbook oncall/rabbitmq-init.yaml -e "env=<env name>" -i inventory/<env name>.yaml
 # At this point you will have rabbitmq nodes, but they will not be clustering. On each node you
 # will need to stop the application, join a cluster, and then start the app again. This is done

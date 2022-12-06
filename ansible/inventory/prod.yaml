@@ -1,5 +1,8 @@
 
 [all]
+p3plrmqsvr003.cloud.phx3.gdg ansible_host=10.36.40.178
+p3plrmqsvr002.cloud.phx3.gdg ansible_host=10.36.41.43
+p3plrmqsvr001.cloud.phx3.gdg ansible_host=10.36.41.109
 p3plk3sagt012.cloud.phx3.gdg ansible_host=10.36.40.183
 p3plk3sagt009.cloud.phx3.gdg ansible_host=10.36.41.196
 p3plk3sagt006.cloud.phx3.gdg ansible_host=10.36.40.46
@@ -17,6 +20,16 @@ p3plk3sagt002.cloud.phx3.gdg ansible_host=10.36.41.57
 p3plk3sagt001.cloud.phx3.gdg ansible_host=10.36.40.120
 
 [ungrouped]
+
+[rabbitmq]
+p3plrmqsvr003.cloud.phx3.gdg ansible_host=10.36.40.178
+p3plrmqsvr002.cloud.phx3.gdg ansible_host=10.36.41.43
+p3plrmqsvr001.cloud.phx3.gdg ansible_host=10.36.41.109
+
+[rabbitmqservers]
+p3plrmqsvr003.cloud.phx3.gdg ansible_host=10.36.40.178
+p3plrmqsvr002.cloud.phx3.gdg ansible_host=10.36.41.43
+p3plrmqsvr001.cloud.phx3.gdg ansible_host=10.36.41.109
 
 [k3sagent]
 p3plk3sagt012.cloud.phx3.gdg ansible_host=10.36.40.183
