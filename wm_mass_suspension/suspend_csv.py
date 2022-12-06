@@ -11,7 +11,14 @@ class AppConfig():
     def __init__(self, config):
         self.COLLECTION = config.get('COLLECTION')
         self.DB = config.get('DB')
-        self.DBURL = f'mongodb://{config.get("DB_USER")}:{config.get("DB_PASS")}@{config.get("DB_IP")}/?authSource={self.DB}'
+        self.DB_USER = config.get('DB_USER')
+        self.DB_PASS = config.get('DB_PASS')
+        self.DB_IP = config.get('DB_IP')
+        mongo_cert = config.get('MONGO_CLIENT_CERT')
+        self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}'
+        if config.get('SYSENV') == "dev":
+            self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={mongo_cert}'
+            self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={mongo_cert}'
         self.GOCENTRAL_URL = config.get('GOCENTRAL_URL')
         self.GOCENTRAL_SSL_CERT = config.get('GOCENTRAL_SSL_CERT')
         self.GOCENTRAL_SSL_KEY = config.get('GOCENTRAL_SSL_KEY')
