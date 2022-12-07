@@ -92,6 +92,13 @@ processors:
   - add_host_metadata: 
   - add_docker_metadata: 
   - add_kubernetes_metadata: 
+  - drop_event:
+      when:
+        and:
+          - has_fields:
+              - 'error.message'
+          - equals:
+              event.dataset: rabbitmq.queue
 
 # =============================== Elastic Cloud ================================
 cloud.id: ${ELASTIC_DEPLOYMENT}

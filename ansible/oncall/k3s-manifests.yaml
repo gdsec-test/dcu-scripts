@@ -1,0 +1,23 @@
+#!/usr/bin/env ansible-playbook
+- name: Build K8s manifests
+  vars_files: 
+    - vars.yaml
+  hosts: localhost
+  tasks:
+  - name: build kubernetes manifests
+    command: "kustomize build ../services/roles/k3s/manifests/{{ env }}/"
+    register: kustomize
+  - copy:
+      content: "{{ kustomize.stdout }}"
+      dest: ../services/roles/k3s/server/files/manifest.yml
+
+- name: Push the K3s manifests to the server nodes
+  hosts: k3sserver
+  become: yes
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Install Kubernetes Manifest
+      copy:
+        src: ../services/roles/k3s/server/files/manifest.yml
+        dest: /var/lib/rancher/k3s/server/manifests/manifest.yaml

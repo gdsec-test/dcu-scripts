@@ -34,10 +34,10 @@ ansible-playbook oncall/k3s-agents.yaml -e "env=dev" -i inventory/dev.yaml
 You will also need to update your NFS shares per the documentation in `services/roles/k3s/manifests/nfs/README.md`.
 
 ### Updating K3s Manifests in the cluster
-The Kubernetes cluster manifests are built from kustomize templates at playbook run time and loaded to the cluster. The K3s server process will detect the change to the manifest and apply the new state to the cluster.
+The Kubernetes cluster manifests are built from kustomize templates at playbook run time and loaded to the cluster. The K3s server process will detect the change to the manifest and apply the new state to the cluster. To just push a manifset update, run the command below(changing the env for your environment).
 
 ```sh
-ansible-playbook services/k3s.yaml -e "env=dev" --tags "k3s" -i inventory/dev.yaml
+ansible-playbook oncall/k3s-manifests.yaml -e "env=dev" --tags "k3s" -i inventory/dev.yaml
 ```
 
 ### Kubernetes cluster access.
