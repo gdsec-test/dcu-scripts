@@ -37,7 +37,7 @@ You will also need to update your NFS shares per the documentation in `services/
 The Kubernetes cluster manifests are built from kustomize templates at playbook run time and loaded to the cluster. The K3s server process will detect the change to the manifest and apply the new state to the cluster. To just push a manifset update, run the command below(changing the env for your environment).
 
 ```sh
-ansible-playbook oncall/k3s-manifests.yaml -e "env=dev" --tags "k3s" -i inventory/dev.yaml
+ansible-playbook oncall/k3s-manifests.yaml -e "env=dev" -i inventory/dev.yaml
 ```
 
 ### Kubernetes cluster access.
@@ -57,7 +57,7 @@ ansible-playbook openstack/rabbitmq.yaml -e "env=<env name>"
 # "node001.rmq.cset.int.dev-gdcorp.tools" where the number is the node
 # id.
 ansible-playbook openstack/inventory.yaml -e "env=<env name>"
-ansible-playbook services/rabbitmq.yaml -e "env=<env name>"
+ansible-playbook services/rabbitmq.yaml -e "env=<env name>" -i inventory/<env name>.yaml
 ansible-playbook oncall/rabbitmq-init.yaml -e "env=<env name>" -i inventory/<env name>.yaml
 # At this point you will have rabbitmq nodes, but they will not be clustering. On each node you
 # will need to stop the application, join a cluster, and then start the app again. This is done

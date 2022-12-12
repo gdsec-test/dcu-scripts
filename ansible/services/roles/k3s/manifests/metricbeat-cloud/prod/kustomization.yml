@@ -5,6 +5,6 @@ namespace: monitoring
 
 configMapGenerator:
 - literals:
-  - RABBITMQ_HOSTS=rmq1-39.cloud.phx3.gdg:15672,rmq2-39.cloud.phx3.gdg:15672,rmq3-39.cloud.phx3.gdg:15672
+  - RABBITMQ_HOSTS=node001.rmq.cset.int.gdcorp.tools:15672,node002.rmq.cset.int.gdcorp.tools:15672,node003.rmq.cset.int.gdcorp.tools:15672
   - POSTGRESQL_HOSTS=postgres://10.37.109.235:5432?sslmode=disable
   name: env-specific-values
