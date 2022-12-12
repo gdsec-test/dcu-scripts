@@ -66,7 +66,7 @@ ansible-playbook oncall/rabbitmq-init.yaml -e "env=<env name>" -i inventory/<env
 #   rabbitmqctl join_cluster <env>-cset
 #   rabbitmqctl start_app
 # Example of running one of these commands with Ansible.
-#   ansible rabbitmq -i inventory/<env name>.yaml -a "rabbitmqctl stop_app"
+#   ansible p3dlrmqsvr003.cloud.phx3.gdg --extra-vars "@oncall/vars.yaml" -i inventory/<env name>.yaml -a "systemctl status rabbitmq-server"
 # If you have an existing cluster, login to the web UI to check the name. Otherwise pick a node
 # for the initial cluster name and use that one.
 
