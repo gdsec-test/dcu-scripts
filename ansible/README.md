@@ -81,7 +81,7 @@ sudo rabbitmq-queues add_member --vhost "<vhost name>" "<queue name>" "<new node
 ```
 You can then delete the node from that queue.
 ```sh
-sudo rabbitmq-queues delete_member --vhost "<vhost name>" "<queue name>" "<new node name>"
+sudo rabbitmq-queues delete_member --vhost "<vhost name>" "<queue name>" "<old node name>"
 ```
 You can verify the changes with;
 ```sh
