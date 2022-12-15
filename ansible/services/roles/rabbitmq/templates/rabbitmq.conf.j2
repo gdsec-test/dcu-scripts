@@ -24,8 +24,3 @@ cluster_formation.peer_discovery_backend = classic_config
 {% for host in hosts %}
 cluster_formation.classic_config.nodes.{{ loop.index }} = rabbit@node{{ host[10:13] }}.rmq.cset.int.{{ rabbitmq[env].domain }}
 {% endfor %}
-{% if env == 'prod' %}
-cluster_formation.classic_config.nodes.3 = rabbit@rmq1-39.cloud.phx3.gdg
-cluster_formation.classic_config.nodes.4 = rabbit@rmq2-39.cloud.phx3.gdg
-cluster_formation.classic_config.nodes.5 = rabbit@rmq3-39.cloud.phx3.gdg
-{% endif %}
