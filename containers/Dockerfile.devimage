@@ -33,7 +33,9 @@ RUN bash -c "source ~/.asdf/asdf.sh && asdf plugin add python"
 RUN bash -c "source ~/.asdf/asdf.sh && asdf install nodejs 14.17.5"
 RUN apt-get install -y zlib1g-dev libbluetooth-dev libbz2-dev libc6-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev tk-dev uuid-dev xz-utils zlib1g-dev
 RUN bash -c "source ~/.asdf/asdf.sh && asdf install python 3.7.10"
-RUN bash -c "source ~/.asdf/asdf.sh && asdf global python 3.7.10"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf install python 3.9.16"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf install python 3.11.1"
+RUN bash -c "source ~/.asdf/asdf.sh && asdf global python 3.11.1"
 RUN bash -c "source ~/.asdf/asdf.sh && asdf global nodejs 14.17.5"
 RUN bash -c "source ~/.asdf/asdf.sh && pip install poetry"
 # pipx tools
