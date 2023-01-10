@@ -35,9 +35,7 @@ class ProductionAppConfig():
         self.DB_PASS = _config.get('DB_PASS')
         self.DB_IP = _config.get('DB_IP')
         mongo_cert = _config.get('MONGO_CLIENT_CERT')
-        self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}'
-        if _config.get('SYSENV') == "dev":
-            self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={mongo_cert}'
+        self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={mongo_cert}'
 
 
 def _get_value(_question):
