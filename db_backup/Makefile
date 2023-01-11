@@ -9,4 +9,4 @@ image/push: image/build
 
 k8s/deploy:
 	$(eval DIGEST:=$(shell docker inspect --format='{{index .RepoDigests 0}}' $(DOCKER_IMAGE):prod))
-	kubectl --context=prod-admin apply --dry-run=server -o yaml -f k8s/ | sed 's#REPLACE_WITH_GIT_COMMIT#$(DIGEST)#' | kubectl --context=prod-admin apply -f -
+	kubectl --context=prod-cset apply --dry-run=server -o yaml -f k8s/ | sed 's#REPLACE_WITH_GIT_COMMIT#$(DIGEST)#' | kubectl --context=prod-cset apply -f -

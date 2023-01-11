@@ -498,7 +498,7 @@ def get_user_credentials() -> None:
 
 def kubernetes_secrets_search(kube_env: str) -> list:
     p = r"""'{range .items[*]}{.metadata.name}{","}{range .spec.volumes[*]}{.secret.secretName}{","}{end}{"\n"}{end}'"""
-    kube_script = [f"kubectl --context={kube_env}-dcu get pods -o=jsonpath={p}"]
+    kube_script = [f"kubectl --context={kube_env}-cset get pods -o=jsonpath={p}"]
 
     try:
         results = execute(kube_script)
@@ -608,7 +608,7 @@ def process_cert_renewal(body: dict, user_input_required=False):
     if secret_map is not None:
         for secret_name in secret_map:
             for context in cert_secret_mapping['secret'][secret_name]:
-                context = '{}-dcu'.format(context)
+                context = '{}-cset'.format(context)
                 # Step 10.1: Back up the old secret in kubernetes
                 backup_old_secret(context, secret_name)
 
@@ -618,13 +618,13 @@ def process_cert_renewal(body: dict, user_input_required=False):
                 # Step 10.3: Create new secret in kubernetes
                 create_new_secret(context, secret_name)
 
-                if context == 'prod-dcu':
+                if context == 'prod-cset':
                     if secret_name not in PROD_SECRETS_LIST:
                         PROD_SECRETS_LIST.append(secret_name)
-                elif context == 'ote-dcu':
+                elif context == 'ote-cset':
                     if secret_name not in OTE_SECRETS_LIST:
                         OTE_SECRETS_LIST.append(secret_name)
-                elif context == 'dev-dcu':
+                elif context == 'dev-cset':
                     if secret_name not in DEV_SECRETS_LIST:
                         DEV_SECRETS_LIST.append(secret_name)
 
