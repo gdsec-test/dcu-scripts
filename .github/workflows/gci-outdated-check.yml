@@ -39,6 +39,6 @@ jobs:
       - name: Check and rebuild images
         run: cd containers && ./build.sh
         env:
-          SLACK_CHANNEL: customer_protection
+          SLACK_CHANNEL: ise-oncall-notifications
           SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}
           GITHUB_TOKEN: ${{ steps.secrets.outputs.pat-cloud }}

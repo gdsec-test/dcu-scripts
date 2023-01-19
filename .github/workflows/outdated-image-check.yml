@@ -51,5 +51,5 @@ jobs:
       - name: Results
         run: chmod +x ${GITHUB_WORKSPACE}/.github/check_image_updates.sh && ${GITHUB_WORKSPACE}/.github/check_image_updates.sh
         env:
-          SLACK_CHANNEL: customer_protection
+          SLACK_CHANNEL: ise-oncall-notifications
           SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}

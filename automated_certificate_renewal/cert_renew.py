@@ -665,7 +665,7 @@ def read_mapping_file():
 
 
 def slack_message(message: str) -> None:
-    channel = '#customer_protection'
+    channel = '#ise-oncall-notifications'
     slack_user = 'Cert Renewal Script'
 
     if SLACK_WEBHOOK_URL:

@@ -38,13 +38,13 @@ jobs:
         if: github.event.schedule == '25 14 * * MON-FRI'
         run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_stats.sh -c
         env:
-          SLACK_CHANNEL: customer_protection
+          SLACK_CHANNEL: ise-oncall-notifications
           SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}
           GITHUB_TOKEN: ${{ steps.secrets.outputs.pat-cloud }}
       - name: Hourly Stats
         if: github.event.schedule == '25 15-23 * * MON-FRI' || github.event.schedule != '25 14 * * MON-FRI'
         run: chmod +x ${GITHUB_WORKSPACE}/.github/github_stats.sh && PATH="$PATH:~/bin" ${GITHUB_WORKSPACE}/.github/github_stats.sh -d
         env:
-          SLACK_CHANNEL: customer_protection
+          SLACK_CHANNEL: ise-oncall-notifications
           SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}
           GITHUB_TOKEN: ${{ steps.secrets.outputs.pat-cloud }}
