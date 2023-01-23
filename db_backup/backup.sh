@@ -10,9 +10,8 @@ COLLECTIONS_TO_DUMP=(`echo $COLLECTIONS`)
 for collection in ${COLLECTIONS_TO_DUMP[@]}; do
     mongodump --host=10.22.9.209 --port=27017 --db=$BACKUP_DB -u $USERNAME -p $PASSWORD --collection=$collection -o $BDIR --gzip
     if [ $? -ne 0 ]; then
-   	msg="Backup failed for the $collection collection of $BACKUP_DB database"
-    	echo $msg
-    	/usr/local/sbin/slack $msg
+        echo "Backup failed for the $collection collection of $BACKUP_DB database"
+        /usr/local/sbin/slack "#ise-prod-alerts" "Backup failed for the $collection collection of $BACKUP_DB database"
     fi
 done
 
