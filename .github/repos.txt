@@ -58,3 +58,5 @@ gdcorp-infosec/dcu-malware-notifications
 gdcorp-infosec/dcu-google-csai-worker
 gdcorp-infosec/dcu-journal
 gdcorp-infosec/dcu-categorizer
+gdcorp-infosec/cset-cds
+gdcorp-infosec/cset-auth-proxy

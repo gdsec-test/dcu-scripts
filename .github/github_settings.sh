@@ -6,6 +6,27 @@ set_github_stats() {
     while read repo; do
         gh repo clone $repo
         pushd $(basename $repo) || exit 1
+
+        owner="$(dirname $repo)"
+        name="$(basename $repo)"
+        repositoryId="$(gh api graphql -f query='{repository(owner:"'$owner'",name:"'$name'"){id}}' -q .data.repository.id)"
+        gh api graphql -f query='
+        mutation($repositoryId:ID!,$branch:String!) {
+        createBranchProtectionRule(input: {
+            repositoryId: $repositoryId
+            pattern: $branch
+            requiresApprovingReviews: true
+            requiredApprovingReviewCount: 2
+            requiresConversationResolution: true
+            requiresCodeOwnerReviews: true
+            requiresApprovingReviews: true
+            dismissesStaleReviews: true
+            restrictsPushes: true
+            requiredStatusCheckContexts: ["dodge-tartufo-scan"]
+            requiresStatusChecks:true
+        }) { clientMutationId }
+        }' -f repositoryId="$repositoryId" -f branch="[main,master]*"
+
         mkdir -p .github/
         cp $SCRIPT_DIR/pull_request_template.md .github/pull_request_template.md
         cp $SCRIPT_DIR/../CODEOWNERS CODEOWNERS
