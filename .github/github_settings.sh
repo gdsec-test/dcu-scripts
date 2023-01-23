@@ -10,6 +10,21 @@ set_github_stats() {
         owner="$(dirname $repo)"
         name="$(basename $repo)"
         repositoryId="$(gh api graphql -f query='{repository(owner:"'$owner'",name:"'$name'"){id}}' -q .data.repository.id)"
+        gh api graphql -f query="
+        query {
+            repository(owner: \"$owner\", name: \"$name\") {
+                branchProtectionRules(first:100) {
+                    nodes {
+                        pattern
+                        id
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
+            }
+        }" | jq -r '.data.repository.branchProtectionRules.nodes[].id' | while read line ; do gh api graphql -f query="mutation {deleteBranchProtectionRule(input:{branchProtectionRuleId: \"$line\"}) {clientMutationId}}" ; done
         gh api graphql -f query='
         mutation($repositoryId:ID!,$branch:String!) {
         createBranchProtectionRule(input: {
@@ -24,7 +39,22 @@ set_github_stats() {
             requiredStatusCheckContexts: ["dodge-tartufo-scan"]
             requiresStatusChecks:true
         }) { clientMutationId }
-        }' -f repositoryId="$repositoryId" -f branch="[main,master]*"
+        }' -f repositoryId="$repositoryId" -f branch="main"
+        gh api graphql -f query='
+        mutation($repositoryId:ID!,$branch:String!) {
+        createBranchProtectionRule(input: {
+            repositoryId: $repositoryId
+            pattern: $branch
+            requiredApprovingReviewCount: 2
+            requiresConversationResolution: true
+            requiresCodeOwnerReviews: true
+            requiresApprovingReviews: true
+            dismissesStaleReviews: true
+            restrictsPushes: true
+            requiredStatusCheckContexts: ["dodge-tartufo-scan"]
+            requiresStatusChecks:true
+        }) { clientMutationId }
+        }' -f repositoryId="$repositoryId" -f branch="master"
 
         mkdir -p .github/
         cp $SCRIPT_DIR/pull_request_template.md .github/pull_request_template.md
