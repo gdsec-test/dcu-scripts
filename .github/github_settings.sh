@@ -15,7 +15,6 @@ set_github_stats() {
         createBranchProtectionRule(input: {
             repositoryId: $repositoryId
             pattern: $branch
-            requiresApprovingReviews: true
             requiredApprovingReviewCount: 2
             requiresConversationResolution: true
             requiresCodeOwnerReviews: true
