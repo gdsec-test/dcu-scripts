@@ -9,10 +9,12 @@
       shell: |
         rabbitmqctl add_vhost grandma
         rabbitmqctl add_vhost pdna
+        rabbitmqctl add_vhost opencti
         rabbitmqctl set_policy -p grandma ha-all ".*" '{"ha-mode": "all"}'
         rabbitmqctl set_policy -p grandma ha-all ".*" '{"ha-mode": "exactly", "ha-params": 1}'
         rabbitmqctl add_user 02d1081iywc7A "{{ lookup('amazon.aws.aws_secret', '/KeePass/RabbitMQSharedUserv1', bypath=true)['/KeePass/RabbitMQSharedUserv1'] | from_json | json_query('password')}}"
         rabbitmqctl add_user 02d1081iywc7Av2 "{{ lookup('amazon.aws.aws_secret', '/KeePass/RabbitMQSharedUser', bypath=true)['/KeePass/RabbitMQSharedUser'] | from_json | json_query('password')}}"
+        rabbitmqctl add_user opencti-user "{{ lookup('amazon.aws.aws_secret', '/KeePass/RabbitMQOpencti', bypath=true)['/KeePass/RabbitMQOpencti'] | from_json | json_query('password')}}"
         rabbitmqctl add_user admin "{{ lookup('amazon.aws.aws_secret', '/KeePass/tools/rabbitmq-console', bypath=true)['/KeePass/tools/rabbitmq-console'] | from_json | json_query('password')}}"
         rabbitmqctl set_user_tags admin administrator management
         rabbitmqctl set_permissions -p grandma 02d1081iywc7A ".*" ".*" ".*"
@@ -22,6 +24,7 @@
         rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
         rabbitmqctl set_permissions -p grandma admin ".*" ".*" ".*"
         rabbitmqctl set_permissions -p pdna admin ".*" ".*" ".*"
+        rabbitmqctl set_permissions -p opencti opencti-user ".*" ".*" ".*"
         rabbitmqctl delete_user guest
         rabbitmqctl set_operator_policy --vhost grandma no-classic ".*" '{"expires":1}' --priority 1 --apply-to queues
         exit 0
