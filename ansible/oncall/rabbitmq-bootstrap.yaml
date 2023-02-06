@@ -26,5 +26,4 @@
         rabbitmqctl set_permissions -p pdna admin ".*" ".*" ".*"
         rabbitmqctl set_permissions -p opencti opencti-user ".*" ".*" ".*"
         rabbitmqctl delete_user guest
-        rabbitmqctl set_operator_policy --vhost grandma no-classic ".*" '{"expires":1}' --priority 1 --apply-to queues
         exit 0
