@@ -23,5 +23,4 @@
         rabbitmqctl set_permissions -p grandma admin ".*" ".*" ".*"
         rabbitmqctl set_permissions -p pdna admin ".*" ".*" ".*"
         rabbitmqctl delete_user guest
-        rabbitmqctl set_operator_policy --vhost grandma no-classic ".*" '{"expires":1}' --priority 1 --apply-to queues
         exit 0
