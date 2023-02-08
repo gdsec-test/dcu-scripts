@@ -60,3 +60,4 @@ gdcorp-infosec/dcu-journal
 gdcorp-infosec/dcu-categorizer
 gdcorp-infosec/cset-cds
 gdcorp-infosec/cset-auth-proxy
+gdcorp-infosec/isse-opencti
