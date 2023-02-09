@@ -17,14 +17,6 @@ devimage:
 dcu-alpine3.15:
 	$(call build_docker_base,dockerfiles/Dockerfile.dcu-alpine3.15,dcu-alpine3.15)
 
-.PHONY: python3.7
-dcu-python3.7:
-	$(call build_docker_base,dockerfiles/Dockerfile.dcu-python3.7,dcu-python3.7)
-
-.PHONY: python3.8
-dcu-python3.8:
-	$(call build_docker_base,dockerfiles/Dockerfile.dcu-python3.8,dcu-python3.8)
-
 .PHONY: python3.10
 dcu-python3.10:
 	$(call build_docker_base,dockerfiles/Dockerfile.dcu-python3.10,dcu-python3.10)

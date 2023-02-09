@@ -38,7 +38,7 @@ jobs:
           aws secretsmanager get-secret-value --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7.10
+          python-version: 3.11.1
           architecture: 'x64'
       - uses: azure/setup-kubectl@v2.0
         with:
