@@ -25,6 +25,11 @@ contexts:
   name: dev-dcu
 - context:
     cluster: dev
+    namespace: abuse-api-dev
+    user: p3dabuse01-admin
+  name: dev-cset
+- context:
+    cluster: dev
     namespace: abuse-api-test
     user: p3dabuse01-admin
   name: test
@@ -33,6 +38,11 @@ contexts:
     namespace: abuse-api-test
     user: p3dabuse01-admin
   name: test-dcu
+- context:
+    cluster: dev
+    namespace: abuse-api-test
+    user: p3dabuse01-admin
+  name: test-cset
 - context:
     cluster: prod
     namespace: abuse-api-prod
