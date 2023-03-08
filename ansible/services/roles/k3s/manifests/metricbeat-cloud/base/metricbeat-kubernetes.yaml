@@ -64,16 +64,6 @@ spec:
             secretKeyRef:
               name: rabbitmq-secrets
               key: password
-        - name: POSTGRESQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgresql-secrets
-              key: username
-        - name: POSTGRESQL_PASS
-          valueFrom:
-            secretKeyRef:
-              name: postgresql-secrets
-              key: password
         - name: MONGODB_URL
           valueFrom:
             secretKeyRef:

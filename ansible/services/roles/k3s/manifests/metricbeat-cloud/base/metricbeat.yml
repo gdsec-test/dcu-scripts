@@ -45,15 +45,6 @@ metricbeat.autodiscover:
               hosts: "${RABBITMQ_HOSTS}"
               username: "${RABBITMQ_USER}"
               password: "${RABBITMQ_PASS}"
-            - module: postgresql
-              metricsets:
-                - database
-                - bgwriter
-                - activity
-              period: 30s
-              hosts: "${POSTGRESQL_HOSTS}"
-              username: "${POSTGRESQL_USER}"
-              password: "${POSTGRESQL_PASS}"
             - module: mongodb
               metricsets:
                 - status
