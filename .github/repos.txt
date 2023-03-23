@@ -61,3 +61,4 @@ gdcorp-infosec/dcu-categorizer
 gdcorp-infosec/cset-cds
 gdcorp-infosec/cset-auth-proxy
 gdcorp-infosec/isse-opencti
+gdcorp-infosec/isse-report-management
