@@ -20,7 +20,7 @@ get_github_current() {
         CURRENT_DEPENDABOT_ALERTS="["
         DEPENDABOT_ALERTS=$(gh api graphql -F owner="$OWNER" -F name="$REPO_NAME" -f query='query($name: String!, $owner: String!) { repository(owner: $owner, name: $name) { vulnerabilityAlerts(last: 100, states: OPEN) { nodes { securityVulnerability { package { name } advisory { identifiers { value }}}}}}}' | jq -r '[ .data.repository.vulnerabilityAlerts.nodes[].securityVulnerability.advisory.identifiers[0].value ] | @csv')
         CURRENT_DEPENDABOT_ALERTS="$CURRENT_DEPENDABOT_ALERTS$DEPENDABOT_ALERTS]"
-        CODEQL_ALERTS=$(gh api repos/$OWNER/$REPO_NAME/code-scanning/alerts?state=open | jq -c '.[] | .instances_url')
+        CODEQL_ALERTS=$(gh api repos/$OWNER/$REPO_NAME/code-scanning/alerts?state=open | jq -cr '. | map("\"" + .instances_url + "\"") | join(",")')
         CURRENT_CODEQL_ALERTS="[$CODEQL_ALERTS]"
 
         if [ "$CURRENT_RUN_ISSUES" != "[]" ]; then
@@ -57,7 +57,7 @@ get_github_differences() {
         CURRENT_DEPENDABOT_ALERTS="["
         DEPENDABOT_ALERTS=$(gh api graphql -F owner="$OWNER" -F name="$REPO_NAME" -f query='query($name: String!, $owner: String!) { repository(owner: $owner, name: $name) { vulnerabilityAlerts(last: 100, states: OPEN) { nodes { securityVulnerability { package { name } advisory { identifiers { value }}}}}}}' | jq -r '[ .data.repository.vulnerabilityAlerts.nodes[].securityVulnerability.advisory.identifiers[0].value ] | @csv')
         CURRENT_DEPENDABOT_ALERTS="$CURRENT_DEPENDABOT_ALERTS$DEPENDABOT_ALERTS]"
-        CODEQL_ALERTS=$(gh api repos/$OWNER/$REPO_NAME/code-scanning/alerts?state=open | jq -c '.[] | .instances_url')
+        CODEQL_ALERTS=$(gh api repos/$OWNER/$REPO_NAME/code-scanning/alerts?state=open | jq -cr '. | map("\"" + .instances_url + "\"") | join(",")')
         CURRENT_CODEQL_ALERTS="[$CODEQL_ALERTS]"
 
         LAST_RUN_DATA=$(aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 >/dev/null && aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 | jq -r '.Parameter.Value' || echo '{"issues":[],"prs":[],"dependabot":[],"codeql":[]}')
