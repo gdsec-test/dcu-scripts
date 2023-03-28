@@ -20,7 +20,9 @@ get_github_current() {
         CURRENT_DEPENDABOT_ALERTS="["
         DEPENDABOT_ALERTS=$(gh api graphql -F owner="$OWNER" -F name="$REPO_NAME" -f query='query($name: String!, $owner: String!) { repository(owner: $owner, name: $name) { vulnerabilityAlerts(last: 100, states: OPEN) { nodes { securityVulnerability { package { name } advisory { identifiers { value }}}}}}}' | jq -r '[ .data.repository.vulnerabilityAlerts.nodes[].securityVulnerability.advisory.identifiers[0].value ] | @csv')
         CURRENT_DEPENDABOT_ALERTS="$CURRENT_DEPENDABOT_ALERTS$DEPENDABOT_ALERTS]"
-        echo $CURRENT_DEPENDABOT_ALERTS
+        CODEQL_ALERTS=$(gh api repos/$OWNER/$REPO_NAME/code-scanning/alerts?state=open | jq -c '.[] | .instances_url')
+        CURRENT_CODEQL_ALERTS="[$CODEQL_ALERTS]"
+
         if [ "$CURRENT_RUN_ISSUES" != "[]" ]; then
             outstanding_issue_body="$outstanding_issue_body\n<https://github.com/$repo/issues|$repo>"
         fi
@@ -30,7 +32,10 @@ get_github_current() {
         if [ "$CURRENT_DEPENDABOT_ALERTS" != "[]" ]; then
             outstanding_alert_body="$outstanding_alert_body\n<https://github.com/$repo/security/dependabot|$repo>"
         fi
-        aws ssm put-parameter --region us-west-2 --name "/slackstats/repo/$repo" --type "String" --value "{\"issues\": $CURRENT_RUN_ISSUES, \"prs\": $CURRENT_RUN_PRs, \"dependabot\": $CURRENT_DEPENDABOT_ALERTS}" --overwrite >/dev/null
+        if [ "$CURRENT_CODEQL_ALERTS" != "[]" ]; then
+            outstanding_alert_body="$outstanding_alert_body\n<https://github.com/$repo/security/code-scanning|$repo>"
+        fi
+        aws ssm put-parameter --region us-west-2 --name "/slackstats/repo/$repo" --type "String" --value "{\"issues\": $CURRENT_RUN_ISSUES, \"prs\": $CURRENT_RUN_PRs, \"dependabot\": $CURRENT_DEPENDABOT_ALERTS, \"codeql\": $CURRENT_CODEQL_ALERTS}" --overwrite >/dev/null
     done <<<"$(cat $SCRIPT_DIR/repos.txt)"
     send_github_notification "Outstanding Issues" "$outstanding_issue_body"
     send_github_notification "Outstanding PRs" "$outstanding_pr_body"
@@ -52,11 +57,14 @@ get_github_differences() {
         CURRENT_DEPENDABOT_ALERTS="["
         DEPENDABOT_ALERTS=$(gh api graphql -F owner="$OWNER" -F name="$REPO_NAME" -f query='query($name: String!, $owner: String!) { repository(owner: $owner, name: $name) { vulnerabilityAlerts(last: 100, states: OPEN) { nodes { securityVulnerability { package { name } advisory { identifiers { value }}}}}}}' | jq -r '[ .data.repository.vulnerabilityAlerts.nodes[].securityVulnerability.advisory.identifiers[0].value ] | @csv')
         CURRENT_DEPENDABOT_ALERTS="$CURRENT_DEPENDABOT_ALERTS$DEPENDABOT_ALERTS]"
+        CODEQL_ALERTS=$(gh api repos/$OWNER/$REPO_NAME/code-scanning/alerts?state=open | jq -c '.[] | .instances_url')
+        CURRENT_CODEQL_ALERTS="[$CODEQL_ALERTS]"
 
-        LAST_RUN_DATA=$(aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 >/dev/null && aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 | jq -r '.Parameter.Value' || echo '{"issues":[],"prs":[],"dependabot":[]}')
+        LAST_RUN_DATA=$(aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 >/dev/null && aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 | jq -r '.Parameter.Value' || echo '{"issues":[],"prs":[],"dependabot":[],"codeql":[]}')
         PREVIOUS_RUN_ISSUES=$(echo $LAST_RUN_DATA | jq '.issues')
         PREVIOUS_RUN_PRS=$(echo $LAST_RUN_DATA | jq '.prs')
         PREVIOUS_RUN_DEPENDABOT_ALERTS=$(echo $LAST_RUN_DATA | jq '.dependabot')
+        PREVIOUS_RUN_CODEQL_ALERTS=$(echo $LAST_RUN_DATA | jq -cr '.codeql // ""')
         update_ssm=false
         if [ "$CURRENT_RUN_ISSUES" != "$PREVIOUS_RUN_ISSUES" ]; then
             DIFFERENCE=$(python -c "curr = $CURRENT_RUN_ISSUES; prev = $PREVIOUS_RUN_ISSUES; diff = list(set(x['url'] for x in curr) - set(x['url'] for x in prev)); print(diff)")
@@ -82,8 +90,16 @@ get_github_differences() {
             fi
             update_ssm=true
         fi
+        if [ "$CURRENT_CODEQL_ALERTS" != "$PREVIOUS_RUN_CODEQL_ALERTS" ]; then
+            DIFFERENCE=$(python -c "curr = $CURRENT_CODEQL_ALERTS; prev = $PREVIOUS_RUN_CODEQL_ALERTS; diff = list(set(curr) - set(prev)); print(diff)")
+            if [ "$DIFFERENCE" != "[]" ]; then
+                outstanding_security_alerts=true
+                outstanding_alert_body="$outstanding_alert_body\n<https://github.com/$repo/code-scanning/dependabot|$repo>"
+            fi
+            update_ssm=true
+        fi
         if [ "$update_ssm" = true ]; then
-            aws ssm put-parameter --region us-west-2 --name "/slackstats/repo/$repo" --type "String" --value "{\"issues\": $CURRENT_RUN_ISSUES, \"prs\": $CURRENT_RUN_PRs, \"dependabot\": $CURRENT_DEPENDABOT_ALERTS}" --overwrite >/dev/null
+            aws ssm put-parameter --region us-west-2 --name "/slackstats/repo/$repo" --type "String" --value "{\"issues\": $CURRENT_RUN_ISSUES, \"prs\": $CURRENT_RUN_PRs, \"dependabot\": $CURRENT_DEPENDABOT_ALERTS, \"codeql\": $CURRENT_CODEQL_ALERTS}" --overwrite >/dev/null
         fi
     done <<<"$(cat $SCRIPT_DIR/repos.txt)"
 
