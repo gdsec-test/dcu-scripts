@@ -62,3 +62,4 @@ gdcorp-infosec/cset-cds
 gdcorp-infosec/cset-auth-proxy
 gdcorp-infosec/isse-opencti
 gdcorp-infosec/isse-report-management
+gdcorp-infosec/isse-safer-hashing-service
