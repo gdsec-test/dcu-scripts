@@ -63,8 +63,8 @@ get_github_differences() {
         LAST_RUN_DATA=$(aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 >/dev/null && aws ssm get-parameter --name "/slackstats/repo/$repo" --region us-west-2 | jq -r '.Parameter.Value' || echo '{"issues":[],"prs":[],"dependabot":[],"codeql":[]}')
         PREVIOUS_RUN_ISSUES=$(echo $LAST_RUN_DATA | jq '.issues')
         PREVIOUS_RUN_PRS=$(echo $LAST_RUN_DATA | jq '.prs')
-        PREVIOUS_RUN_DEPENDABOT_ALERTS=$(echo $LAST_RUN_DATA | jq '.dependabot')
-        PREVIOUS_RUN_CODEQL_ALERTS=$(echo $LAST_RUN_DATA | jq -cr '.codeql // ""')
+        PREVIOUS_RUN_DEPENDABOT_ALERTS=$(echo $LAST_RUN_DATA | jq '.dependabot // "{}"')
+        PREVIOUS_RUN_CODEQL_ALERTS=$(echo $LAST_RUN_DATA | jq -cr '.codeql // "{}"')
         update_ssm=false
         if [ "$CURRENT_RUN_ISSUES" != "$PREVIOUS_RUN_ISSUES" ]; then
             DIFFERENCE=$(python -c "curr = $CURRENT_RUN_ISSUES; prev = $PREVIOUS_RUN_ISSUES; diff = list(set(x['url'] for x in curr) - set(x['url'] for x in prev)); print(diff)")
