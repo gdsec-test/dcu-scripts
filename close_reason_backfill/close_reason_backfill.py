@@ -12,7 +12,7 @@ class AppConfig():
         self.DBURL = f'mongodb://{self.DB_USER}:{self.DB_PASS}@{self.DB_IP}/?authSource={self.DB}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={mongo_cert}'
 
 if __name__ in '__main__':
-    RUN_ENVIRONMENT = 'test'
+    RUN_ENVIRONMENT = 'dev'
     _config_file = configparser.ConfigParser()
     _config_file.read('./settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
@@ -20,7 +20,7 @@ if __name__ in '__main__':
 
     incidents = _db.find_incidents({
         'close_reason': 'resolved'
-    })
+    }, limit=1000)
 
     for incident in incidents:
         print(incident["_id"])
@@ -28,7 +28,7 @@ if __name__ in '__main__':
 
     incidents = _db.find_incidents({
         'close_reason': 'suspended'
-    })
+    }, limit=1000)
 
     for incident in incidents:
         print(incident["_id"])
