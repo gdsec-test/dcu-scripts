@@ -20,7 +20,7 @@ if __name__ in '__main__':
 
     incidents = _db.find_incidents({
         'close_reason': 'resolved'
-    }, limit=1000)
+    }, limit=5000)
 
     for incident in incidents:
         print(incident["_id"])
@@ -28,7 +28,7 @@ if __name__ in '__main__':
 
     incidents = _db.find_incidents({
         'close_reason': 'suspended'
-    }, limit=1000)
+    }, limit=5000)
 
     for incident in incidents:
         print(incident["_id"])
