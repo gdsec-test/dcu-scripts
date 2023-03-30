@@ -46,4 +46,5 @@ exclude-signatures = [
     { signature='daf883880ab50aa90ace952c018c86b05b2bf511c8a086d5ed2613ea1cae14a7' },
     { signature='3325dd4c4ad2200372cbb1fbdd5f10b60fae36f48223aff71b432e3f9c3df972' },
     { signature='ce508c39ff5f8084e16da3529e260de69783224a7a0d883e2d289e3f6f828d71' },
+    { signature='9d9ab5ac4a7fb114e3733eafb063d161f1cba132963396e2ecc50f62aa5f9a8f' }
 ]
