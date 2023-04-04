@@ -2,3 +2,6 @@
 ansible_user: "{{ lookup('amazon.aws.aws_secret', '/Secrets/openstack/creds', bypath=true)['/Secrets/openstack/creds'] | from_json | json_query('user')}}"
 ansible_ssh_pass: "{{ lookup('amazon.aws.aws_secret', '/Secrets/openstack/creds', bypath=true)['/Secrets/openstack/creds'] | from_json | json_query('password')}}"
 ansible_become_pass: "{{ lookup('amazon.aws.aws_secret', '/Secrets/openstack/creds', bypath=true)['/Secrets/openstack/creds'] | from_json | json_query('password')}}"
+
+sentinelone:
+  key: "{{ lookup('amazon.aws.aws_secret', '/Secrets/sentinelone', bypath=true)['/Secrets/sentinelone'] | from_json | json_query(env)}}"

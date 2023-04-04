@@ -1,0 +1,16 @@
+#!/usr/bin/env ansible-playbook
+- name: start sentinel one on all nodes
+  hosts: all
+  become: yes
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: install sentinelone
+      package:
+        name: gd-sentinel-agent.noarch
+        state: latest
+        disable_gpg_check: true
+    - name: register sentinelone
+      shell: /opt/sentinelone/bin/sentinelctl management token set {{ sentinelone.key }}
+    - name: start sentinelone
+      shell: /opt/sentinelone/bin/sentinelctl control start
