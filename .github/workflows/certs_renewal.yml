@@ -14,23 +14,23 @@ jobs:
       - name: Get Secrets
         id: secrets
         run: |
-          SECRET=$(aws secretsmanager get-secret-value --secret-id '/Secrets/slack' --query 'SecretString' --output text)
+          SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/Secrets/slack' --query 'SecretString' --output text)
           SLACK_WEBHOOK_URL=$(echo ${SECRET} | jq -r .webhook)
           echo "::set-output name=slack-webhook-url::${SLACK_WEBHOOK_URL}"
           echo "::add-mask::$SLACK_WEBHOOK_URL"
       - name: Configure kubeconfigs
         run: |
           export AWS_REGION='us-west-2'
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
+          aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
+          aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
+          aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
+          aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
       - uses: actions/checkout@v2
       - name: Pull down credentials
         run: |
           export AWS_REGION='us-west-2'
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3pabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.crt
-          aws secretsmanager get-secret-value --secret-id /KeePass/K8s/p3pabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.key
+          aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/p3pabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.crt
+          aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/p3pabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.key
       - uses: actions/setup-python@v2
         with:
           python-version: 3.11.1
@@ -41,8 +41,8 @@ jobs:
       - name: Results
         run: | 
           export AWS_REGION='us-west-2'
-          export USER_NAME=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq --raw-output '.SecretString' | jq -r .username)
-          export USER_PASSWORD=$(aws secretsmanager get-secret-value --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq --raw-output '.SecretString' | jq -r .password)
+          export USER_NAME=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq --raw-output '.SecretString' | jq -r .username)
+          export USER_PASSWORD=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/svc-accounts/aws-abuse-pipeline | jq --raw-output '.SecretString' | jq -r .password)
           chmod +x ${GITHUB_WORKSPACE}/.github/certs_renewal.sh && ${GITHUB_WORKSPACE}/.github/certs_renewal.sh
         env:
           SLACK_WEBHOOK_URL: ${{ steps.secrets.outputs.slack-webhook-url }}

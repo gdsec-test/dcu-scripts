@@ -12,11 +12,11 @@ jobs:
       - name: Get Secrets
         id: secrets
         run: |
-          SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
+          SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
           PAT=$(echo ${SECRET} | jq -r .PAT)
           echo "::set-output name=pat-cloud::${PAT}"
           echo "::add-mask::$PAT"
-          SECRET=$(aws secretsmanager get-secret-value --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
+          SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
           USERNAME=$(echo ${SECRET} | jq -r .username)
           PASSWORD=$(echo ${SECRET} | jq -r .password)
           echo "::set-output name=artifactory-username::${USERNAME}"
@@ -24,7 +24,7 @@ jobs:
           echo "::set-output name=artifactory-password::${PASSWORD}"
           echo "::add-mask::$PASSWORD"
 
-          SECRET=$(aws secretsmanager get-secret-value --secret-id '/Secrets/slack' --query 'SecretString' --output text)
+          SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/Secrets/slack' --query 'SecretString' --output text)
           SLACK_WEBHOOK_URL=$(echo ${SECRET} | jq -r .webhook)
           echo "::set-output name=slack-webhook-url::${SLACK_WEBHOOK_URL}"
           echo "::add-mask::$SLACK_WEBHOOK_URL"

@@ -34,7 +34,7 @@ jobs:
     - name: Get dc1 Service account credentials
       id: dc1
       run: |
-        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/svc-accounts/dc1-openstack' --query 'SecretString' --output text)
+        SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/KeePass/svc-accounts/dc1-openstack' --query 'SecretString' --output text)
         DC1_USERNAME=$(echo ${SECRET} | jq -r .username)
         DC1_PASSWORD=$(echo ${SECRET} | jq -r .password)
         echo "::set-output name=dc1-user::${DC1_USERNAME}"
