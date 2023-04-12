@@ -23,6 +23,11 @@
     - rabbitmq
     - bastion
 
+- import_playbook: services/bastion.yaml
+  when: env == "dev"
+  tags:
+    - bastion
+
 - import_playbook: services/mongo.yaml
   when: env == "dev"
   tags:
