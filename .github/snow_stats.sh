@@ -30,6 +30,12 @@ get_current_problems() {
     send_slack_notification "Open Problem Reports" "$CURRENT_PRBs"
 }
 
+get_current_vulnerabilities() {
+    CURRENT_VULNS=$(curl -u "$SNOW_USER:$SNOW_PASS" --silent --location --request GET "https://godaddy.service-now.com/api/now/table/sn_vul_vulnerability?assignment_group=$ASSIGN_GROUP&state=1" --header 'Accept: application/json' --header 'Content-Type: application/json' | jq -r '.result[] | "\n<https://godaddy.service-now.com/now/nav/ui/classic/params/target/sn_vul_vulnerability.do%3Fsys_id%3D\(.sys_id)|\(.task_effective_number)>"')
+    send_slack_notification "Open Vulnerability Tickets" "$CURRENT_VULNS"
+}
+
 get_current_incidents
 get_current_problems
 get_current_oncall
+get_current_vulnerabilities
