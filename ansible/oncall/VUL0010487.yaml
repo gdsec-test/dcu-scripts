@@ -1,0 +1,37 @@
+#!/usr/bin/env ansible-playbook
+- name: Remove the unused serverspec-base package to resolve VUL0010487.
+  hosts: all
+  become: yes
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Remove the serverspec-base package
+      ansible.builtin.dnf:
+        name: serverspec-base
+        state: absent
+        autoremove: true
+    - name: Remove the ruby-doc package
+      ansible.builtin.dnf:
+        name: ruby-doc
+        state: absent
+        autoremove: true
+    - name: Remove the rubygem-rdoc package
+      ansible.builtin.dnf:
+        name: rubygem-rdoc
+        state: absent
+        autoremove: true
+    - name: Remove the ruby-irb package
+      ansible.builtin.dnf:
+        name: ruby-irb
+        state: absent
+        autoremove: true
+    - name: Remove the rubygems package
+      ansible.builtin.dnf:
+        name: rubygems
+        state: absent
+        autoremove: true
+    - name: Remove the ruby package
+      ansible.builtin.dnf:
+        name: ruby
+        state: absent
+        autoremove: true
