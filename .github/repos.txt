@@ -53,3 +53,4 @@ gdcorp-infosec/isse-opencti
 gdcorp-infosec/isse-report-management
 gdcorp-infosec/isse-safer-hashing-service
 gdcorp-infosec/isse-cmap-servicev2
+gdcorp-infosec/isse-seds
