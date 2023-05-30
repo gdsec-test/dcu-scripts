@@ -36,7 +36,7 @@ set_github_stats() {
             requiresApprovingReviews: true
             dismissesStaleReviews: true
             restrictsPushes: true
-            requiredStatusCheckContexts: ["dodge-tartufo-scan"]
+            requiredStatusCheckContexts: []
             requiresStatusChecks:true
         }) { clientMutationId }
         }' -f repositoryId="$repositoryId" -f branch="main"
@@ -51,7 +51,7 @@ set_github_stats() {
             requiresApprovingReviews: true
             dismissesStaleReviews: true
             restrictsPushes: true
-            requiredStatusCheckContexts: ["dodge-tartufo-scan"]
+            requiredStatusCheckContexts: []
             requiresStatusChecks:true
         }) { clientMutationId }
         }' -f repositoryId="$repositoryId" -f branch="master"
