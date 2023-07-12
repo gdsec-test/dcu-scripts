@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploy the IAM JWT IAMUser Service Catalog Product
+Parameters:
+  UserName:
+    Type: String
+    Description: A name for the IAM user.
+Resources:
+  JWTUser:
+    Type: AWS::ServiceCatalog::CloudFormationProvisionedProduct
+    Properties:
+      ProductName: UtilityAccountIAMUser
+      ProvisioningArtifactName: 2.3.0
+      ProvisionedProductName: test-utility-iam-jwt-user
+      ProvisioningParameters:
+        - Key: UserName
+          Value: !Ref UserName
+        - Key: PolicyName
+          Value: "GetIAMJWT"
+        - Key: DMZTag
+          Value: "NONE"
+      Tags:
+        - Key: doNotShutDown
+          Value: true
