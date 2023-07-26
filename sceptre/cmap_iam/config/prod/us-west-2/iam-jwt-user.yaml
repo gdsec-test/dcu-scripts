@@ -1,0 +1,4 @@
+template_path: iam-jwt-user.yaml
+project_code: esspdcu-iam-user-prod
+parameters:
+  UserName: cmap-iam-jwt-retrieval
