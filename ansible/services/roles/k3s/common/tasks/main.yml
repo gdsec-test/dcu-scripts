@@ -11,7 +11,7 @@
     reload: yes
 
 - name: Add br_netfilter to /etc/modules-load.d/
-  copy:
+  ansible.builtin.copy:
     content: "br_netfilter"
     dest: /etc/modules-load.d/br_netfilter.conf
     mode: "u=rw,g=,o="
@@ -32,7 +32,7 @@
     - net.bridge.bridge-nf-call-ip6tables
 
 - name: Add /usr/local/bin to sudo secure_path
-  lineinfile:
+  ansible.builtin.lineinfile:
     line: 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
     regexp: "Defaults(\\s)*secure_path(\\s)*="
     state: present
@@ -41,7 +41,7 @@
     validate: 'visudo -cf %s'
 
 - name: Download k3s binary x64
-  get_url:
+  ansible.builtin.get_url:
     url: https://github.com/k3s-io/k3s/releases/download/{{ k3s[env]['version'] }}/k3s
     checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s[env]['version'] }}/sha256sum-amd64.txt
     dest: /usr/local/bin/k3s
@@ -50,7 +50,7 @@
     mode: 0755
 
 - name: Add network script ifcfg-tunl0
-  template:
+  ansible.builtin.template:
     src: ifcfg-tunl0.j2
     dest: /etc/sysconfig/network-scripts/ifcfg-tunl0
     owner: root
@@ -72,7 +72,7 @@
     reload: yes
 
 - name: Copy dsr.conf
-  copy:
+  ansible.builtin.copy:
     src: dsr.conf
     dest: /etc/modprobe.d/dsr.conf
     owner: root
@@ -80,7 +80,7 @@
     mode: '0644'
 
 - name: Add ipip to /etc/modules-load.d/
-  copy:
+  ansible.builtin.copy:
     content: "ipip"
     dest: /etc/modules-load.d/ipip.conf
     mode: "u=rw,g=,o="
@@ -91,7 +91,7 @@
     state: present
 
 - name: Bring up the tunl0 interface
-  command:
+  ansible.builtin.command:
     cmd: /sbin/ifup tunl0
 
 - name: Set rp_filter
@@ -107,28 +107,28 @@
     - net.ipv4.conf.eth0.rp_filter
 
 - name: Install epel-release
-  dnf:
+  ansible.builtin.dnf:
     name: epel-release
     state: present
 
 - name: Install elrepo-release
-  dnf:
+  ansible.builtin.dnf:
     name: https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
     state: present
     disable_gpg_check: true
 
 - name: Install kmod-wireguard
-  dnf:
+  ansible.builtin.dnf:
     name: kmod-wireguard
     state: present
 
 - name: Install wireguard-tools
-  dnf:
+  ansible.builtin.dnf:
     name: wireguard-tools
     state: present
 
 - name: Add wireguard to /etc/modules-load.d/
-  copy:
+  ansible.builtin.copy:
     content: "wireguard"
     dest: /etc/modules-load.d/wireguard.conf
     mode: "u=rw,g=,o="
@@ -139,7 +139,7 @@
     state: present
 
 - name: Run k3s check-config to bootstrap env
-  shell: k3s check-config || exit 0
+  ansible.builtin.shell: k3s check-config || exit 0
 
 - name: Use k3s bundled iptables
   community.general.alternatives:

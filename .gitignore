@@ -104,7 +104,6 @@ ENV/
 .mypy_cache/
 
 db_downtime/certs/
-*.ini
 one_offs/data/*
 one_offs/*.csv
 one_offs/*.zip

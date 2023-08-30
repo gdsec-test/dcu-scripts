@@ -8,23 +8,23 @@
     gpgkey: https://www.mongodb.org/static/pgp/server-3.6.asc
     description: MongoDB 3.6 Repo
 - name: Install MongoDB base package
-  dnf:
+  ansible.builtin.dnf:
     name: mongodb-org == 3.6.23
     state: present
 - name: Install MongoDB server
-  dnf:
+  ansible.builtin.dnf:
     name: mongodb-org-server == 3.6.23
     state: present
 - name: Install MongoDB shell
-  dnf:
+  ansible.builtin.dnf:
     name: mongodb-org-shell == 3.6.23
     state: present
 - name: Install MongoDB mongos
-  dnf:
+  ansible.builtin.dnf:
     name: mongodb-org-mongos == 3.6.23
     state: present
 - name: Install MongoDB mongos
-  dnf:
+  ansible.builtin.dnf:
     name: mongodb-org-tools == 3.6.23
     state: present
 - name: Version lock mongo packages
@@ -46,31 +46,31 @@
     remote_src: yes
 - name: Insert chain into file
   ansible.builtin.blockinfile:
-    block: "{{mongo[env].chain}}"
+    block: "{{ mongo[env].chain }}"
     path: /etc/mongo-ca.pem
 - name: Copy remote mongo.pem 
-  template:
+  ansible.builtin.template:
     src: templates/mongo.pem.j2
     dest: /etc/mongo.pem
     owner: root
     group: mongod
     mode: 0660
 - name: Copy local only mongod config
-  template:
+  ansible.builtin.template:
     src: mongod.local.conf.j2
     dest: /etc/mongod.conf
     owner: root
     group: root
     mode: 0644
 - name: Enable service mongod
-  systemd:
+  ansible.builtin.systemd:
     name: mongod
     enabled: yes
     masked: no
     daemon_reload: yes
     state: restarted
 - name: Install pymongo
-  pip:
+  ansible.builtin.pip:
     name: pymongo
 - name: Create mongo admin user
   community.mongodb.mongodb_user:
@@ -83,14 +83,14 @@
       - userAdminAnyDatabase
       - readWriteAnyDatabase
 - name: Copy remote mongod config
-  template:
+  ansible.builtin.template:
     src: mongod.remote.conf.j2
     dest: /etc/mongod.conf
     owner: root
     group: root
     mode: 0644
 - name: Enable service mongod
-  systemd:
+  ansible.builtin.systemd:
     name: mongod
     enabled: yes
     masked: no

@@ -1,5 +1,5 @@
 ---
-- name: rabbitmq_erlang
+- name: Rabbitmq_erlang
   ansible.builtin.yum_repository:
     name: rabbitmq_erlang
     baseurl: https://packagecloud.io/rabbitmq/erlang/el/8/$basearch
@@ -9,7 +9,7 @@
     gpgkey:
       - https://packagecloud.io/rabbitmq/erlang/gpgkey
       - https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
-- name: rabbitmq_server
+- name: Rabbitmq_server
   ansible.builtin.yum_repository:
     name: rabbitmq_server
     baseurl: https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/$basearch
@@ -20,15 +20,15 @@
       - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
       - https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
 - name: Install erlang base package
-  dnf:
+  ansible.builtin.dnf:
     name: erlang == 24.2.2-1.el8
     state: present
 - name: Install socat base package
-  dnf:
+  ansible.builtin.dnf:
     name: socat
     state: present
 - name: Install rabbitmq-server base package
-  dnf:
+  ansible.builtin.dnf:
     name: rabbitmq-server == 3.9.8-1.el8
     state: present
 
@@ -41,7 +41,7 @@
     state: present
 
 - name: Copy remote rabbitmq-env.conf config
-  template:
+  ansible.builtin.template:
     src: templates/rabbitmq-env.conf.j2
     dest: /etc/rabbitmq/rabbitmq-env.conf
     owner: root
@@ -49,7 +49,7 @@
     mode: 0644
 
 - name: Copy remote rabbitmq.conf config
-  template:
+  ansible.builtin.template:
     src: templates/rabbitmq.conf.j2
     dest: /etc/rabbitmq/rabbitmq.conf
     owner: root
@@ -57,7 +57,7 @@
     mode: 0644
 
 - name: Copy remote enabled_plugins config
-  template:
+  ansible.builtin.template:
     src: files/enabled_plugins
     dest: /etc/rabbitmq/enabled_plugins
     owner: root
@@ -65,14 +65,14 @@
     mode: 0644
 
 - name: Create limits directory
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/rabbitmq-server.service.d/
     state: directory
     mode: 0644
     owner: root
     group: root
 - name: Copy remote limits.conf config
-  template:
+  ansible.builtin.template:
     src: files/limits.conf
     dest: /etc/systemd/system/rabbitmq-server.service.d/limits.conf
     owner: root
@@ -80,7 +80,7 @@
     mode: 0644
 
 - name: Copy remote ca.crt config
-  template:
+  ansible.builtin.template:
     src: templates/ca.crt.j2
     dest: /etc/rabbitmq/ca.crt
     owner: root
@@ -88,7 +88,7 @@
     mode: 0660
 
 - name: Copy remote rmq.crt config
-  template:
+  ansible.builtin.template:
     src: templates/rmq.crt.j2
     dest: /etc/rabbitmq/rmq.crt
     owner: root
@@ -96,7 +96,7 @@
     mode: 0660
 
 - name: Copy remote rmq.key config
-  template:
+  ansible.builtin.template:
     src: templates/rmq.key.j2
     dest: /etc/rabbitmq/rmq.key
     owner: root
@@ -104,10 +104,9 @@
     mode: 0660
 
 - name: Copy remote erlang.cookie config
-  template:
+  ansible.builtin.template:
     src: templates/erlang.cookie.j2
     dest: /var/lib/rabbitmq/.erlang.cookie
     owner: rabbitmq
     group: rabbitmq
     mode: 0400
-

@@ -2,7 +2,7 @@
 
 - name: Copy K3s service file
   register: k3s_service
-  template:
+  ansible.builtin.template:
     src: "k3s.service.j2"
     dest: "/etc/systemd/system/k3s.service"
     owner: root
@@ -10,23 +10,23 @@
     mode: 0640
 
 - name: Create kubectl symlink
-  file:
+  ansible.builtin.file:
     src: /usr/local/bin/k3s
     dest: /usr/local/bin/kubectl
     state: link
 
 - name: Create crictl symlink
-  file:
+  ansible.builtin.file:
     src: /usr/local/bin/k3s
     dest: /usr/local/bin/crictl
     state: link
 
 - name: Creates k3s manifest directory
-  file:
+  ansible.builtin.file:
     path: /var/lib/rancher/k3s/server/manifests
     state: directory
 
 - name: Install Kubernetes Manifest
-  copy:
+  ansible.builtin.copy:
     src: manifest.yml
     dest: /var/lib/rancher/k3s/server/manifests/manifest.yaml
