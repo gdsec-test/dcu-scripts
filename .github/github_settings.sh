@@ -82,12 +82,15 @@ set_github_stats() {
        check_repo_golang=$(check_repo_list $repo "repos_golang.txt")
        check_repo_empty=$(check_repo_list $repo "repos_empty.txt")
        check_repo_unique=$(check_repo_list $repo "repos_unique.txt")
+       check_repo_k8s=$(check_repo_list $repo "repos_k8s.txt")
        if [[ $check_repo_empty == 0 ]]; then
             cp $SCRIPT_DIR/workflows/ci.yaml .github/workflows/ci.yaml
        elif [[ $check_repo_golang == 0 ]]; then
             cp $SCRIPT_DIR/go-ci.yaml .github/workflows/ci.yaml
        elif [[ $check_repo_unique == "No ci script will be added!" ]]; then
             echo "No ci script copied for:" $repo
+       elif [[ $check_repo_k8s == 0 ]]; then
+            cp $SCRIPT_DIR/k8s-deploy.yml .github/workflows/k8s-deploy.yml
        else
             cp $SCRIPT_DIR/py-ci.yaml .github/workflows/ci.yaml
        fi

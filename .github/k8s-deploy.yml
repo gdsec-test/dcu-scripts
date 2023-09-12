@@ -1,0 +1,116 @@
+name: Run Kubernetes Deploy
+on:
+ workflow_dispatch:
+   inputs:
+     env:
+       type: choice
+       description: Select deploy env
+       required: true
+       options:
+       - dev
+       - test
+       - ote
+       - prod
+
+jobs:
+ ci:
+   runs-on: [csetubuntu]
+   steps:
+    - uses: actions/checkout@v2
+    - uses: azure/setup-kubectl@v3.0
+      with:
+        version: 'v1.24.4'
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '^1.20.0'
+        architecture: 'x64'
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11.1
+        architecture: 'x64'
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        architecture: 'x64'
+
+    - name: Configure kubeconfigs
+      run: |
+        aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
+        aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
+        aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
+        aws secretsmanager get-secret-value --region us-west-2 --secret-id /Secrets/k3s-kubeconfig | jq -r '.SecretString' > ./.github/static/local-config.yml
+        aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
+        echo "KUBECONFIG=$PWD/.github/static/local-config.yml" >> $GITHUB_ENV
+
+    - name: Get Secrets
+      id: secrets
+      run: |
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
+        PAT=$(echo ${SECRET} | jq -r .PAT)
+        echo "::set-output name=pat-cloud::${PAT}"
+        echo "::add-mask::$PAT"
+
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
+        USERNAME=$(echo ${SECRET} | jq -r .username)
+        PASSWORD=$(echo ${SECRET} | jq -r .password)
+        echo "::set-output name=artifactory-username::${USERNAME}"
+        echo "::add-mask::$USERNAME"
+        echo "::set-output name=artifactory-password::${PASSWORD}"
+        echo "::add-mask::$PASSWORD"
+
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/github-pat/secureserver' --query 'SecretString' --output text)
+        PREMISE_PAT=$(echo ${SECRET} | jq -r .pat)
+        echo "::set-output name=pat-onpremise::${PREMISE_PAT}"
+        echo "::add-mask::$PREMISE_PAT"
+
+    - name: Configure Pip/Poetry
+      shell: bash
+      run: |
+        mkdir -p ~/.pip
+        echo "[distutils]" > ~/.pypirc
+        echo "index-servers = local" >> ~/.pypirc
+        echo "[local]" >> ~/.pypirc
+        echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
+        echo "username: ${{ steps.secrets.outputs.artifactory-username }}" >> ~/.pypirc
+        echo "password: ${{ steps.secrets.outputs.artifactory-password }}" >> ~/.pypirc
+
+        echo "[global]" > ~/.pip/pip.conf
+        echo "index-url = https://${{ steps.secrets.outputs.artifactory-username }}:${{ steps.secrets.outputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
+
+        echo "POETRY_HTTP_BASIC_GDDY_USERNAME=${{ steps.secrets.outputs.artifactory-username }}" >> $GITHUB_ENV
+        echo "POETRY_HTTP_BASIC_GDDY_PASSWORD=${{ steps.secrets.outputs.artifactory-password }}" >> $GITHUB_ENV
+
+    - name: Configure Golang
+      shell: bash
+      run: |
+        go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.com/gdcorp-golang/*,github.secureserver.net/*"
+        git config --global url."https://${{ steps.secrets.outputs.pat-cloud }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
+        git config --global url."https://${{ steps.secrets.outputs.pat-onpremise }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
+        git config --global url."https://${{ steps.secrets.outputs.pat-cloud }}:x-oauth-basic@github.com/gdcorp-golang".insteadOf "https://github.com/gdcorp-golang"
+
+    - name: Install Dependencies with pip
+      run: |
+        pip install poetry
+
+    - name: Docker Login
+      run: |
+        docker login docker-dcu-local.artifactory.secureserver.net -u ${{ steps.secrets.outputs.artifactory-username }} -p ${{ steps.secrets.outputs.artifactory-password }}
+
+    - name: Install kustomize
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        mkdir -p ${HOME}/.local/bin
+        cp /usr/local/bin/actions-runner/_work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/kustomize ${HOME}/.local/bin/
+        echo "${HOME}/.local/bin" >> $GITHUB_PATH 
+        echo $GITHUB_PATH   
+
+    - name: Run Deployment
+      run: |
+        kustomize -h
+        make ${{ github.event.inputs.env }}-deploy
