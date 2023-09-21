@@ -1,4 +1,4 @@
-dockerrepo := docker-dcu-local.artifactory.secureserver.net
+dockerrepo := gdartifactory1.jfrog.io/docker-dcu-local
 DOCKER_TAG ?= latest
 
 define build_docker_base

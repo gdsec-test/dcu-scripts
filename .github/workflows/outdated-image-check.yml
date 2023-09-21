@@ -47,7 +47,7 @@ jobs:
         env:
           ARTIFACTORY_USER: ${{ steps.secrets.outputs.artifactory-username }}
           ARTIFACTORY_PASSWORD: ${{ steps.secrets.outputs.artifactory-password }}
-        run: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_PASSWORD} docker-dcu-local.artifactory.secureserver.net
+        run: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_PASSWORD} gdartifactory1.jfrog.io/docker-dcu-local
       - name: Results
         run: chmod +x ${GITHUB_WORKSPACE}/.github/check_image_updates.sh && ${GITHUB_WORKSPACE}/.github/check_image_updates.sh
         env:

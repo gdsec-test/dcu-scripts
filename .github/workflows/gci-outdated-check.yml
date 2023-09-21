@@ -35,7 +35,7 @@ jobs:
         env:
           ARTIFACTORY_USER: ${{ steps.secrets.outputs.artifactory-username }}
           ARTIFACTORY_PASSWORD: ${{ steps.secrets.outputs.artifactory-password }}
-        run: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_PASSWORD} docker-dcu-local.artifactory.secureserver.net
+        run: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_PASSWORD} gdartifactory1.jfrog.io/docker-dcu-local
       - name: Check and rebuild images
         run: cd containers && ./build.sh
         env:

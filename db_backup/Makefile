@@ -1,4 +1,4 @@
-DOCKER_IMAGE=docker-dcu-local.artifactory.secureserver.net/dcu-db-backup
+DOCKER_IMAGE=gdartifactory1.jfrog.io/docker-dcu-local/dcu-db-backup
 
 image/build:
 	docker build -t dcu-db-backup:local ./

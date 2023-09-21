@@ -76,12 +76,12 @@ jobs:
         echo "[distutils]" > ~/.pypirc
         echo "index-servers = local" >> ~/.pypirc
         echo "[local]" >> ~/.pypirc
-        echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
+        echo "repository: https://gdartifactory1.jfrog.io/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
         echo "username: ${{ steps.secrets.outputs.artifactory-username }}" >> ~/.pypirc
         echo "password: ${{ steps.secrets.outputs.artifactory-password }}" >> ~/.pypirc
 
         echo "[global]" > ~/.pip/pip.conf
-        echo "index-url = https://${{ steps.secrets.outputs.artifactory-username }}:${{ steps.secrets.outputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
+        echo "index-url = https://${{ steps.secrets.outputs.artifactory-username }}:${{ steps.secrets.outputs.artifactory-password }}@gdartifactory1.jfrog.io/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
 
         echo "POETRY_HTTP_BASIC_GDDY_USERNAME=${{ steps.secrets.outputs.artifactory-username }}" >> $GITHUB_ENV
         echo "POETRY_HTTP_BASIC_GDDY_PASSWORD=${{ steps.secrets.outputs.artifactory-password }}" >> $GITHUB_ENV
@@ -100,7 +100,7 @@ jobs:
 
     - name: Docker Login
       run: |
-        docker login docker-dcu-local.artifactory.secureserver.net -u ${{ steps.secrets.outputs.artifactory-username }} -p ${{ steps.secrets.outputs.artifactory-password }}
+        docker login gdartifactory1.jfrog.io/docker-dcu-local -u ${{ steps.secrets.outputs.artifactory-username }} -p ${{ steps.secrets.outputs.artifactory-password }}
 
     - name: Install kustomize
       run: |
