@@ -8,16 +8,11 @@ on:
         required: true
         options:
         - dev
+        - prod
       tag:
-        type: choice
         description: Select tags
         default: ""
         required: false
-        options:
-        - mongo
-        - k3s
-        - rabbitmq
-        - bastion
       playbook:
         default: site.yaml
         description: playbook to run
