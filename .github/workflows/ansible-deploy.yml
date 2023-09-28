@@ -11,12 +11,17 @@ on:
       tag:
         type: choice
         description: Select tags
-        required: true
+        default: ""
+        required: false
         options:
         - mongo
         - k3s
         - rabbitmq
         - bastion
+      playbook:
+        default: site.yaml
+        description: playbook to run
+        required: true
 jobs:
   deploy:
     concurrency: cset-ansible
@@ -56,4 +61,8 @@ jobs:
         ANSIBLE_HOST_KEY_CHECKING: False
       run: |
         cd ansible
-        ansible-playbook site.yaml -e "env=${{ github.event.inputs.env }}" --tags "${{ github.event.inputs.tag }}"
+        TAGS=""
+        if [[ "${{ github.event.inputs.tag }}" != "" ]]; then
+          TAGS="--tags '${{ github.event.inputs.tag }}'"
+        fi
+        ansible-playbook ${{ github.event.inputs.playbook }} -e "env=${{ github.event.inputs.env }}" $TAGS -i inventory/${{ github.event.inputs.env }}.yaml
