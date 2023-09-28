@@ -60,4 +60,4 @@ jobs:
         if [[ "${{ github.event.inputs.tag }}" != "" ]]; then
           TAGS="--tags '${{ github.event.inputs.tag }}'"
         fi
-        ansible-playbook ${{ github.event.inputs.playbook }} -e "env=${{ github.event.inputs.env }}" $TAGS -i inventory/${{ github.event.inputs.env }}.yaml
+        ansible-playbook ${{ github.event.inputs.playbook }} -e "env=${{ github.event.inputs.env }}" $TAGS -i inventory/${{ github.event.inputs.env }}.ini
