@@ -1,0 +1,15 @@
+#!/usr/bin/env ansible-playbook
+- name: rotate certificates on all server nodes
+  hosts: k3sserver
+  become: yes
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: rotate certificates
+      ansible.builtin.shell: k3s certificates rotate
+    - name: Enable and check K3s service
+      systemd:
+        name: k3s
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
