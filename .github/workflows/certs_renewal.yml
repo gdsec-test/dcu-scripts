@@ -21,7 +21,8 @@ jobs:
       - name: Configure kubeconfigs
         run: |
           export AWS_REGION='us-west-2'
-          touch ./.github/static/dev-ng-client.crt
+          cd .github/static/
+          touch dev-ng-client.crt
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.crt | jq -r '.SecretString' > ./.github/static/dev-ng-client.crt
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
