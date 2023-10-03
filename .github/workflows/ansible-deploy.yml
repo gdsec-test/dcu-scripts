@@ -28,6 +28,8 @@ jobs:
         python-version: 3.11.1
         architecture: 'x64'
     - name: Base python setup/install
+      env:
+        ANSIBLE_GALAXY_SERVER: https://old-galaxy.ansible.com/
       run: |
         cd ansible
         make ci
