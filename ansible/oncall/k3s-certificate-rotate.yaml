@@ -6,7 +6,7 @@
     - vars.yaml
   tasks:
     - name: rotate certificates
-      ansible.builtin.shell: k3s certificates rotate
+      ansible.builtin.shell: k3s certificate rotate
     - name: Enable and check K3s service
       systemd:
         name: k3s
