@@ -54,6 +54,7 @@ jobs:
         OS_IDENTITY_API_VERSION: "3"
         AWS_DEFAULT_REGION: us-west-2 
         ANSIBLE_HOST_KEY_CHECKING: False
+        ANSIBLE_GALAXY_SERVER: https://old-galaxy.ansible.com/
       run: |
         cd ansible
         TAGS=""
