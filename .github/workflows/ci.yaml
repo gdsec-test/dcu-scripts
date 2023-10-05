@@ -10,8 +10,6 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: '37 2 * * 3'
 
 jobs:
   ci:
@@ -96,7 +94,7 @@ jobs:
   analyze:
     name: Analyze
 
-    runs-on: ubuntu-latest
+    runs-on: [ csetubuntu ]
 
     permissions:
       actions: read

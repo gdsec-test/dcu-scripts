@@ -13,10 +13,11 @@ If you need to close a number of tickets given parameters that can be formulated
 #### ADDING A NEW REPO
 Repos_golang is a list of golang repos with unit-test & test coverage. \
 Repos_empty is a list of python repos with empty unit-test & test coverage. \
-Repos_unique is a list of repos that need a unique ci script or none at all.
+Repos_unique is a list of repos that need a unique ci script or none at all. \
+Repos_k8s is a list of repos that need the k8s deployment script.
 
 Set the codeQL analysis to 'advanced' in the settings of the repo. \
 Add the repo name to the regular repos list and to the specific repo list if it fits said description. \
 Then, run github_settings.sh. 
 
-If the repo is unique and its ci script needs updating, it has to be manually updated.
+If the repo is unique and its ci script or the k8s script needs updating, it has to be manually updated. 

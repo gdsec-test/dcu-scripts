@@ -14,8 +14,8 @@ check_repo_list() {
             echo "No ci script will be added!"
             break
         fi
-        if [ "$1" == "$line" ]; then 
-            echo 0 
+        if [ "$1" == "$line" ]; then
+            echo 0
         fi
     done <<<"$(cat $SCRIPT_DIR/"$2")"
 }
@@ -89,11 +89,17 @@ set_github_stats() {
             cp $SCRIPT_DIR/go-ci.yaml .github/workflows/ci.yaml
        elif [[ $check_repo_unique == "No ci script will be added!" ]]; then
             echo "No ci script copied for:" $repo
-       elif [[ $check_repo_k8s == 0 ]]; then
-            cp $SCRIPT_DIR/k8s-deploy.yml .github/workflows/k8s-deploy.yml
        else
             cp $SCRIPT_DIR/py-ci.yaml .github/workflows/ci.yaml
        fi
+
+        if [[ $check_repo_k8s == 0 ]]; then
+            if grep -q $repo "repos_unique.txt"; then
+                echo "Unique k8s script! Please keep it updated as needed:" $repo
+            else
+                cp $SCRIPT_DIR/k8s-deploy.yml .github/workflows/k8s-deploy.yml
+            fi
+        fi
 
        # If there are changes in the repo create a PR.
        if [[ `git status --porcelain | wc -l` -gt 0 ]];

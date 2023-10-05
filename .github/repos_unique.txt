@@ -3,9 +3,14 @@ gdcorp-infosec/hasher
 gdcorp-infosec/dcu-malware-notifications
 gdcorp-infosec/isse-report-management
 gdcorp-infosec/isse-seds
-gdcorp-infosec/dcu-protobuf 
+gdcorp-infosec/dcu-protobuf
 gdcorp-infosec/dcu-actions
+gdcorp-infosec/cset-sharktales
 gdcorp-infosec/cset-handbook
+gdcorp-infosec/dcu-cmap-service
+gdcorp-infosec/dcu-branddetection
+gdcorp-infosec/dcu-phishnet
+gdcorp-infosec/dcu-mimir
 gdcorp-infosec/security-logging-containers
 gdcorp-infosec/security-logging-rpms
 gdcorp-infosec/security-logging-assets

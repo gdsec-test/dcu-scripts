@@ -13,7 +13,7 @@ on:
        - prod
 
 jobs:
- ci:
+ k8s:
    runs-on: [csetubuntu]
    steps:
     - uses: actions/checkout@v2
@@ -41,6 +41,7 @@ jobs:
 
     - name: Configure kubeconfigs
       run: |
+        mkdir -p ./.github/static
         aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
         aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
         aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
@@ -97,6 +98,11 @@ jobs:
     - name: Install Dependencies with pip
       run: |
         pip install poetry
+        pip install pipx
+        pip install pre-commit
+        sudo apt-get update
+        sudo apt-get install gcc libffi-dev -y
+        make init
 
     - name: Docker Login
       run: |
@@ -107,10 +113,9 @@ jobs:
         curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
         mkdir -p ${HOME}/.local/bin
         cp /usr/local/bin/actions-runner/_work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/kustomize ${HOME}/.local/bin/
-        echo "${HOME}/.local/bin" >> $GITHUB_PATH 
-        echo $GITHUB_PATH   
+        echo "${HOME}/.local/bin" >> $GITHUB_PATH
+        echo $GITHUB_PATH
 
     - name: Run Deployment
       run: |
-        kustomize -h
         make ${{ github.event.inputs.env }}-deploy
