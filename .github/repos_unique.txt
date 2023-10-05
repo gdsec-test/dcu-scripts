@@ -6,3 +6,10 @@ gdcorp-infosec/isse-seds
 gdcorp-infosec/dcu-protobuf 
 gdcorp-infosec/dcu-actions
 gdcorp-infosec/cset-handbook
+gdcorp-infosec/security-logging-containers
+gdcorp-infosec/security-logging-rpms
+gdcorp-infosec/security-logging-assets
+gdcorp-infosec/security-logging-cicd
+gdcorp-infosec/security-logging-siem-lookup
+gdcorp-infosec/security-logging-aws-infra
+gdcorp-infosec/security-logging-k8s
