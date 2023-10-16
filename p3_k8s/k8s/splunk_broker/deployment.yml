@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: splunk-broker
+spec:
+  selector:
+    matchLabels:
+      app: splunk-broker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: splunk-broker
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: splunk-broker-persistent-data
+      containers:
+        - name: splunk-broker
+          image: godaddysoar.soar.splunkcloud.com/phantomsaas/automation_broker:latest
+          volumeMounts:
+            - name: data
+              mountPath: /splunk_data
+          env:
+            - name: PHANTOM_BASE_URL
+              value: https://brsoar-godaddy.soar.splunkcloud.com/
