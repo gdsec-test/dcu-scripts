@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  annotations:
+    nginx.ingress.kubernetes.io/auth-signin: https://sso.gdcorp.tools/?app=grafana.cset.int&realm=jomax&path=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-url: http://auth-proxy.product-security.svc.cluster.local:8080/auth?group=org-infosec-software-engineering
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/configuration-snippet: proxy_set_header "X-Grafana-Jomax" "$cookie_auth_jomax";
+spec:
+  rules:
+  - host: grafana.cset.int.gdcorp.tools
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: grafana
+              port:
+                number: 3000
+  tls:
+    - hosts:
+      - grafana.cset.int.gdcorp.tools
+      secretName: cset-wildcard

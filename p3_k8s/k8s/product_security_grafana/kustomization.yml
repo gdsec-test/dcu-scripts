@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: product-security
+resources:
+- ./namespace.yml
+- ./deployment.yml
+- ./service.yml
+- ./ingress.yml
+
+configMapGenerator:
+- files:
+    - grafana.ini=data/grafana.ini
+  name: grafana-ini
+- files:
+    - datasources.yaml=data/datasources.yaml
+  name: grafana-datasources
+- files:
+    - fluentd.json=data/fluentd.json
+    - gowec.json=data/gowec.json
+  name: grafana-dashboards
+- files:
+    - security-logging.yaml=data/security-logging.yaml
+  name: grafana-dash-mappings

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-proxy
+spec:
+  selector:
+    matchLabels:
+      app: auth-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth-proxy
+    spec:
+      containers:
+        - name: auth-proxy
+          args: ["-sso", "https://sso.gdcorp.tools"]
+          image: gdartifactory1.jfrog.io/docker-dcu-local/auth-proxy:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ELASTIC_APM_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: apm-access
+                  key: url
+            - name: ELASTIC_APM_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: apm-access
+                  key: secret
+            - name: ELASTIC_APM_ENVIRONMENT
+              value: prod
+            - name: ELASTIC_APM_TRANSACTION_SAMPLE_RATE
+              value: "0.5"
+            - name: ELASTIC_APM_SERVICE_NAME
+              value: prod-sec-auth-proxy
+      imagePullSecrets:
+        - name: artifactory-saas-creds

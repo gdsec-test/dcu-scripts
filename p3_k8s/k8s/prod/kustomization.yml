@@ -2,3 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - ../splunk_broker
+- ../product_security_grafana
+- ../product_security_auth_proxy

@@ -1,0 +1,41 @@
+# config file version
+apiVersion: 1
+
+# list of datasources to insert/update depending
+# on what's available in the database
+datasources:
+  - name: Prometheus EKS (dev-private us-west-2 BLUE)
+    type: prometheus
+    uid: eks-uswest2-dev-blue
+    access: proxy
+    orgId: 1 # Security Logging Org
+    url: http://internal.ingress.uswest2-blue.security.dp.aws.gdcld.net:9090/
+    editable: false
+  - name: Prometheus EKS (dev-private us-west-2 GREEN)
+    type: prometheus
+    uid: eks-uswest2-dev-green
+    access: proxy
+    orgId: 1 # Security Logging Org
+    url: http://internal.ingress.uswest2-green.security.dp.aws.gdcld.net:9090/
+    editable: false
+  - name: Prometheus EKS (prod us-east-1)
+    type: prometheus
+    uid: eks-useast1-prod
+    access: proxy
+    orgId: 1 # Security Logging Org
+    url: http://internal.ingress.useast1.security.aws.gdcld.net:9090/
+    editable: false
+  - name: Prometheus EKS (prod us-west-2 BLUE)
+    type: prometheus
+    uid: eks-uswest2-prod-blue
+    access: proxy
+    orgId: 1 # Security Logging Org
+    url: http://internal.ingress.uswest2-blue.security.aws.gdcld.net:9090/
+    editable: false
+  - name: Prometheus EKS (prod us-west-2 GREEN)
+    type: prometheus
+    uid: eks-uswest2-prod-green
+    access: proxy
+    orgId: 1 # Security Logging Org
+    url: http://internal.ingress.uswest2-green.security.aws.gdcld.net:9090/
+    editable: false
