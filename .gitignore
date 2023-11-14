@@ -110,3 +110,4 @@ one_offs/*.zip
 .vscode/
 .direnv
 mysql/.envrc
+one_offs/emls_to_parse
