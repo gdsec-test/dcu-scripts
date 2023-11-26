@@ -25,17 +25,17 @@ jobs:
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/dev-ng-client.key | jq -r '.SecretString' > ./.github/static/dev-ng-client.key
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.crt | jq -r '.SecretString' > ./.github/static/prod-ng-client.crt
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/prod-ng-client.key | jq -r '.SecretString' > ./.github/static/prod-ng-client.key
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
       - name: Pull down credentials
         run: |
           export AWS_REGION='us-west-2'
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/p3pabuse01-client.crt | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.crt
           aws secretsmanager get-secret-value --region us-west-2 --secret-id /KeePass/K8s/p3pabuse01-client.key | jq -r '.SecretString' > ./.github/static/p3pabuse01-client.key
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236
         with:
           python-version: 3.11.1
           architecture: 'x64'
-      - uses: azure/setup-kubectl@v3.0
+      - uses: azure/setup-kubectl@901a10e89ea615cf61f57ac05cecdf23e7de06d8
         with:
           version: 'v1.16.3'
       - name: Results

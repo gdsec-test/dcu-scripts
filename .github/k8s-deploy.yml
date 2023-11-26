@@ -16,25 +16,25 @@ jobs:
  k8s:
    runs-on: [csetubuntu]
    steps:
-    - uses: actions/checkout@v2
-    - uses: azure/setup-kubectl@v3.0
+    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+    - uses: azure/setup-kubectl@901a10e89ea615cf61f57ac05cecdf23e7de06d8
       with:
         version: 'v1.24.4'
 
     - name: Setup Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe
       with:
         go-version: '^1.20.0'
         architecture: 'x64'
 
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236
       with:
         python-version: 3.11.1
         architecture: 'x64'
 
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d
       with:
         node-version: 18
         architecture: 'x64'
@@ -117,5 +117,7 @@ jobs:
         echo $GITHUB_PATH
 
     - name: Run Deployment
+      env:
+        DEPLOY_CMD: ${{ github.event.inputs.env }}-deploy
       run: |
-        make ${{ github.event.inputs.env }}-deploy
+        make "$DEPLOY_CMD"
