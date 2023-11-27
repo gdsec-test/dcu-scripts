@@ -24,8 +24,6 @@ gdcorp-infosec/dcu-shadowfax-integration-test
 gdcorp-infosec/dcu-actions
 gdcorp-infosec/dcu-ncmec-hashsharing
 gdcorp-infosec/dcu-go-abuse
-gdcorp-infosec/dcu-structured-logging-flask
-gdcorp-infosec/dcu-structured-logging-grpc
 gdcorp-infosec/dcu-crm-notate
 gdcorp-infosec/dcu-structured-logging-go
 gdcorp-infosec/cset-go-common

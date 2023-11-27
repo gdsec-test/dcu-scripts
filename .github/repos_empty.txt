@@ -1,6 +1,4 @@
 gdcorp-infosec/dcu-essp-pipeline
 gdcorp-infosec/dcu-scripts
-gdcorp-infosec/dcu-structured-logging-flask
-gdcorp-infosec/dcu-structured-logging-grpc
 gdcorp-infosec/cset-auth-proxy
 gdcorp-infosec/isse-safer-hashing-service
