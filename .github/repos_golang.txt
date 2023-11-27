@@ -8,5 +8,4 @@ gdcorp-infosec/dcu-shadowfax-integration-test
 gdcorp-infosec/dcu-ncmec-hashsharing
 gdcorp-infosec/dcu-go-abuse
 gdcorp-infosec/dcu-structured-logging-go
-gdcorp-infosec/hashserve
 gdcorp-infosec/cset-go-common

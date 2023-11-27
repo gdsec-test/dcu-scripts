@@ -1,4 +1,3 @@
-gdcorp-infosec/requeue
 gdcorp-infosec/dcu-essp-pipeline
 gdcorp-infosec/dcu-scripts
 gdcorp-infosec/dcu-structured-logging-flask

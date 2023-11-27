@@ -1,5 +1,4 @@
 gdcorp-infosec/dcu-shadowfax
-gdcorp-infosec/requeue
 gdcorp-infosec/dcu-essp-pipeline
 gdcorp-infosec/dcu-cst-mail-parser
 gdcorp-infosec/dcu-brand-services
@@ -29,8 +28,6 @@ gdcorp-infosec/dcu-structured-logging-flask
 gdcorp-infosec/dcu-structured-logging-grpc
 gdcorp-infosec/dcu-crm-notate
 gdcorp-infosec/dcu-structured-logging-go
-gdcorp-infosec/hasher
-gdcorp-infosec/hashserve
 gdcorp-infosec/cset-go-common
 gdcorp-infosec/cset-sharktales
 gdcorp-infosec/cset-py-utils

@@ -9,7 +9,6 @@ This application uses a pre-existing text file listing DCU repositories. It is l
 Example of the repository owner/repository name format the file uses:
 ```
 gdcorp-infosec/dcu-shadowfax
-gdcorp-infosec/requeue
 gdcorp-infosec/dcu-hubstream-actions
 ```
 

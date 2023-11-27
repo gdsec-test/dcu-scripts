@@ -1,5 +1,4 @@
 gdcorp-infosec/dcu-shadowfax
-gdcorp-infosec/requeue
 gdcorp-infosec/dcu-essp-pipeline
 gdcorp-infosec/dcu-cst-mail-parser
 gdcorp-infosec/dcu-brand-services
