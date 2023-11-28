@@ -24,7 +24,7 @@ spec:
         spec:
           restartPolicy: OnFailure
           imagePullSecrets:
-            - name: dcu-artifactory-creds
+            - name: artifactory-saas-creds
           containers:
             - name: backup
               imagePullPolicy: Always
