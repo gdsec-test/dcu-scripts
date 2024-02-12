@@ -4,7 +4,7 @@ region: us-west-2
 template_path: gha-runner.yaml
 parameters:
   IsOrgRunner: "true"
-  ProductVersion: 2.3.1
+  ProductVersion: 2.4.1
   RunnerName: github-actions-runner
   RunnerLabels: self-hosted,csetubuntu
   RunnerAutoScalingGroupDesiredSize: "1"
