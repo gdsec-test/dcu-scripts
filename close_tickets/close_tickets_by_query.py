@@ -1,6 +1,7 @@
 import configparser
 import requests
 import time
+import json
 
 from datetime import datetime
 from dcdatabase.phishstorymongo import PhishstoryMongo
@@ -11,7 +12,13 @@ Script to close tickets given a database query.
 Use this script if you're asked to do something like: close Open or Paused phishing tickets older
  than 1/1/2021 (close reason resolved)
 """
-
+def generate_jwt():
+    response = requests.post(_config.get('API_TOKEN_URL'),
+                             json={'username': _config.get('API_USER'), 'password': _config.get('API_PASS')},
+                             params={'realm': 'idp'})
+    print(f'response sso: {response.content}')
+    body = json.loads(response.text)
+    return body.get('data')
 
 class ProductionAppConfig():
     # Prod Mongo DB Settings
@@ -64,9 +71,9 @@ if __name__ in '__main__':
     PAYLOAD = {'closed': 'true', 'close_reason': CLOSE_REASON}
     RUN_ENVIRONMENT = 'dev'
     _config_file = configparser.ConfigParser()
-    _config_file.read('./settings.ini')
+    _config_file.read('./close_tickets/settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
-    HEADER = {'Authorization': _config.get('API_TOKEN')}
+    HEADER = {'Authorization': f'sso-jwt {generate_jwt()}'}
 
     _user = getuser()
     while True:
@@ -78,9 +85,10 @@ if __name__ in '__main__':
     #####################################################################
     #  The database query used to select tickets to close. !!BE CAREFUL!!
     _query = {
-        'type': 'PHISHING',
+        'type': {'$in': ['PHISHING', 'MALWARE']},
         'phishstory_status': {'$in': ['OPEN', 'PAUSED']},
-        'created': {'$lt': datetime.strptime('2021-01-01', '%Y-%m-%d')}
+        'created': {'$lt': datetime.strptime('2023-06-01', '%Y-%m-%d')},
+        'reporter': { '$nin': [ "129092584", "276848701" ] }
     }
     #####################################################################
 
@@ -101,13 +109,14 @@ if __name__ in '__main__':
             time.sleep(1)
         _cnt += 1
         _ticket_id = _row.get('_id')
+        _created_date = _row.get('created')
         try:
             _r = requests.patch('{}/{}'.format(_config.get('API_URL'), _ticket_id),
                                 json=PAYLOAD,
                                 headers=HEADER)
             if _r.status_code == 204:
                 _success += 1
-                print('{}: Closed {}'.format(_cnt, _ticket_id))
+                print('{}: Closed ticket {}, created on {}'.format(_cnt, _ticket_id, _created_date))
                 _db.update_actions_sub_document(_ticket_id, CLOSE_REASON, user=_user)
             else:
                 print('{}: Unable to close ticket {} {}'.format(_cnt, _ticket_id, _r.content))

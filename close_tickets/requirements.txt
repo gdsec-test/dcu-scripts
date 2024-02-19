@@ -1,2 +1,2 @@
-dcdatabase==1.2
+dcdatabase==2.0.5
 requests==2.31.0
