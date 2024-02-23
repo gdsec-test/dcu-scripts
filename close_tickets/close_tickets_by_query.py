@@ -67,13 +67,14 @@ def _is_affirmative(_response):
 
 
 if __name__ in '__main__':
-    CLOSE_REASON = 'resolved'
+    CLOSE_REASON = 'admin_close'
     PAYLOAD = {'closed': 'true', 'close_reason': CLOSE_REASON}
     RUN_ENVIRONMENT = 'dev'
     _config_file = configparser.ConfigParser()
     _config_file.read('./close_tickets/settings.ini')
     _config = _config_file[RUN_ENVIRONMENT]
     HEADER = {'Authorization': f'sso-jwt {generate_jwt()}'}
+    # HEADER = {'Authorization': _config.get("API_TOKEN")}
 
     _user = getuser()
     while True:
@@ -108,8 +109,10 @@ if __name__ in '__main__':
         if _cnt % 10 == 0:
             time.sleep(1)
         _cnt += 1
+
         _ticket_id = _row.get('_id')
         _created_date = _row.get('created')
+
         try:
             _r = requests.patch('{}/{}'.format(_config.get('API_URL'), _ticket_id),
                                 json=PAYLOAD,
