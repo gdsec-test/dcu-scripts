@@ -1,6 +1,6 @@
-ansible==8.5.0
+ansible==9.2.0
 boto3==1.24.62
 botocore==1.27.62
 passlib==1.7.4
 python-openstackclient==5.8.0
-openstacksdk==0.61.0
+openstacksdk==3.0.0

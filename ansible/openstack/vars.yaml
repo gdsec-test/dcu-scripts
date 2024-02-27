@@ -1,3 +1,7 @@
+userdata_deploymentserver: |
+  #cloud-config
+  runcmd:
+    - godaddy-ad-groups-sudo admins_infosec-dcu
 userdata: |
         #cloud-config
         runcmd:

@@ -1,0 +1,21 @@
+#!/usr/bin/env ansible-playbook
+- name: Deploy bastion hosts for AWS access
+  vars_files: 
+    - vars.yaml
+  hosts: localhost
+  tasks:
+  - name: Deploy an instance
+    os_server:
+      state: present
+      flavor: c4.r8.d100
+      name: "{{ openstack[env]['prefix'] }}abuseads02"
+      image: almalinux8
+      network: cor
+      security_groups: ["Cyberark Access"]
+      wait: yes
+      availability_zone: nova
+      auto_ip: no
+      userdata: "{{ userdata_deploymentserver }}"
+      meta:
+        group: deploymentserver
+        zone: deploymentserver
