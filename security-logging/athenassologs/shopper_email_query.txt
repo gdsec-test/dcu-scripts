@@ -1,0 +1,1 @@
+'"alias":"(a@sample\.com|b@sample\.com)"|"id":"(123|456)"|"(ip|address)":"(10\.200\.13\.191)"'

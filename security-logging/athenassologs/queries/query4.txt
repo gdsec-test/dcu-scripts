@@ -1,0 +1,8 @@
+SELECT data as jsonlog
+    FROM shimdb.onprem_appseclog_all
+    WHERE ( product = 'SSO' )
+      AND ( env = 'PROD' )
+      AND ( year between 2021 and 2023 )
+      AND ( 
+        regexp_like(data, <place_holder>) 
+        )

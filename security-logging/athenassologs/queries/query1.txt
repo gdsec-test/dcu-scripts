@@ -1,0 +1,8 @@
+SELECT data as jsonlog
+    FROM shimdb.aws_appseclog_all
+    WHERE ( product = 'ssoplatform' )
+      AND ( env = 'prod' )
+      AND ( year = 2024 )
+      AND ( 
+        regexp_like(data, <place_holder>)
+      )
